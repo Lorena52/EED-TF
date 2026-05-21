@@ -14,7 +14,7 @@ public:
     void repasoContinuo(Progreso& progreso) override;
     void cargarVocabulario();
 
-    void diccionario() override;
+    void diccionario() override; //ESTOY CANSADA
 
     void mostrarDiccionarioRecursivo(ListaCircular<Palabra>::Nodo* nodo, unsigned int restantes);
 };
