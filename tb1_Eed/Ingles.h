@@ -13,7 +13,7 @@ public:
     void iniciarEjercicios(Progreso& progreso) override;
     void repasoContinuo(Progreso& progreso) override;
     void cargarVocabulario();
-
+    //KASSANDRA TA CANSADA
     void diccionario() override;
 
     void mostrarDiccionarioRecursivo(ListaCircular<Palabra>::Nodo* nodo, unsigned int restantes);
