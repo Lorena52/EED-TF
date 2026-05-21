@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Archivos de origen">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Archivos de encabezado">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Archivos de recursos">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Estructuras">
+      <UniqueIdentifier>{d57610ca-837b-4096-94af-7ee4482a9d8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ordenamiento">
+      <UniqueIdentifier>{85399bbd-d92d-4155-a57b-7172a04f9401}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{5a0a7098-c90b-423b-acac-54f1a86e4a1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{f71f1de2-840b-403b-9cc7-4541eedf12ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Servicios">
+      <UniqueIdentifier>{1f2377fb-d343-463e-a15a-82865ae0b07a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modelo">
+      <UniqueIdentifier>{a16a240d-48aa-421c-91d0-fdbcbc105d34}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="app.rc">
+      <Filter>Archivos de recursos</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Resource.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="Cola.hpp">
+      <Filter>Estructuras</Filter>
+    </ClInclude>
+    <ClInclude Include="Lista.hpp">
+      <Filter>Estructuras</Filter>
+    </ClInclude>
+    <ClInclude Include="ListaCircular.hpp">
+      <Filter>Estructuras</Filter>
+    </ClInclude>
+    <ClInclude Include="ListaDoble.hpp">
+      <Filter>Estructuras</Filter>
+    </ClInclude>
+    <ClInclude Include="Pila.hpp">
+      <Filter>Estructuras</Filter>
+    </ClInclude>
+    <ClInclude Include="Ordenamiento.h">
+      <Filter>Ordenamiento</Filter>
+    </ClInclude>
+    <ClInclude Include="Util.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Usuario.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="Idioma.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="Ejercicio.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="Leccion.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="Palabra.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="Progreso.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="Sistema.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="ArchivoManager.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="Error.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="Ingles.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="Portugues.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="Italiano.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="Racha.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="LeccionPortugues.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="LeccionItaliano.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="Ranking.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="LeccionIngles.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="tb1_Eed.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="AssemblyInfo.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="Usuario.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+    <ClCompile Include="Idioma.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+    <ClCompile Include="Ejercicio.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+    <ClCompile Include="Leccion.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+    <ClCompile Include="Palabra.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+    <ClCompile Include="Progreso.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+    <ClCompile Include="Sistema.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+    <ClCompile Include="Error.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+    <ClCompile Include="ArchivoManager.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+    <ClCompile Include="Ingles.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+    <ClCompile Include="Portugues.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+    <ClCompile Include="Italiano.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+    <ClCompile Include="LeccionPortugues.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+    <ClCompile Include="LeccionItaliano.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+    <ClCompile Include="Ranking.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+    <ClCompile Include="LeccionIngles.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="app.ico">
+      <Filter>Archivos de recursos</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="usuarios.txt">
+      <Filter>Estructuras</Filter>
+    </Text>
+    <Text Include="ranking.txt">
+      <Filter>Estructuras</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

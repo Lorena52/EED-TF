@@ -1,0 +1,186 @@
+﻿#include "pch.h"
+#include "Portugues.h"
+#include "Error.h"
+#include "LeccionPortugues.h"
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+Portugues::Portugues() : Idioma("PT", "Portugués") {
+    cargarVocabulario();
+}
+
+void Portugues::mostrarTeoria() {
+    switch (nivel) {
+    case 1:
+        cout << "Teoria básica de Português: cumprimentos e frases simples." << endl;
+        break;
+    case 2:
+        cout << "Teoria intermediária: tempos verbais e vocabulário." << endl;
+        break;
+    case 3:
+        cout << "Teoria avançada: estruturas complexas e expressões idiomáticas." << endl;
+        break;
+    default:
+        cout << "Nível não reconhecido." << endl;
+    }
+}
+
+void Portugues::iniciarEjercicios(Progreso& progreso) {
+    Leccion* leccion = new LeccionPortugues();
+    lecciones.insertarFinal(leccion);
+    switch (nivel) {
+    case 1: leccion->ordenarOracion(progreso); break;
+    case 2: leccion->completarOracion(progreso); break;
+    case 3: leccion->traduccionAvanzada(progreso); break;
+    }
+}
+
+void Portugues::repasoContinuo(Progreso& progreso) {
+
+    if (vocabulario.estaVacia()) {
+        cout << "Não há palavras registradas." << endl;
+        return;
+    }
+
+    srand(time(nullptr)); // inicializar aleatoriedad
+    auto aux = vocabulario.primero();
+    char continuar;
+
+    do {
+        Palabra& p = aux->elem;
+
+     
+        if (p.getNivel() == nivel) {
+            cout << "\nPalavra em português: " << p.getTermino() << endl;
+
+      
+            string opciones[4] = { p.getTraduccion(), "porta", "cachorro", "céu" };
+            int correcta = 0;
+
+            // Mezclar opciones
+            for (int i = 0; i < 4; i++) {
+                int j = rand() % 4;
+                swap(opciones[i], opciones[j]);
+                if (i == correcta) correcta = j;
+                else if (j == correcta) correcta = i;
+            }
+
+            for (int i = 0; i < 4; i++) {
+                cout << i + 1 << ". " << opciones[i] << endl;
+            }
+
+            int resposta;
+            cout << "Selecione a opção correta (1-4): ";
+            cin >> resposta;
+
+            if (resposta - 1 == correcta) {
+
+                cout << " Correto!" << endl;
+
+                p.incrementarRepaso();
+
+                progreso.registrarAcierto();
+            }
+            else {
+
+                cout << " Incorreto. A resposta correta era: "
+                    << opciones[correcta] << endl;
+
+                Error e(
+                    0,
+                    "Error en repaso Portugues",
+                    "2026-05-07"
+                );
+
+                progreso.registrarError(e);
+            }
+
+            cout << "Vezes repasada: " << p.getVeces() << endl;
+        }
+        if (progreso.getErroresSeguidos() >= 3) {
+
+            cout << "\n⚠ Has cometido 3 errores seguidos." << endl;
+
+            cout << "¿Desea continuar el repaso? (s/n): ";
+
+            char op;
+
+            cin >> op;
+
+            if (op == 'n' || op == 'N') {
+
+                cout << "Volviendo al menu..." << endl;
+
+                return;
+            }
+
+            progreso.reiniciarErrores();
+
+            continue;
+        }
+        cout << "Deseja continuar? (s/n): ";
+        cin >> continuar;
+
+        aux = aux->sig;
+
+    } while (continuar == 's' || continuar == 'S');
+}
+
+
+void Portugues::cargarVocabulario() {
+    vocabulario.vaciar();
+    if (nivel == 1) {
+        vocabulario.insertarFinal(Palabra("ola", "hola", 1));
+        vocabulario.insertarFinal(Palabra("adeus", "adiós", 1));
+        vocabulario.insertarFinal(Palabra("casa", "casa", 1));
+        vocabulario.insertarFinal(Palabra("gato", "gato", 1));
+        vocabulario.insertarFinal(Palabra("cao", "perro", 1));
+        vocabulario.insertarFinal(Palabra("agua", "agua", 1));
+        vocabulario.insertarFinal(Palabra("livro", "libro", 1));
+        vocabulario.insertarFinal(Palabra("sol", "sol", 1));
+        vocabulario.insertarFinal(Palabra("mesa", "mesa", 1));
+        vocabulario.insertarFinal(Palabra("amigo", "amigo", 1));
+    }
+    else if (nivel == 2) {
+        vocabulario.insertarFinal(Palabra("livro", "libro", 2));
+        vocabulario.insertarFinal(Palabra("escola", "escuela", 2));
+        vocabulario.insertarFinal(Palabra("trabalho", "trabajo", 2));
+        vocabulario.insertarFinal(Palabra("cidade", "ciudad", 2));
+        vocabulario.insertarFinal(Palabra("janela", "ventana", 2));
+        vocabulario.insertarFinal(Palabra("porta", "puerta", 2));
+        vocabulario.insertarFinal(Palabra("familia", "familia", 2));
+        vocabulario.insertarFinal(Palabra("professor", "profesor", 2));
+        vocabulario.insertarFinal(Palabra("comida", "comida", 2));
+        vocabulario.insertarFinal(Palabra("rua", "calle", 2));
+    }
+    else if (nivel == 3) {
+        vocabulario.insertarFinal(Palabra("responsabilidade", "responsabilidad", 3));
+        vocabulario.insertarFinal(Palabra("conhecimento", "conocimiento", 3));
+        vocabulario.insertarFinal(Palabra("desenvolvimento", "desarrollo", 3));
+        vocabulario.insertarFinal(Palabra("aprendizagem", "aprendizaje", 3));
+        vocabulario.insertarFinal(Palabra("experiencia", "experiencia", 3));
+        vocabulario.insertarFinal(Palabra("traduccion", "traducción", 3));
+        vocabulario.insertarFinal(Palabra("comunicacao", "comunicación", 3));
+        vocabulario.insertarFinal(Palabra("tecnologia", "tecnología", 3));
+        vocabulario.insertarFinal(Palabra("inteligencia", "inteligencia", 3));
+        vocabulario.insertarFinal(Palabra("universidade", "universidad", 3));
+    }
+}
+
+void Portugues::diccionario() {
+    if (vocabulario.estaVacia()) {
+        cout << "Diccionario vacío. Cargue vocabulario primero." << endl;
+        return;
+    }
+
+    cout << "\n=== Diccionario de Português ===\n";
+    auto aux = vocabulario.primero();
+    unsigned int n = vocabulario.tam();
+
+    for (unsigned int i = 0; i < n; i++) {
+        aux->elem.mostrar();
+        aux = aux->sig;
+    }
+}
