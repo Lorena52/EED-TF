@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "Italiano.h"
 #include "LeccionItaliano.h"
+#include "Ordenamiento.h"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -50,7 +51,6 @@ void Italiano::iniciarEjercicios(Progreso& progreso) {
         break;
     }
 }
-
 void Italiano::repasoContinuo(Progreso& progreso) {
 
     if (vocabulario.estaVacia()) {
@@ -58,9 +58,9 @@ void Italiano::repasoContinuo(Progreso& progreso) {
         return;
     }
 
-    srand(time(nullptr));
+    srand(static_cast<unsigned int>(time(nullptr)));
 
-    auto aux = vocabulario.primero();
+    auto* aux = vocabulario.primero();
 
     char continuar;
 
@@ -70,97 +70,117 @@ void Italiano::repasoContinuo(Progreso& progreso) {
 
         if (p.getNivel() == nivel) {
 
-            cout << "\nPalabra en italiano: "
+            cout << "\n====================================" << endl;
+            cout << "Parola in italiano: "
                 << p.getTermino() << endl;
+            cout << "====================================" << endl;
 
-            string opciones[4] = {
-                p.getTraduccion(),
-                "puerta",
-                "perro",
-                "cielo"
-            };
+            // LISTA DE OPCIONES
+            Lista<string> opciones;
 
-            int correcta = 0;
+            string correcta = p.getTraduccion();
 
-            // Mezclar opciones
-            for (int i = 0; i < 4; i++) {
+            opciones.insertarFinal(correcta);
+            opciones.insertarFinal("puerta");
+            opciones.insertarFinal("perro");
+            opciones.insertarFinal("cielo");
 
-                int j = rand() % 4;
+            // MEZCLAR OPCIONES
+            Ordenamiento<string>::mezclar(&opciones);
 
-                swap(opciones[i], opciones[j]);
+            // MOSTRAR OPCIONES
+            auto* nodo = opciones.inicio();
 
-                if (i == correcta)
-                    correcta = j;
+            int indice = 1;
 
-                else if (j == correcta)
-                    correcta = i;
-            }
+            while (nodo != nullptr) {
 
-            for (int i = 0; i < 4; i++) {
-                cout << i + 1 << ". "
-                    << opciones[i] << endl;
+                cout << indice << ". "
+                    << nodo->elem << endl;
+
+                nodo = nodo->sig;
+                indice++;
             }
 
             int respuesta;
 
-            cout << "Seleccione la opcion correcta (1-4): ";
+            cout << "\nSeleccione la opcion correcta (1-4): ";
             cin >> respuesta;
 
-            if (respuesta - 1 == correcta) {
+            // VALIDAR OPCION
+            if (respuesta < 1 || respuesta > 4) {
 
-                cout << "Correcto!" << endl;
-
-                p.incrementarRepaso();
-
-                progreso.registrarAcierto();
+                cout << "Opcion invalida." << endl;
             }
             else {
 
-                cout << "Incorrecto. La respuesta correcta era: "
-                    << opciones[correcta] << endl;
+                // COMPARAR RESPUESTA
+                if (opciones.obtener(respuesta - 1) == correcta) {
 
-                Error e(
-                    0,
-                    "Error en repaso Italiano",
-                    "2026-05-07"
-                );
+                    cout << "\nCorrecto! :) " << endl;
 
-                progreso.registrarError(e);
+                    p.incrementarRepaso();
+
+                    progreso.registrarAcierto();
+
+                    cout << "\n--- Racha actual ---" << endl;
+
+                    progreso.getRacha()->mostrar();
+
+                    cout << "Veces repasada: "
+                        << p.getVeces() << endl;
+                }
+                else {
+
+                    cout << "\nIncorrecto." << endl;
+
+                    cout << "La respuesta correcta era: "
+                        << correcta << endl;
+
+                    Error e(
+                        0,
+                        "Error en repaso Italiano",
+                        "2026-05-07"
+                    );
+
+                    progreso.registrarError(e);
+
+                    // REINICIAR RACHA
+                    progreso.getRacha()->reiniciar();
+
+                    cout << "\n--- Racha reiniciada ---" << endl;
+                }
             }
 
-            cout << "Veces repasada: "
-                << p.getVeces() << endl;
-        }
-        if (progreso.getErroresSeguidos() >= 3) {
+            // CONTROL DE ERRORES SEGUIDOS
+            if (progreso.getErroresSeguidos() >= 3) {
 
-            cout << "\n⚠ Has cometido 3 errores seguidos." << endl;
+                cout << "\nHas cometido 3 errores seguidos." << endl;
 
-            cout << "¿Desea continuar el repaso? (s/n): ";
+                cout << "¿Desea continuar el repaso? (s/n): ";
 
-            char op;
+                char op;
 
-            cin >> op;
+                cin >> op;
 
-            if (op == 'n' || op == 'N') {
+                if (op == 'n' || op == 'N') {
 
-                cout << "Volviendo al menu..." << endl;
+                    cout << "Volviendo al menu..." << endl;
 
-                return;
+                    return;
+                }
+
+                progreso.reiniciarErrores();
             }
-
-            progreso.reiniciarErrores();
-
-            continue;
         }
 
-        cout << "Desea continuar? (s/n): ";
+        cout << "\n¿Desea continuar? (s/n): ";
         cin >> continuar;
 
         aux = aux->sig;
 
     } while (continuar == 's' || continuar == 'S');
 }
-
 void Italiano::cargarVocabulario() {
 
     vocabulario.vaciar();

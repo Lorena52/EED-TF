@@ -63,8 +63,9 @@ void LeccionPortugues::ordenarOracion(Progreso& progreso) {
 
             //Avanza barra solo si es correcto
             contador++;
-            Sistema sistema;
-            sistema.mostrarBarraProgreso(contador, totalPreguntas);
+            Sistema::mostrarBarraProgreso(contador, totalPreguntas);
+
+            
 
             //Mostrar racha actual
             cout << "\n--- Racha actual ---" << endl;
@@ -132,8 +133,8 @@ void LeccionPortugues::completarOracion(Progreso& progreso) {
         progreso.registrarAcierto();
         progreso.actualizar(1, 1);
 
-        Sistema sistema;
-        sistema.mostrarBarraProgreso(1, 1);
+        Sistema::mostrarBarraProgreso(1, 1);
+
 
         cout << "\n--- Racha actual ---" << endl;
         progreso.getRacha()->mostrar();
@@ -184,8 +185,9 @@ void LeccionPortugues::traduccionAvanzada(Progreso& progreso) {
             corretas++;
 
             // Barra solo si es correcto
-            Sistema sistema;
-            sistema.mostrarBarraProgreso(corretas, total);
+           
+            Sistema::mostrarBarraProgreso(corretas, total);
+
         }
         else {
             cout << "Incorrecto. A tradução correta é:\n" << frases[i].espanhol << endl;

@@ -17,17 +17,20 @@ using namespace std;
 
 Sistema::Sistema() : idiomaSeleccionado(nullptr), usuarioActivo(nullptr) {
     //LAMBDAS
-    cargarArchivo("usuarios.txt",
-        [](string linea) { return Usuario::deserializar(linea); },
+    cargarArchivo("usuarios.txt",[](string linea) 
+        { return Usuario::deserializar(linea); },
         [this](Usuario u) { usuarios.insertarFinal(u); });
 }
+
+
+//destruc
 Sistema::~Sistema() {
     if (idiomaSeleccionado) {
         delete idiomaSeleccionado;
         idiomaSeleccionado = nullptr;
     }
 }
-
+//________________
 void Sistema::iniciar() {
     cout << CYAN << BOLD;
     cout << "=========================================\n";
@@ -35,7 +38,6 @@ void Sistema::iniciar() {
     cout << "=========================================\n" << RESET;
     menuPrincipal();
 }
-
 
 void Sistema::menuPrincipal() {
     int opcion;
@@ -64,8 +66,10 @@ void Sistema::menuPrincipal() {
     } while (opcion != 7);
 }
 
-//RECURSIVIDAD
+//RECURSIVIDAD  
+//progreso es del avance pero de ordenat oracion y completar oracion 
 void Sistema::mostrarBarraProgreso(int progreso, int total) {
+
     int ancho = 30;
     int completado = (progreso * ancho) / total;
 
@@ -85,7 +89,7 @@ void Sistema::mostrarBarraProgreso(int progreso, int total) {
     if (progreso == total) {
         cout << MAGENTA << "\n¡Felicitaciones! Has completado la lección al 100% " << RESET << endl;
         cout << CYAN << "Regresando al menú principal..." << RESET << endl;
-        menuPrincipal();
+       
     }
 }
 
@@ -121,7 +125,7 @@ void Sistema::registrarUsuario() {
     Usuario nuevo(usuarios.tam() + 1, nombre, email, ni, np, ni2);
     usuarios.insertarFinal(nuevo);
 
-    //LAMBDA
+    //LAMBDA- hyarda el usuario 
     guardarArchivo(&usuarios, "usuarios.txt",
         [](Usuario u) { return u.serializar(); });
 
@@ -156,7 +160,7 @@ void Sistema::seleccionarIdioma() {
         return;
     }
 
-    cout << GREEN << "Bienvenida(o), " << usuarioEncontrado->getNombre() << "!" << RESET << endl;
+    cout << GREEN << "Bienvenida(o), :)  " << usuarioEncontrado->getNombre() << "!" << RESET << endl;
 
     int opcion;
     cout << BLUE << "\nSeleccione idioma:" << RESET << endl;
@@ -268,8 +272,8 @@ void Sistema::iniciarLecciones() {
         cout << RED << "Opción inválida." << RESET << endl;
     }
 
-    guardarArchivo(&usuarios, "usuarios.txt",
-        [](Usuario u) { return u.serializar(); });
+    guardarArchivo(&usuarios, "usuarios.txt", [](Usuario u) 
+        { return u.serializar(); });
 }
 
 

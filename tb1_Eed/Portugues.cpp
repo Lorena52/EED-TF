@@ -2,6 +2,7 @@
 #include "Portugues.h"
 #include "Error.h"
 #include "LeccionPortugues.h"
+#include "Ordenamiento.h"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -44,83 +45,123 @@ void Portugues::repasoContinuo(Progreso& progreso) {
         return;
     }
 
-    srand(time(nullptr)); // inicializar aleatoriedad
-    auto aux = vocabulario.primero();
+    srand(static_cast<unsigned int>(time(nullptr)));
+
+    auto* aux = vocabulario.primero();
+
     char continuar;
 
     do {
+
         Palabra& p = aux->elem;
 
-     
         if (p.getNivel() == nivel) {
-            cout << "\nPalavra em português: " << p.getTermino() << endl;
 
-      
-            string opciones[4] = { p.getTraduccion(), "porta", "cachorro", "céu" };
-            int correcta = 0;
+            cout << "\n====================================" << endl;
+            cout << "Palavra em português: "
+                << p.getTermino() << endl;
+            cout << "====================================" << endl;
 
-            // Mezclar opciones
-            for (int i = 0; i < 4; i++) {
-                int j = rand() % 4;
-                swap(opciones[i], opciones[j]);
-                if (i == correcta) correcta = j;
-                else if (j == correcta) correcta = i;
-            }
+            // LISTA DE OPCIONES
+            Lista<string> opciones;
 
-            for (int i = 0; i < 4; i++) {
-                cout << i + 1 << ". " << opciones[i] << endl;
+            string correcta = p.getTraduccion();
+
+            opciones.insertarFinal(correcta);
+            opciones.insertarFinal("porta");
+            opciones.insertarFinal("cachorro");
+            opciones.insertarFinal("céu");
+
+            // MEZCLAR OPCIONES
+            Ordenamiento<string>::mezclar(&opciones);
+
+            // MOSTRAR OPCIONES
+            auto* nodo = opciones.inicio();
+
+            int indice = 1;
+
+            while (nodo != nullptr) {
+
+                cout << indice << ". "
+                    << nodo->elem << endl;
+
+                nodo = nodo->sig;
+                indice++;
             }
 
             int resposta;
-            cout << "Selecione a opção correta (1-4): ";
+
+            cout << "\nSelecione a opção correta (1-4): ";
             cin >> resposta;
 
-            if (resposta - 1 == correcta) {
+            // VALIDAR OPCION
+            if (resposta < 1 || resposta > 4) {
 
-                cout << " Correto!" << endl;
-
-                p.incrementarRepaso();
-
-                progreso.registrarAcierto();
+                cout << "Opção inválida." << endl;
             }
             else {
 
-                cout << " Incorreto. A resposta correta era: "
-                    << opciones[correcta] << endl;
+                // COMPARAR RESPUESTA
+                if (opciones.obtener(resposta - 1) == correcta) {
 
-                Error e(
-                    0,
-                    "Error en repaso Portugues",
-                    "2026-05-07"
-                );
+                    cout << "\nCorreto! :) " << endl;
 
-                progreso.registrarError(e);
+                    p.incrementarRepaso();
+
+                    progreso.registrarAcierto();
+
+                    cout << "\n--- Racha atual ---" << endl;
+
+                    progreso.getRacha()->mostrar();
+
+                    cout << "Vezes repasada: "
+                        << p.getVeces() << endl;
+                }
+                else {
+
+                    cout << "\nIncorreto." << endl;
+
+                    cout << "A resposta correta era: "
+                        << correcta << endl;
+
+                    Error e(
+                        0,
+                        "Error en repaso Portugues",
+                        "2026-05-07"
+                    );
+
+                    progreso.registrarError(e);
+
+                    // REINICIAR RACHA
+                    progreso.getRacha()->reiniciar();
+
+                    cout << "\n--- Racha reiniciada ---" << endl;
+                }
             }
 
-            cout << "Vezes repasada: " << p.getVeces() << endl;
-        }
-        if (progreso.getErroresSeguidos() >= 3) {
+            // CONTROL DE ERRORES SEGUIDOS
+            if (progreso.getErroresSeguidos() >= 3) {
 
-            cout << "\n⚠ Has cometido 3 errores seguidos." << endl;
+                cout << "\nHas cometido 3 errores seguidos." << endl;
 
-            cout << "¿Desea continuar el repaso? (s/n): ";
+                cout << "¿Desea continuar el repaso? (s/n): ";
 
-            char op;
+                char op;
 
-            cin >> op;
+                cin >> op;
 
-            if (op == 'n' || op == 'N') {
+                if (op == 'n' || op == 'N') {
 
-                cout << "Volviendo al menu..." << endl;
+                    cout << "Volviendo al menu..." << endl;
 
-                return;
+                    return;
+                }
+
+                progreso.reiniciarErrores();
             }
-
-            progreso.reiniciarErrores();
-
-            continue;
         }
-        cout << "Deseja continuar? (s/n): ";
+
+        cout << "\nDeseja continuar? (s/n): ";
         cin >> continuar;
 
         aux = aux->sig;

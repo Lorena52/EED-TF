@@ -1,9 +1,13 @@
-﻿#include "pch.h"
+﻿// se usa listacircular para <palabra>
+// lista para repaso continuo 
+//ordenamineto mezclar 
+#include "pch.h"
 #include "Ingles.h"
 #include "Leccion.h"
 #include "Progreso.h"
 #include <iostream>
 #include "LeccionIngles.h"
+#include "Ordenamiento.h"
 #include <cstdlib>   // rand, srand
 #include <ctime>   // time
 
@@ -15,13 +19,13 @@ Ingles::Ingles() : Idioma("EN", "Inglés") {
 void Ingles::mostrarTeoria() {
     switch (nivel) {
     case 1:
-        cout << "Teoría básica de Inglés: saludos y frases simples." << endl;
+        cout << "Teoria basica de Ingles: saludos y frases simples." << endl;
         break;
     case 2:
-        cout << "Teoría intermedia: tiempos verbales y vocabulario." << endl;
+        cout << "Teoria intermedia: tiempos verbales y vocabulario." << endl;
         break;
     case 3:
-        cout << "Teoría avanzada: estructuras complejas y modismos." << endl;
+        cout << "Teoria avanzada: estructuras complejas y modismos." << endl;
         break;
     default:
         cout << "Nivel no reconocido." << endl;
@@ -29,8 +33,14 @@ void Ingles::mostrarTeoria() {
 }
 
 void Ingles::iniciarEjercicios(Progreso& progreso) {
+    //aqui creamos una leccion - de La clase Leccion que es de Leccion Leccion 
     Leccion* leccion = new LeccionIngles();
+    //lecciones_ Leccion ordenada_oraciones, es lista doble 
+    //leccion: es un puntero a leccion ingles que insetrata al final de la lista lecciones 
+ 
     lecciones.insertarFinal(leccion);
+    //"guardar ESTA lección dentro de la lista de lecciones"
+   
     switch (nivel) {
     case 1:
         leccion->ordenarOracion(progreso);
@@ -46,67 +56,102 @@ void Ingles::iniciarEjercicios(Progreso& progreso) {
 }
 
 void Ingles::repasoContinuo(Progreso& progreso) {
+
     if (vocabulario.estaVacia()) {
         cout << "No hay palabras registradas." << endl;
         return;
     }
 
-    srand(static_cast<unsigned int>(time(nullptr))); // evitar warning C4244
-    auto* aux = vocabulario.primero();  // primer nodo de la lista circular
+    srand(static_cast<unsigned int>(time(nullptr)));
+
+    auto* aux = vocabulario.primero();
     char continuar;
-
     do {
-        Palabra& p = aux->elem;
-
+         Palabra& p = aux->elem;
         if (p.getNivel() == nivel) {
-            cout << "\nPalabra en inglés: " << p.getTermino() << endl;
+            cout << "\n====================================" << endl;
+            cout << "Palabra en ingles: " << p.getTermino() << endl;
+            cout << "====================================" << endl;
+            Lista<string> opciones;
+            string correcta = p.getTraduccion();
+            opciones.insertarFinal(correcta);
+            opciones.insertarFinal("puerta");
+            opciones.insertarFinal("perro");
+            opciones.insertarFinal("cielo");
 
-            string opciones[4] = { p.getTraduccion(), "puerta", "perro", "cielo" };
-            int correcta = 0;
-
-            // Mezclar opciones
-            for (int i = 0; i < 4; i++) {
-                int j = rand() % 4;
-                swap(opciones[i], opciones[j]);
-                if (i == correcta) correcta = j;
-                else if (j == correcta) correcta = i;
+            Ordenamiento<string>::mezclar(&opciones);
+            auto* nodo = opciones.inicio();
+            int indice = 1;
+            while (nodo != nullptr) {
+                cout << indice << ". "
+                    << nodo->elem << endl;
+                nodo = nodo->sig;
+                indice++;
             }
-
-            for (int i = 0; i < 4; i++) {
-                cout << i + 1 << ". " << opciones[i] << endl;
-            }
-
             int respuesta;
-            cout << "Seleccione la opción correcta (1-4): ";
+
+            cout << "\nSeleccione la opcion correcta (1-4): ";
             cin >> respuesta;
 
-            if (respuesta - 1 == correcta) {
-                cout << "✅ Correcto!" << endl;
-                p.incrementarRepaso();
-                progreso.registrarAcierto();
+            if (respuesta < 1 || respuesta > 4) {
+
+                cout << "Opcion invalida." << endl;
             }
             else {
-                cout << "❌ Incorrecto. La respuesta correcta era: " << opciones[correcta] << endl;
-                Error e(0, "Error en repaso", "2026-05-07");
-                progreso.registrarError(e);
+                if (opciones.obtener(respuesta - 1) == correcta) {
+
+                    cout << "\n Correcto! :) " << endl;
+
+                    p.incrementarRepaso();
+
+                    progreso.registrarAcierto();
+
+                    //cout << "Repasos completados: "
+                    //    << p.getRepasos() << endl;
+
+                    // Mostramos racha
+                    cout << "\n--- Racha actual ---" << endl;
+
+                   progreso.getRacha()->mostrar();
+                }
+                else {
+                 cout << "\n Incorrecto." << endl;
+                    cout << "La respuesta correcta era: " << correcta << endl;
+                    Error e(  0,   "Error en repaso", "2026-05-07" );
+
+                    progreso.registrarError(e);
+
+                    // Raplicamos lod el aracha 
+                    progreso.getRacha()->reiniciar();
+
+                    cout << "\n--- Racha reiniciada ---" << endl;
+                }
             }
 
+            //Implemtactar los errores seguios 
             if (progreso.getErroresSeguidos() >= 3) {
-                cout << "\n⚠ Has cometido 3 errores seguidos." << endl;
+                cout << "\n Has cometido 3 errores seguidos." << endl;
                 cout << "¿Desea continuar el repaso? (s/n): ";
-                char op; cin >> op;
-                if (op == 'n' || op == 'N') return;
+                char op;
+                cin >> op;
+
+                if (op == 'n' || op == 'N') {
+                    return;
+                }
+
                 progreso.reiniciarErrores();
             }
         }
 
-        cout << "¿Desea continuar? (s/n): ";
+        cout << "\n¿Desea continuar? (s/n): ";
         cin >> continuar;
 
-        aux = aux->sig;  // ✅ avanzar en la lista circular
+ 
+        aux = aux->sig;
 
     } while (continuar == 's' || continuar == 'S');
 }
+
 
 void Ingles::cargarVocabulario() {
     vocabulario.vaciar(); // limpiar lista antes de recargar

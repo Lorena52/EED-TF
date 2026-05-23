@@ -1,7 +1,11 @@
-﻿#include "pch.h"
-#include <limits>
+﻿//Aqui utilizamos 
+//- listas - colas - Ordemamiendto (mezclar )
+//guia pa los demas lecciones quitar nulltpr ya esta en el main 
+#include "pch.h"
 #include "LeccionIngles.h"
 #include "Ordenamiento.h"
+//::::::::::::::::
+#include <limits>
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -14,18 +18,24 @@ void LeccionIngles::ordenarOracion(Progreso& progreso) {
     int totalPreguntas = 3;
 
     do {
-        srand(time(nullptr));
+        Lista<string> correcta;// aplicamos lista para la oracion correcta , luego se mescla y se ordena luego  se compara 
+        int tipo = rand() % 4; 
 
-        Lista<string> correcta;
-        int tipo = rand() % 4;
+        if (tipo == 0)
+        { correcta.insertarFinal("I"); correcta.insertarFinal("study"); correcta.insertarFinal("English"); }
 
-        if (tipo == 0) { correcta.insertarFinal("I"); correcta.insertarFinal("study"); correcta.insertarFinal("English"); }
-        else if (tipo == 1) { correcta.insertarFinal("She"); correcta.insertarFinal("likes"); correcta.insertarFinal("music"); }
-        else if (tipo == 2) { correcta.insertarFinal("We"); correcta.insertarFinal("play"); correcta.insertarFinal("soccer"); }
+        else if (tipo == 1) 
+        { correcta.insertarFinal("She"); correcta.insertarFinal("likes"); correcta.insertarFinal("music"); }
+
+        else if (tipo == 2) 
+        { correcta.insertarFinal("We"); correcta.insertarFinal("play"); correcta.insertarFinal("soccer"); }
+
         else { correcta.insertarFinal("They"); correcta.insertarFinal("watch"); correcta.insertarFinal("movies"); }
 
-        Lista<string> mezclada;
-        for (unsigned int i = 0; i < correcta.tam(); i++) mezclada.insertarFinal(correcta.obtener(i));
+        Lista<string> mezclada;// se crea una lista nueva pero mezclada 
+
+        for (unsigned int i = 0; i < correcta.tam(); i++)  mezclada.insertarFinal(correcta.obtener(i));
+
         Ordenamiento<string>::mezclar(&mezclada);
 
         cout << "Order the sentence:" << endl;
@@ -33,11 +43,13 @@ void LeccionIngles::ordenarOracion(Progreso& progreso) {
 
         int respuestas[10];
         cout << "Enter the correct order: ";
-        for (unsigned int i = 0; i < correcta.tam(); i++) cin >> respuestas[i];
+
+        for (unsigned int i = 0; i < correcta.tam(); i++)
+            cin >> respuestas[i];
 
         bool correcto = true;
         for (unsigned int i = 0; i < correcta.tam(); i++) {
-            if (mezclada.obtener(respuestas[i] - 1) != correcta.obtener(i)) correcto = false;
+            if (mezclada.obtener(respuestas[i] - 1) != correcta.obtener(i)) correcto = false;// comparando las respuestas de listas 
         }
 
         if (correcto) {
@@ -47,31 +59,47 @@ void LeccionIngles::ordenarOracion(Progreso& progreso) {
 
             //Avanza barra solo si es correcto
             contador++;
-            Sistema sistema;
-            sistema.mostrarBarraProgreso(contador, totalPreguntas);
+        //aqui se muestra con statci 
+            Sistema::mostrarBarraProgreso(contador, totalPreguntas);
 
             //Mostrar racha actual
-            cout << "\n--- Racha actual ---" << endl;
-            progreso.getRacha()->mostrar();
+            cout << "\n--- Racha actual :) ---" << endl;
+            progreso.getRacha()->mostrar();//mostar de racha actual 
         }
+
+
         else {
             cout << "Incorrecto." << endl;
-            Error e(1, "Orden incorrecto", "2026-05-09");
+            Error e(1, "Orden incorrecto", "2026-05-09");//deriva de clase error (esta registrando )
             progreso.registrarError(e);
             progreso.actualizar(0, 1);
 
-            //Reiniciar racha si falla
-            progreso.getRacha()->reiniciar();
-            cout << "\n--- Racha reiniciada a 0 ---" << endl;
+          
+            progreso.getRacha()->reiniciar();//esta reiniciando la racha a 0 
+            cout << "\n--- Perdio su Racha  :(  ---" << endl;
         }
 
-        cout << "Continue? (y/n): ";
+        cout << "Desea Continuar  (y/n): ";
         cin >> continuar;
+        // COMPLEJIDAD:::::::::::::::::::::::::::::::::::::::::::::
+//
+// - Copiar elementos a la lista mezclada -> O(n)
+// - Mezclar palabras -> O(n)
+// - Mostrar palabras -> O(n)
+// - Verificar respuestas -> O(n)
+//
+// COMPLEJIDAD TOTAL:
+// O(n)
+//
+// ESPACIO:
+// O(n)
+
     } while (continuar == 'y' || continuar == 'Y');
 }
 
 
 void LeccionIngles::completarOracion(Progreso& progreso) {
+    //creamos cola de opciones para completar la oracion 
     Cola<string> opciones;
     opciones.encolar("study");
     opciones.encolar("eat");
@@ -79,16 +107,19 @@ void LeccionIngles::completarOracion(Progreso& progreso) {
 
     cout << "Complete the sentence: I ___ English." << endl;
     int i = 1;
+    //landa para mostarr 
     opciones.mostrarCon([&](string palabra) { cout << i++ << ") " << palabra << endl; });
 
-    int opcion; cin >> opcion;
+    int opcion;
+    cin >> opcion;
+
     if (opcion == 1) {
         cout << "Correcto!" << endl;
         progreso.registrarAcierto();
         progreso.actualizar(1, 1);
 
-        Sistema sistema;
-        sistema.mostrarBarraProgreso(1, 1);
+        Sistema::mostrarBarraProgreso(1, 1);
+
 
         cout << "\n--- Racha actual ---" << endl;
         progreso.getRacha()->mostrar();
@@ -100,7 +131,7 @@ void LeccionIngles::completarOracion(Progreso& progreso) {
         progreso.actualizar(0, 1);
 
         progreso.getRacha()->reiniciar();
-        cout << "\n--- Racha reiniciada a 0 ---" << endl;
+        cout << "\n--- Perdio su Racha :( ---" << endl;
     }
 
 }

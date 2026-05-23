@@ -45,5 +45,6 @@ public:
     void ordenarUsuariosPorNombreAsc();
     void mostrarRankingRachas();
 
-    void mostrarBarraProgreso(int progreso, int total);
+  
+    static void mostrarBarraProgreso(int progreso, int total);
 };

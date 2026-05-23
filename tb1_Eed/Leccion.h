@@ -13,7 +13,7 @@ class Leccion {
 public:
     virtual ~Leccion();
 
-    // Métodos comunes que cada idioma debe implementar
+ // es la clase abtracta que sus hijas son lpor, lec ing, lec ita
     virtual void ordenarOracion(Progreso& progreso) = 0;
     virtual void completarOracion(Progreso& progreso) = 0;
     virtual void traduccionAvanzada(Progreso& progreso) = 0;
