@@ -1,20 +1,16 @@
 #pragma once
-#include <iostream>
 #include <string>
-#include "Idioma.h"
 #include "Progreso.h"
-#include "Leccion.h"
-#include "ListaDoble.hpp"
 
-using namespace std;
+class Idioma; // fwd decl para no acoplar headers
 
 class Usuario {
 private:
-    int id;
-    string nombre;
-    string email;
-    int puntajeTotal;
-    Progreso progreso;      // progreso del usuario
+    int         id;
+    std::string nombre;
+    std::string email;
+    int         puntajeTotal;
+    Progreso    progreso;
 
     int nivelIngles;
     int nivelPortugues;
@@ -22,34 +18,28 @@ private:
 
 public:
     Usuario();
-    Usuario(int i, const string& n, const string& e, int ni, int np, int ni2);
-    ~Usuario();
+    Usuario(int id, const std::string& nombre, const std::string& email,
+        int ni, int np, int ni2);
 
-    // getters
-    string getNombre() const;
-    string getEmail() const;
-    int getPuntajeTotal() const;
+    // Getters
+    int         getId()             const { return id; }
+    std::string getNombre()         const { return nombre; }
+    std::string getEmail()          const { return email; }
+    int         getPuntajeTotal()   const { return puntajeTotal; }
+    int         getNivelIngles()    const { return nivelIngles; }
+    int         getNivelPortugues() const { return nivelPortugues; }
+    int         getNivelItaliano()  const { return nivelItaliano; }
 
-    int getNivelIngles() const;
-    int getNivelPortugues() const;
-    int getNivelItaliano() const;
+    // Setters
+    void setNivelIngles(int n) { nivelIngles = n; }
+    void setNivelPortugues(int n) { nivelPortugues = n; }
+    void setNivelItaliano(int n) { nivelItaliano = n; }
 
-    void setNivelIngles(int n);
-    void setNivelPortugues(int n);
-    void setNivelItaliano(int n);
-
-
-    // manejo de idioma
-    void seleccionarIdioma(int opcion, int nivel);
-    Idioma* getIdiomaActual();
-
-    // progreso
+    // Progreso
     Progreso* obtenerProgreso();
-    void agregarPuntaje(int n);
+    void      agregarPuntaje(int n) { puntajeTotal += n; }
 
-
-    string serializar() const;
-    static Usuario deserializar(const string& linea);
-
-
+    // Persistencia
+    std::string    serializar() const;
+    static Usuario deserializar(const std::string& linea);
 };
