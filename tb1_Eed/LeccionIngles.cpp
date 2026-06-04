@@ -96,7 +96,7 @@ void LeccionIngles::ordenarOracion(Progreso& progreso) {
 
     } while (continuar == 'y' || continuar == 'Y');
 }
-
+//comento
 
 void LeccionIngles::completarOracion(Progreso& progreso) {
     //creamos cola de opciones para completar la oracion 
