@@ -24,7 +24,9 @@ class ArchivoManager {
 private:
     string rutaUsuarios;
     string rutaRanking;
-
+    string rutaIngles;
+    string rutaItaliano;
+    string rutaPortugues;
 public:
     ArchivoManager();
     ~ArchivoManager();
@@ -37,4 +39,11 @@ public:
 
     // --- Ranking ---
     void guardarRanking(Lista<Ranking>& ranking);
+
+    //ingles 
+    void guardarNivelesIngles(ListaDoble<Usuario>& usuarios);
+    //ita
+    void guardarNivelesItaliano(ListaDoble<Usuario>& usuarios);
+    // port
+    void guardarNivelesPortugues(ListaDoble<Usuario>& usuarios);
 };

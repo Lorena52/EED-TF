@@ -133,6 +133,13 @@ void Sistema::registrarUsuario() {
     usuarios.insertarFinal(nuevo);
 
     archivoMgr.guardarUsuarios(usuarios);
+    //_____
+    archivoMgr.guardarNivelesIngles(usuarios);
+    //ita
+    archivoMgr.guardarNivelesItaliano(usuarios);
+    //port
+
+    archivoMgr.guardarNivelesPortugues(usuarios);
 
     cout << "Usuario registrado con éxito." << endl;
 }
@@ -330,6 +337,13 @@ void Sistema::actualizarNivelUsuario() {
     }
 
     archivoMgr.guardarUsuarios(usuarios);
+    //ingles txt
+    archivoMgr.guardarNivelesIngles(usuarios);
+    //ita
+    archivoMgr.guardarNivelesItaliano(usuarios);
+    //port
+
+    archivoMgr.guardarNivelesPortugues(usuarios);
 
     cout << "Nivel actualizado correctamente." << endl;
 }

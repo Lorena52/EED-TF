@@ -5,7 +5,7 @@
 using namespace std;
 
 ArchivoManager::ArchivoManager()
-    : rutaUsuarios("usuarios.txt"), rutaRanking("ranking.txt") {
+    : rutaUsuarios("usuarios.txt"), rutaRanking("ranking.txt"), rutaIngles("ingles.txt"), rutaItaliano("Italiano.txt"), rutaPortugues("Portugues.txt") {
 }
 
 ArchivoManager::~ArchivoManager() {
@@ -42,5 +42,42 @@ void ArchivoManager::guardarRanking(Lista<Ranking>& ranking) {
         &ranking,
         rutaRanking,
         [](Ranking r) { return r.serializar(); }
+    );
+}
+
+// inlges 
+void ArchivoManager::guardarNivelesIngles(ListaDoble<Usuario>& usuarios) {
+    guardarArchivo(
+        &usuarios,
+        rutaIngles,
+        [](Usuario u) {
+            return u.getNombre() + ";" +
+                to_string(u.getNivelIngles());
+        }
+    );
+}
+
+
+// italiano
+void ArchivoManager::guardarNivelesItaliano(ListaDoble<Usuario>& usuarios) {
+    guardarArchivo(
+        &usuarios,
+        rutaItaliano,
+        [](Usuario u) {
+            return u.getNombre() + ";" +
+                to_string(u.getNivelItaliano());
+        }
+    );
+}
+
+// portugues 
+void ArchivoManager::guardarNivelesPortugues(ListaDoble<Usuario>& usuarios) {
+    guardarArchivo(
+        &usuarios,
+        rutaPortugues,
+        [](Usuario u) {
+            return  u.getNombre() + ";" +
+                to_string(u.getNivelPortugues());
+        }
     );
 }
