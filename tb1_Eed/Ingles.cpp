@@ -10,6 +10,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+//mensaje 
 using namespace std;
 
 Ingles::Ingles() : Idioma("EN", "Ingles") {
