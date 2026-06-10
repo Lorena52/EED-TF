@@ -66,7 +66,7 @@ void Progreso::registrarError(const Error& e) {
 void Progreso::mostrarHistorialErrores() {
     cout << "\n===== ERRORES =====\n";
 
-    // LAMBDA: define como se imprime un error (formato en un solo lugar)
+    // LAMBDA 3: define como se imprime un error (formato en un solo lugar)
     auto formatearError = [](const Error& e) {
         cout << "Error en ejercicio " << e.getIdEjercicio()
             << ": " << e.getDetalle()
@@ -105,15 +105,37 @@ void Progreso::setRachaActual(int valor) {
 }
 
 void Progreso::setMejorRacha(int valor) {
-    racha->setMejor(valor);   // ⚠️ necesitas implementar este método en Racha
+    racha->setMejor(valor);   
     racha->reiniciar();
 }
 
-// RECURSIVIDAD: cuenta los errores recorriendo la pila nodo a nodo.
+// RECURSIVIDAD 1: cuenta los errores recorriendo la pila nodo a nodo.
 int Progreso::contarErrores() {
     return contarErroresAux(errores.inicio());
 }
 int Progreso::contarErroresAux(Pila<Error>::Nodo* nodo) {
     if (nodo == nullptr) return 0;              // caso base
     return 1 + contarErroresAux(nodo->sig);     // 1 + el resto de la pila
+}
+
+float Progreso::calcularPorcentaje(int aciertos, int total) const {
+    // LAMBDA 8: calcula el porcentaje evitando division por cero
+    auto porcentaje = [](int a, int t) -> float {
+        return (t == 0) ? 0.0f : (float)a / t * 100.0f;
+        };
+    return porcentaje(aciertos, total);
+}
+
+int Progreso::contarErroresDeEjercicio(int idEjercicio) {
+    // LAMBDA 9 : predicado que filtra errores por id de ejercicio
+    auto esDelEjercicio = [idEjercicio](const Error& e) {
+        return e.getIdEjercicio() == idEjercicio;
+        };
+    int total = 0;
+    auto* aux = errores.inicio();   // recorre la pila REAL (sin copiar)
+    while (aux != nullptr) {
+        if (esDelEjercicio(aux->elem)) total++;
+        aux = aux->sig;
+    }
+    return total;
 }

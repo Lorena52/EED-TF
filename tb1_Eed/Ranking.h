@@ -9,6 +9,7 @@ private:
 
     string nombre;
     int mejorRacha;
+   
 
 public:
 
@@ -21,7 +22,7 @@ public:
     void setNombre(string nombre);
     void setMejorRacha(int racha);
 
-
+    string clasificacion() const;
 
     string serializar() const;
 };

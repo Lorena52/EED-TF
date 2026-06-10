@@ -26,7 +26,6 @@ void Idioma::repasoContinuo(Progreso& progreso) {
         cout << "No hay palabras cargadas." << endl;
         return;
     }
-    // La lista circular se usa para el vocabulario de cada idioma.
     vocabulario.recorrerCon([](const Palabra& p) {
         cout << p.getTermino() << endl;
     });
@@ -39,6 +38,5 @@ void Idioma::diccionario() {
         return;
     }
     cout << "\n=== Diccionario de " << nombre << " ===\n";
-    // RECURSIVIDAD: la propia estructura recorre sus nodos recursivamente.
     vocabulario.recorrerRecursivo([](const Palabra& p) { p.mostrar(); });
 }

@@ -37,3 +37,13 @@ string Ranking::serializar() const {
 
     return nombre + ";" + to_string(mejorRacha);
 }
+
+string Ranking::clasificacion() const {
+    // LAMBDA 5: categoriza la racha segun su valor
+    auto categoria = [](int r) -> string {
+        if (r >= 10) return "Oro";
+        if (r >= 5)  return "Plata";
+        return "Bronce";
+        };
+    return categoria(mejorRacha);
+}

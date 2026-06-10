@@ -24,6 +24,10 @@ private:
     Idioma* idiomaSeleccionado;  
   
     Usuario* usuarioActivo;
+    Usuario* buscarUsuario(const std::string& nombre);
+
+    int contarUsuariosConNivel(int nivelMin);
+
     
 public:
   
@@ -48,6 +52,7 @@ public:
     void mostrarRankingRachas();
 
     void mostrarUsuariosAvanzados();
+    void ordenarUsuariosPorNivel();
 
     static void mostrarBarraProgreso(int progreso, int total);
 };

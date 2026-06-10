@@ -22,6 +22,7 @@ private:
 
     int contarErroresAux(Pila<Error>::Nodo* nodo);
 
+
 public:
     Progreso();
     ~Progreso();
@@ -49,4 +50,7 @@ public:
     void reiniciarErrores();
 
     int contarErrores();
+
+    float calcularPorcentaje(int aciertos, int total) const;
+    int contarErroresDeEjercicio(int idEjercicio);
 };

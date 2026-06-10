@@ -16,6 +16,10 @@ Ingles::Ingles() : Idioma("EN", "Ingles") {
     cargarVocabulario();
 }
 
+bool cmpPalabraAZ(Palabra* a, Palabra* b) {
+    return a->getTermino() < b->getTermino();
+}
+
 void Ingles::mostrarTeoria() {
     switch (nivel) {
     case 1: cout << "Teoria basica de Ingles: saludos y frases simples." << endl; break;
@@ -177,6 +181,20 @@ void Ingles::diccionario() {
         cout << "Diccionario vacio. Cargue vocabulario primero." << endl;
         return;
     }
-    cout << "\n=== Diccionario de Ingles (recursivo) ===\n";
-    mostrarDiccionarioRecursivo(vocabulario.primero(), vocabulario.tam());
+
+    // Pasar el vocabulario a una Lista de punteros para poder ordenarlo
+    Lista<Palabra*> ordenado;
+    auto* nodo = vocabulario.primero();
+    for (unsigned int i = 0; i < vocabulario.tam(); i++) {
+        ordenado.insertarFinal(&nodo->elem);
+        nodo = nodo->sig;
+    }
+
+    // INSERTION SORT: ideal para listas pequenias como el vocabulario
+    Ordenamiento<Palabra*>::insertion(&ordenado, cmpPalabraAZ);
+
+    cout << "\n=== Diccionario de Ingles (orden alfabetico) ===\n";
+    for (unsigned int i = 0; i < ordenado.tam(); i++) {
+        ordenado.obtener(i)->mostrar();
+    }
 }

@@ -51,5 +51,13 @@ public:
     string serializar() const;
     static Usuario deserializar(const string& linea);
 
+    // LAMBDA 4: nivel global = promedio de los 3 idiomas
+    int nivelGlobal() const {
+        auto promedio = [](int a, int b, int c) {
+            return (a + b + c) / 3;
+            };
+        return promedio(nivelIngles, nivelPortugues, nivelItaliano);
+    }
+
 
 };

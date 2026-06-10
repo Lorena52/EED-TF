@@ -58,7 +58,8 @@ void Sistema::menuPrincipal() {
         cout << GREEN << "5. Ver ranking de rachas" << RESET << endl;
         cout << GREEN << "6. Ordenar usuarios por nombre ascendente" << RESET << endl;
         cout << GREEN << "7. Ver usuarios de nivel avanzado" << RESET << endl;
-        cout << RED << "8. Salir" << RESET << endl;
+        cout << GREEN << "8. Ordenar usuarios por nivel (Shell)" << RESET << endl;   // NUEVA
+        cout << RED << "9. Salir" << RESET << endl;
         cout << "Seleccione una opción: ";
         cin >> opcion;
 
@@ -70,11 +71,12 @@ void Sistema::menuPrincipal() {
         case 5: limpiarPantalla();mostrarRankingRachas(); break;
         case 6: limpiarPantalla();ordenarUsuariosPorNombreAsc(); break;
         case 7: limpiarPantalla(); mostrarUsuariosAvanzados(); break;
-        case 8: cout << RED << "Saliendo..." << RESET << endl; break;
+        case 8: limpiarPantalla(); ordenarUsuariosPorNivel(); break;   // NUEVA
+        case 9: cout << RED << "Saliendo..." << RESET << endl; break;
         default: cout << RED << "Opcion invalida." << RESET << endl;
         }
-        if (opcion != 7) pausar();
-    } while (opcion != 7);
+        if (opcion != 9) pausar();
+    } while (opcion != 9);
 }
 
 
@@ -146,22 +148,13 @@ void Sistema::seleccionarIdioma() {
     cout << "Ingrese su nombre para continuar: ";
     cin >> nombreBuscado;
 
-    ListaDoble<Usuario>::Nodo* aux = usuarios.inicio();
-    Usuario* usuarioEncontrado = nullptr;
-
-    while (aux != nullptr) {
-        if (aux->elem.getNombre() == nombreBuscado) {
-            usuarioEncontrado = &(aux->elem);
-            usuarioActivo = usuarioEncontrado;
-            break;
-        }
-        aux = aux->sig;
-    }
-
+    Usuario* usuarioEncontrado = buscarUsuario(nombreBuscado);
     if (!usuarioEncontrado) {
         cout << RED << "No existe un usuario con ese nombre." << RESET << endl;
         return;
     }
+
+    usuarioActivo = usuarioEncontrado;   // <-- AGREGA ESTA LINEA
 
     cout << GREEN << "Bienvenida(o), " << usuarioEncontrado->getNombre() << "!" << RESET << endl;
 
@@ -209,15 +202,7 @@ void Sistema::verProgreso() {
     cout << "Ingrese su nombre: ";
     cin >> nombreBuscado;
 
-    auto* aux = usuarios.inicio();
-    Usuario* encontrado = nullptr;
-    while (aux != nullptr) {
-        if (aux->elem.getNombre() == nombreBuscado) {
-            encontrado = &(aux->elem);
-            break;
-        }
-        aux = aux->sig;
-    }
+    Usuario* encontrado = buscarUsuario(nombreBuscado);
     if (!encontrado) { cout << "Usuario no encontrado." << endl; return; }
 
     cout << "\n========== Progreso de " << encontrado->getNombre()
@@ -242,6 +227,13 @@ void Sistema::verProgreso() {
 
     //Total de errores contados recursivamente sobre la pila
     cout << "\nTotal de errores cometidos: " << prog->contarErrores() << endl;
+    cout << "Nivel global: " << encontrado->nivelGlobal() << endl;
+    cout << "Porcentaje de avance: "
+        << prog->calcularPorcentaje(prog->getLeccionesComp(), prog->getLeccionesComp() + prog->contarErrores())
+        << "%" << endl;
+    cout << "Errores en repaso (ejercicio 0): "
+        << prog->contarErroresDeEjercicio(0) << endl;
+
 
     cout << "=================================" << endl;
 }
@@ -288,16 +280,7 @@ void Sistema::actualizarNivelUsuario() {
     cout << "Ingrese el nombre del usuario: ";
     cin >> nombreBuscado;
 
-    auto aux = usuarios.inicio();
-    Usuario* usuarioEncontrado = nullptr;
-
-    while (aux != nullptr) {
-        if (aux->elem.getNombre() == nombreBuscado) {
-            usuarioEncontrado = &(aux->elem);
-            break;
-        }
-        aux = aux->sig;
-    }
+    Usuario* usuarioEncontrado = buscarUsuario(nombreBuscado);   // <-- ESTA linea
 
     if (!usuarioEncontrado) {
         cout << "Usuario no encontrado." << endl;
@@ -354,6 +337,9 @@ bool compararRacha(Ranking a, Ranking b) {
 
     return a.getMejorRacha() > b.getMejorRacha();
 }
+bool compararPorNivelGlobal(Usuario a, Usuario b) {
+    return a.nivelGlobal() > b.nivelGlobal();
+}
 
 void Sistema::mostrarRankingRachas() {
 
@@ -393,16 +379,21 @@ void Sistema::mostrarRankingRachas() {
 
     while (r != nullptr) {
 
-        cout << pos++ << ". "
-            << r->elem.getNombre()
-            << " -> "
-            << r->elem.getMejorRacha()
-            << endl;
+        cout << pos++ << ". " << r->elem.getNombre()
+            << " -> " << r->elem.getMejorRacha()
+            << " [" << r->elem.clasificacion() << "]" << endl;
 
         r = r->sig;
+       
     }
 
     cout << "===============================" << endl;
+
+    // Estadistica usando la lambda contarUsuariosConNivel
+    cout << "\nUsuarios que alcanzaron nivel avanzado (3): "
+        << contarUsuariosConNivel(3) << endl;
+    cout << "Usuarios en nivel intermedio o mas (2): "
+        << contarUsuariosConNivel(2) << endl;
 }
 
 
@@ -412,7 +403,7 @@ void Sistema::ordenarUsuariosPorNombreAsc() {
         return;
     }
 
-	//LAMBDA para comparar por nombre
+	//LAMBDA 1 para comparar por nombre
     usuarios.ordenar([](const Usuario& a, const Usuario& b) {
         return a.getNombre() < b.getNombre();
         });
@@ -431,7 +422,7 @@ void Sistema::mostrarUsuariosAvanzados() {
         return;
     }
 
-    // LAMBDA: criterio de "usuario avanzado" (algun idioma en nivel 3)
+    // LAMBDA 2: criterio de "usuario avanzado" (algun idioma en nivel 3)
     auto esAvanzado = [](const Usuario& u) {
         return u.getNivelIngles() == 3
             || u.getNivelPortugues() == 3
@@ -451,4 +442,57 @@ void Sistema::mostrarUsuariosAvanzados() {
 
     if (contador == 0)
         cout << "Ningun usuario ha alcanzado nivel avanzado todavia." << endl;
+}
+
+Usuario* Sistema::buscarUsuario(const std::string& nombre) {
+    // LAMBDA 6: predicado de coincidencia por nombre
+    auto coincideNombre = [&nombre](const Usuario& u) {
+        return u.getNombre() == nombre;
+        };
+    auto* aux = usuarios.inicio();
+    while (aux != nullptr) {
+        if (coincideNombre(aux->elem)) return &aux->elem;
+        aux = aux->sig;
+    }
+    return nullptr;
+}
+
+int Sistema::contarUsuariosConNivel(int nivelMin) {
+    // LAMBDA 7: filtro por nivel minimo en cualquier idioma
+    auto alcanzaNivel = [nivelMin](const Usuario& u) {
+        return u.getNivelIngles() >= nivelMin
+            || u.getNivelPortugues() >= nivelMin
+            || u.getNivelItaliano() >= nivelMin;
+        };
+    int total = 0;
+    auto* aux = usuarios.inicio();
+    while (aux != nullptr) {
+        if (alcanzaNivel(aux->elem)) total++;
+        aux = aux->sig;
+    }
+    return total;
+}
+
+void Sistema::ordenarUsuariosPorNivel() {
+    if (usuarios.estaVacia()) {
+        cout << "No hay usuarios registrados." << endl;
+        return;
+    }
+
+    // Copiar usuarios a una Lista para ordenarlos sin alterar la lista doble principal
+    Lista<Usuario> copia;
+    auto* aux = usuarios.inicio();
+    while (aux != nullptr) {
+        copia.insertarFinal(aux->elem);
+        aux = aux->sig;
+    }
+
+    // SHELL SORT: eficiente para volumenes medianos
+    Ordenamiento<Usuario>::shell(&copia, compararPorNivelGlobal);
+
+    cout << "\n=== Usuarios por nivel global (mayor a menor) ===" << endl;
+    for (unsigned int i = 0; i < copia.tam(); i++) {
+        Usuario u = copia.obtener(i);
+        cout << "- " << u.getNombre() << " (nivel global: " << u.nivelGlobal() << ")" << endl;
+    }
 }
