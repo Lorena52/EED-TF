@@ -30,7 +30,9 @@ public:
     Sistema();
     ~Sistema();
 
-    
+    void limpiarPantalla();
+    void pausar();
+
     void iniciar();         
     void menuPrincipal(); 
 
@@ -45,5 +47,7 @@ public:
     void ordenarUsuariosPorNombreAsc();
     void mostrarRankingRachas();
 
-    void mostrarBarraProgreso(int progreso, int total);
+    void mostrarUsuariosAvanzados();
+
+    static void mostrarBarraProgreso(int progreso, int total);
 };

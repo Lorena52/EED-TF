@@ -1,49 +1,44 @@
 ﻿#include "pch.h"
 #include "Idioma.h"
-#include <iostream> 
+#include "Progreso.h"
+#include <iostream>
 using namespace std;
 
-Idioma::Idioma(string c, string n) : codigo(c), nombre(n), nivel(1) {}
-
-Idioma::~Idioma() {
-    //for (auto nodo = lecciones.inicio(); nodo != nullptr; nodo = nodo->sig) {
-    //    delete nodo->elem; 
-    //}
+Idioma::Idioma(string codigo, string nombre)
+    : codigo(codigo), nombre(nombre), nivel(1) {
 }
 
+Idioma::~Idioma() {
+    // Liberar las lecciones creadas con 'new' en iniciarEjercicios().
+    for (auto nodo = lecciones.inicio(); nodo != nullptr; nodo = nodo->sig) {
+        delete nodo->elem;
+    }
+}
 
-void Idioma::setNivel(int n) { nivel = n; }
-int Idioma::getNivel() const { return nivel; }
+// --- Nivel ---
+void   Idioma::setNivel(int n)  { nivel = n; }
+int    Idioma::getNivel() const { return nivel; }
+string Idioma::getNombre() const { return nombre; }
 
+// --- Repaso comun (recorrido simple del vocabulario) ---
 void Idioma::repasoContinuo(Progreso& progreso) {
     if (vocabulario.estaVacia()) {
         cout << "No hay palabras cargadas." << endl;
         return;
     }
-    auto aux = vocabulario.primero();
-    for (unsigned int i = 0; i < vocabulario.tam(); i++) {
-        cout << aux->elem.getTermino() << endl;
-        aux = aux->sig; //La lista circular se usa para el vocabulario de cada idioma
-    }
+    // La lista circular se usa para el vocabulario de cada idioma.
+    vocabulario.recorrerCon([](const Palabra& p) {
+        cout << p.getTermino() << endl;
+    });
 }
 
-void Idioma::cargarVocabulario() {
-
-}
-
-
+// --- Diccionario comun (recursivo sobre la lista circular) ---
 void Idioma::diccionario() {
     if (vocabulario.estaVacia()) {
-        cout << "Diccionario vacío. Cargue vocabulario primero." << endl;
+        cout << "Diccionario vacio. Cargue vocabulario primero." << endl;
         return;
     }
-
     cout << "\n=== Diccionario de " << nombre << " ===\n";
-    auto aux = vocabulario.primero();
-    unsigned int n = vocabulario.tam();
-
-    for (unsigned int i = 0; i < n; i++) {
-        aux->elem.mostrar();   
-        aux = aux->sig;
-    }
+    // RECURSIVIDAD: la propia estructura recorre sus nodos recursivamente.
+    vocabulario.recorrerRecursivo([](const Palabra& p) { p.mostrar(); });
 }

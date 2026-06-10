@@ -65,12 +65,22 @@ void Progreso::registrarError(const Error& e) {
 
 void Progreso::mostrarHistorialErrores() {
     cout << "\n===== ERRORES =====\n";
+
+    // LAMBDA: define como se imprime un error (formato en un solo lugar)
+    auto formatearError = [](const Error& e) {
+        cout << "Error en ejercicio " << e.getIdEjercicio()
+            << ": " << e.getDetalle()
+            << " (" << e.getFecha() << ")" << endl;
+        };
+
     auto aux = errores.inicio();
     while (aux != nullptr) {
-        cout << "Error en ejercicio " << aux->elem.getIdEjercicio()
-            << ": " << aux->elem.getDetalle()
-            << " (" << aux->elem.getFecha() << ")" << endl;
+        formatearError(aux->elem);   // se usa la lambda
         aux = aux->sig;
+    }
+
+    if (errores.inicio() == nullptr) {
+        cout << "Sin errores registrados. Buen trabajo!" << endl;
     }
 }
 
@@ -97,4 +107,13 @@ void Progreso::setRachaActual(int valor) {
 void Progreso::setMejorRacha(int valor) {
     racha->setMejor(valor);   // ⚠️ necesitas implementar este método en Racha
     racha->reiniciar();
+}
+
+// RECURSIVIDAD: cuenta los errores recorriendo la pila nodo a nodo.
+int Progreso::contarErrores() {
+    return contarErroresAux(errores.inicio());
+}
+int Progreso::contarErroresAux(Pila<Error>::Nodo* nodo) {
+    if (nodo == nullptr) return 0;              // caso base
+    return 1 + contarErroresAux(nodo->sig);     // 1 + el resto de la pila
 }

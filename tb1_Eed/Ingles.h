@@ -1,21 +1,28 @@
 #pragma once
-#include "Idioma.h"
 #include <iostream>
-#include "Progreso.h"
+#include "Idioma.h"
 #include "Palabra.h"
-#include "Lista.hpp"
+
+// =====================================================================
+//  Ingles : public Idioma
+//  Idioma concreto. NO redeclara 'vocabulario': usa el que hereda de
+//  Idioma (protected). Asi se evita el shadowing que habia antes.
+// =====================================================================
+
 class Ingles : public Idioma {
 private:
-    ListaCircular<Palabra>vocabulario;
+    // Recursividad propia de Ingles: muestra el diccionario nodo a nodo.
+    void mostrarDiccionarioRecursivo(ListaCircular<Palabra>::Nodo* nodo,
+        unsigned int restantes);
+
 public:
     Ingles();
+
     void mostrarTeoria() override;
     void iniciarEjercicios(Progreso& progreso) override;
     void repasoContinuo(Progreso& progreso) override;
-    void cargarVocabulario();
+    void cargarVocabulario()override;
+    void diccionario() override; 
 
-    void diccionario() override; //ESTOY CANSADA
-
-    void mostrarDiccionarioRecursivo(ListaCircular<Palabra>::Nodo* nodo, unsigned int restantes);
 };
 

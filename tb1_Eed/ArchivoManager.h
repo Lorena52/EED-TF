@@ -1,34 +1,40 @@
 #pragma once
-#include <iostream>
 #include <string>
 #include "Usuario.h"
-#include "Idioma.h"
-#include "Leccion.h"
+#include "Ranking.h"
+#include "ListaDoble.hpp"
 #include "Lista.hpp"
 
 using namespace std;
 
-
-class ArchivoManager
-{
+// =====================================================================
+//  ArchivoManager
+//  UNICA clase responsable de la persistencia en disco. Sabe los
+//  nombres de los archivos y como serializar/deserializar cada entidad.
+//
+//  El resto del programa (Sistema) NO abre archivos directamente:
+//  siempre pasa por aqui. Asi se cumple el requisito de tener un
+//  manejador de archivos por las clases principales.
+//
+//  Archivos que administra:
+//    - usuarios.txt -> lista de usuarios (clase Usuario)
+//    - ranking.txt  -> ranking de rachas (clase Ranking)
+// =====================================================================
+class ArchivoManager {
 private:
-	string rutaBase;
+    string rutaUsuarios;
+    string rutaRanking;
+
 public:
     ArchivoManager();
-	~ArchivoManager();
+    ~ArchivoManager();
 
+    // --- Usuarios ---
+    // Carga los usuarios del archivo dentro de la lista recibida.
+    void cargarUsuarios(ListaDoble<Usuario>& usuarios);
+    // Guarda todos los usuarios de la lista en el archivo.
+    void guardarUsuarios(ListaDoble<Usuario>& usuarios);
 
-	void guardarDatos();
-	void cargarDatos();
-
-
-    //string getRutaBase();
-
-
-	//Lista<Usuario> cargarUsuarios();
-	//Lista<Idiomas> cargarIdiomas();
-	//void guardarProgreso(Usuario* usuario);
-	//Lista<Lecciones> cargarLecciones();
-	//void exportarReporte();
+    // --- Ranking ---
+    void guardarRanking(Lista<Ranking>& ranking);
 };
-

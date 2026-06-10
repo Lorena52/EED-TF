@@ -1,21 +1,46 @@
 #include "pch.h"
 #include "ArchivoManager.h"
+#include "Util.h"
 #include <iostream>
 using namespace std;
 
-ArchivoManager::ArchivoManager() {
-    // inicialización básica
-    cout << "ArchivoManager creado." << endl;
+ArchivoManager::ArchivoManager()
+    : rutaUsuarios("usuarios.txt"), rutaRanking("ranking.txt") {
 }
 
 ArchivoManager::~ArchivoManager() {
-    cout << "ArchivoManager destruido." << endl;
 }
 
-void ArchivoManager::guardarDatos() {
-    cout << "Guardando datos..." << endl;
+// ---------------------------------------------------------------------
+//  Usuarios
+// ---------------------------------------------------------------------
+
+// Lee usuarios.txt linea por linea, deserializa cada linea a un Usuario
+// y lo inserta en la lista. Usa lambdas (requisito de la rubrica).
+void ArchivoManager::cargarUsuarios(ListaDoble<Usuario>& usuarios) {
+    cargarArchivo(
+        rutaUsuarios,
+        [](string linea) { return Usuario::deserializar(linea); },  
+        [&usuarios](Usuario u) { usuarios.insertarFinal(u); }       //LAMBDA
+    );
 }
 
-void ArchivoManager::cargarDatos() {
-    cout << "Cargando datos..." << endl;
+// Recorre la lista y escribe cada usuario serializado en usuarios.txt.
+void ArchivoManager::guardarUsuarios(ListaDoble<Usuario>& usuarios) {
+    guardarArchivo(
+        &usuarios,
+        rutaUsuarios,
+        [](Usuario u) { return u.serializar(); }                    //LAMBDA
+    );
+}
+
+// ---------------------------------------------------------------------
+//  Ranking
+// ---------------------------------------------------------------------
+void ArchivoManager::guardarRanking(Lista<Ranking>& ranking) {
+    guardarArchivo(
+        &ranking,
+        rutaRanking,
+        [](Ranking r) { return r.serializar(); }
+    );
 }

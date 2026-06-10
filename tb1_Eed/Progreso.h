@@ -20,6 +20,8 @@ private:
     Racha* racha;
     int erroresSeguidos;
 
+    int contarErroresAux(Pila<Error>::Nodo* nodo);
+
 public:
     Progreso();
     ~Progreso();
@@ -46,4 +48,5 @@ public:
 
     void reiniciarErrores();
 
+    int contarErrores();
 };

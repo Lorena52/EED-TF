@@ -8,6 +8,12 @@ private:
     int actual;   
     int maxima;     
 
+    //RECURSIVIDAD: puntaje acumulado de la racha actual.
+    int puntajeAux(int n) const {
+        if (n <= 0) return 0;          // caso base
+        return n + puntajeAux(n - 1);  // n + el puntaje de la racha anterior
+    }
+
 public:
     Racha() : actual(0), maxima(0) {}     
 
@@ -18,6 +24,10 @@ public:
 
     void registrarError() {
         actual = 0; 
+    }
+
+    int puntajeAcumulado() const {
+        return puntajeAux(actual);
     }
 
     int getActual() const { return actual   ; }

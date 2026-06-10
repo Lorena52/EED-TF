@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 #include "Sistema.h"
 #include <iostream>
+#include <cstdlib>   
 
 
 //COLORES AGREGADOS GRACIAS A LA IA
@@ -16,16 +17,24 @@
 using namespace std;
 
 Sistema::Sistema() : idiomaSeleccionado(nullptr), usuarioActivo(nullptr) {
-    //LAMBDAS
-    cargarArchivo("usuarios.txt",
-        [](string linea) { return Usuario::deserializar(linea); },
-        [this](Usuario u) { usuarios.insertarFinal(u); });
+    archivoMgr.cargarUsuarios(usuarios);
 }
+
 Sistema::~Sistema() {
     if (idiomaSeleccionado) {
         delete idiomaSeleccionado;
         idiomaSeleccionado = nullptr;
     }
+}
+
+void Sistema::limpiarPantalla() {
+    system("cls");
+}
+
+void Sistema::pausar() {
+    cout << "\nPresione ENTER para continuar...";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.get();
 }
 
 void Sistema::iniciar() {
@@ -40,6 +49,7 @@ void Sistema::iniciar() {
 void Sistema::menuPrincipal() {
     int opcion;
     do {
+        limpiarPantalla();
         cout << YELLOW << "\n--- Menu Principal ---" << RESET << endl;
         cout << GREEN << "1. Registrar usuario" << RESET << endl;
         cout << GREEN << "2. Seleccionar idioma" << RESET << endl;
@@ -47,24 +57,27 @@ void Sistema::menuPrincipal() {
         cout << GREEN << "4. Actualizar nivel de usuario" << RESET << endl;
         cout << GREEN << "5. Ver ranking de rachas" << RESET << endl;
         cout << GREEN << "6. Ordenar usuarios por nombre ascendente" << RESET << endl;
-        cout << RED << "7. Salir" << RESET << endl;
-        cout << "Seleccione una opcion: ";
+        cout << GREEN << "7. Ver usuarios de nivel avanzado" << RESET << endl;
+        cout << RED << "8. Salir" << RESET << endl;
+        cout << "Seleccione una opción: ";
         cin >> opcion;
 
         switch (opcion) {
-        case 1: registrarUsuario(); break;
-        case 2: seleccionarIdioma(); break;
-        case 3: verProgreso(); break;
-        case 4: actualizarNivelUsuario(); break;
-        case 5: mostrarRankingRachas(); break;
-        case 6: ordenarUsuariosPorNombreAsc(); break;
-        case 7: cout << RED << "Saliendo..." << RESET << endl; break;
-        default: cout << RED << "Opción inválida." << RESET << endl;
+        case 1: limpiarPantalla();registrarUsuario(); break;
+        case 2: limpiarPantalla();seleccionarIdioma(); break;
+        case 3: limpiarPantalla();verProgreso(); break;
+        case 4: limpiarPantalla();actualizarNivelUsuario(); break;
+        case 5: limpiarPantalla();mostrarRankingRachas(); break;
+        case 6: limpiarPantalla();ordenarUsuariosPorNombreAsc(); break;
+        case 7: limpiarPantalla(); mostrarUsuariosAvanzados(); break;
+        case 8: cout << RED << "Saliendo..." << RESET << endl; break;
+        default: cout << RED << "Opcion invalida." << RESET << endl;
         }
+        if (opcion != 7) pausar();
     } while (opcion != 7);
 }
 
-//RECURSIVIDAD
+
 void Sistema::mostrarBarraProgreso(int progreso, int total) {
     int ancho = 30;
     int completado = (progreso * ancho) / total;
@@ -81,15 +94,11 @@ void Sistema::mostrarBarraProgreso(int progreso, int total) {
     cout << BLUE << "] " << RESET;
     cout << (progreso * 100 / total) << "%" << endl;
 
-    // Cuando llega al 100%, felicitar y regresar al menú
-    if (progreso == total) {
-        cout << MAGENTA << "\n¡Felicitaciones! Has completado la lección al 100% " << RESET << endl;
-        cout << CYAN << "Regresando al menú principal..." << RESET << endl;
-        menuPrincipal();
-    }
+    // Mensaje de completado SOLO cuando llega al 100 %
+        if (progreso == total) {
+            cout << MAGENTA << "\nFelicitaciones! Completado al 100%" << RESET << endl;
+        }
 }
-
-
 
 void Sistema::registrarUsuario() {
     string nombre, email;
@@ -121,9 +130,7 @@ void Sistema::registrarUsuario() {
     Usuario nuevo(usuarios.tam() + 1, nombre, email, ni, np, ni2);
     usuarios.insertarFinal(nuevo);
 
-    //LAMBDA
-    guardarArchivo(&usuarios, "usuarios.txt",
-        [](Usuario u) { return u.serializar(); });
+    archivoMgr.guardarUsuarios(usuarios);
 
     cout << "Usuario registrado con éxito." << endl;
 }
@@ -191,7 +198,6 @@ void Sistema::seleccionarIdioma() {
     iniciarLecciones();
 }
 
-//Función auxiliar: ver progreso rachaaaaaaaaaaaaaaaaaa
 void Sistema::verProgreso() {
     if (usuarios.estaVacia()) {
         cout << "No hay usuarios registrados." << endl;
@@ -224,19 +230,18 @@ void Sistema::verProgreso() {
     cout << "  Italiano:  " << encontrado->getNivelItaliano() << endl;
 
     Progreso* prog = encontrado->obtenerProgreso();
-
-    /*cout << "\nPorcentaje de aciertos: "
-        << prog->getPorcentaje() << "%" << endl;
-
-    cout << "Lecciones completadas:  "
-        << prog->getLeccionesComp() << endl;*/
-
     
     cout << "\n--- Racha ---" << endl;
     prog->mostrarRacha();
 
+    // Puntaje acumulado de la racha (1+2+...+actual)
+    cout << "Puntaje por racha: " << prog->getRacha()->puntajeAcumulado() << endl;
+
     
     prog->mostrarHistorialErrores();
+
+    //Total de errores contados recursivamente sobre la pila
+    cout << "\nTotal de errores cometidos: " << prog->contarErrores() << endl;
 
     cout << "=================================" << endl;
 }
@@ -250,6 +255,7 @@ void Sistema::iniciarLecciones() {
     cout << "2. Iniciar lección" << endl;
     cout << "3. Ver diccionario" << endl;
     cin >> modo;
+    limpiarPantalla();
 
     if (modo == 1) {
         idiomaSeleccionado->repasoContinuo(*(usuarioActivo->obtenerProgreso()));
@@ -268,8 +274,7 @@ void Sistema::iniciarLecciones() {
         cout << RED << "Opción inválida." << RESET << endl;
     }
 
-    guardarArchivo(&usuarios, "usuarios.txt",
-        [](Usuario u) { return u.serializar(); });
+    archivoMgr.guardarUsuarios(usuarios);
 }
 
 
@@ -341,9 +346,7 @@ void Sistema::actualizarNivelUsuario() {
         return;
     }
 
-    // Guardar cambios en archivo
-    guardarArchivo(&usuarios, "usuarios.txt",
-        [](Usuario u) { return u.serializar(); });
+    archivoMgr.guardarUsuarios(usuarios);
 
     cout << "Nivel actualizado correctamente." << endl;
 }
@@ -380,11 +383,7 @@ void Sistema::mostrarRankingRachas() {
     //  ORDENAMIENTO
     Ordenamiento<Ranking>::selection( &ranking,compararRacha);
     
-    //LAMBDA
-    guardarArchivo(&ranking,"ranking.txt",  [](Ranking r) {
-         return r.serializar();
-        }
-    );
+    archivoMgr.guardarRanking(ranking);
     cout << "Ranking guardado correctamente." << endl;
     cout << "\n====== RANKING DE RACHAS ======" << endl;
 
@@ -426,3 +425,30 @@ void Sistema::ordenarUsuariosPorNombreAsc() {
     }
 }
 
+void Sistema::mostrarUsuariosAvanzados() {
+    if (usuarios.estaVacia()) {
+        cout << "No hay usuarios registrados." << endl;
+        return;
+    }
+
+    // LAMBDA: criterio de "usuario avanzado" (algun idioma en nivel 3)
+    auto esAvanzado = [](const Usuario& u) {
+        return u.getNivelIngles() == 3
+            || u.getNivelPortugues() == 3
+            || u.getNivelItaliano() == 3;
+        };
+
+    cout << "\n=== Usuarios de nivel avanzado ===" << endl;
+    int contador = 0;
+    auto* aux = usuarios.inicio();
+    while (aux != nullptr) {
+        if (esAvanzado(aux->elem)) {       // se usa la lambda
+            cout << "- " << aux->elem.getNombre() << endl;
+            contador++;
+        }
+        aux = aux->sig;
+    }
+
+    if (contador == 0)
+        cout << "Ningun usuario ha alcanzado nivel avanzado todavia." << endl;
+}
