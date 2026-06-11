@@ -140,7 +140,7 @@ void Sistema::registrarUsuario() {
     //port
 
     archivoMgr.guardarNivelesPortugues(usuarios);
-
+    archivoMgr.guardarNivelesRacha(usuarios);
     cout << "Usuario registrado con éxito." << endl;
 }
 
@@ -274,6 +274,7 @@ void Sistema::iniciarLecciones() {
     }
 
     archivoMgr.guardarUsuarios(usuarios);
+    archivoMgr.guardarNivelesRacha(usuarios);
 }
 
 
@@ -384,6 +385,7 @@ void Sistema::mostrarRankingRachas() {
     Ordenamiento<Ranking>::selection( &ranking,compararRacha);
     
     archivoMgr.guardarRanking(ranking);
+    archivoMgr.guardarNivelesRacha(usuarios);
     cout << "Ranking guardado correctamente." << endl;
     cout << "\n====== RANKING DE RACHAS ======" << endl;
 

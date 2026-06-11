@@ -27,6 +27,7 @@ private:
     string rutaIngles;
     string rutaItaliano;
     string rutaPortugues;
+    string rutaRacha;
 public:
     ArchivoManager();
     ~ArchivoManager();
@@ -46,4 +47,6 @@ public:
     void guardarNivelesItaliano(ListaDoble<Usuario>& usuarios);
     // port
     void guardarNivelesPortugues(ListaDoble<Usuario>& usuarios);
+    // racha
+    void guardarNivelesRacha(ListaDoble<Usuario>& usuarios);
 };

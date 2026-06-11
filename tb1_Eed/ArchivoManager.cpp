@@ -5,7 +5,7 @@
 using namespace std;
 
 ArchivoManager::ArchivoManager()
-    : rutaUsuarios("usuarios.txt"), rutaRanking("ranking.txt"), rutaIngles("ingles.txt"), rutaItaliano("Italiano.txt"), rutaPortugues("Portugues.txt") {
+    : rutaUsuarios("usuarios.txt"), rutaRanking("ranking.txt"), rutaIngles("ingles.txt"), rutaItaliano("Italiano.txt"), rutaPortugues("Portugues.txt"), rutaRacha("Racha.txt") {
 }
 
 ArchivoManager::~ArchivoManager() {
@@ -78,6 +78,18 @@ void ArchivoManager::guardarNivelesPortugues(ListaDoble<Usuario>& usuarios) {
         [](Usuario u) {
             return  u.getNombre() + ";" +
                 to_string(u.getNivelPortugues());
+        }
+    );
+}
+
+// portugues 
+void ArchivoManager::guardarNivelesRacha(ListaDoble<Usuario>& usuarios) {
+    guardarArchivo(
+        &usuarios,
+        rutaRacha,
+        [](Usuario u) {
+            return u.getNombre() + ";" +
+                to_string(u.obtenerProgreso()->getRacha()->getMaxima());
         }
     );
 }
