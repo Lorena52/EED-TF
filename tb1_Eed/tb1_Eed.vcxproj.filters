@@ -31,6 +31,9 @@
     <Filter Include="Modelo">
       <UniqueIdentifier>{a16a240d-48aa-421c-91d0-fdbcbc105d34}</UniqueIdentifier>
     </Filter>
+    <Filter Include="OA">
+      <UniqueIdentifier>{0b048a8b-d898-45a0-899d-a847888f5c91}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc">
