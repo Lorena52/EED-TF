@@ -188,6 +188,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="ingles.txt" />
+    <Text Include="Italiano.txt" />
+    <Text Include="Portugues.txt" />
+    <Text Include="Racha.txt" />
     <Text Include="ranking.txt" />
     <Text Include="usuarios.txt" />
   </ItemGroup>

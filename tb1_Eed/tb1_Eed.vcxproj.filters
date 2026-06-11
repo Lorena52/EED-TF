@@ -185,11 +185,23 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="usuarios.txt">
-      <Filter>Estructuras</Filter>
+    <Text Include="ingles.txt">
+      <Filter>OA</Filter>
+    </Text>
+    <Text Include="Italiano.txt">
+      <Filter>OA</Filter>
+    </Text>
+    <Text Include="Portugues.txt">
+      <Filter>OA</Filter>
+    </Text>
+    <Text Include="Racha.txt">
+      <Filter>OA</Filter>
     </Text>
     <Text Include="ranking.txt">
-      <Filter>Estructuras</Filter>
+      <Filter>OA</Filter>
+    </Text>
+    <Text Include="usuarios.txt">
+      <Filter>OA</Filter>
     </Text>
   </ItemGroup>
 </Project>
