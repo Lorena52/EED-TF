@@ -2,7 +2,7 @@
 #include "Idioma.h"
 #include <iostream> 
 using namespace std;
-
+//comentario 
 Idioma::Idioma(string c, string n) : codigo(c), nombre(n), nivel(1) {}
 
 Idioma::~Idioma() {
