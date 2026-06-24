@@ -119,6 +119,9 @@
     <ClInclude Include="LeccionIngles.h">
       <Filter>Modelo</Filter>
     </ClInclude>
+    <ClInclude Include="Ordenamiento2.hpp">
+      <Filter>Estructuras</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tb1_Eed.cpp">

@@ -141,6 +141,7 @@
     <ClInclude Include="ListaCircular.hpp" />
     <ClInclude Include="ListaDoble.hpp" />
     <ClInclude Include="Ordenamiento.h" />
+    <ClInclude Include="Ordenamiento2.hpp" />
     <ClInclude Include="Palabra.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Pila.hpp" />

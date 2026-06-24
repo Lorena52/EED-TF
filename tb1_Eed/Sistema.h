@@ -14,7 +14,7 @@
 #include "ArchivoManager.h"
 #include "Ranking.h"
 #include "Ordenamiento.h"
-
+#include "Ordenamiento2.hpp"
 using namespace std;
 
 class Sistema {
@@ -55,4 +55,9 @@ public:
     void ordenarUsuariosPorNivel();
 
     static void mostrarBarraProgreso(int progreso, int total);
+    //implemntaciones hito 1 
+
+    void rankingXpMergeSort();
+    void rankingNombreQuickSort();
+
 };

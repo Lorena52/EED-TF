@@ -29,7 +29,7 @@ public:
     Progreso(const Progreso& otro);            
     Progreso& operator=(const Progreso& otro); 
 
-    void actualizar(int aciertos, int total);
+    void actualizar(int puntos, int total);
     void reiniciar();
     void registrarAcierto();
     void registrarError(const Error& e);
@@ -39,6 +39,12 @@ public:
     float getPorcentaje() const;
     int getLeccionesComp() const;
     int getErroresSeguidos() const;
+    //agregacacion
+   
+    void setPuntosTotales(int v);
+    int getPuntosTotales() const;
+
+
     Racha* getRacha() const;
     Pila<Error> verUltimosErrores() const;
 

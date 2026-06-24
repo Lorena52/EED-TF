@@ -1,1 +1,6 @@
 Kassandra;0
+shayli;10
+oracio;10
+herlinda;10
+sani;5
+urbano;6

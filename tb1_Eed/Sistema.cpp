@@ -59,7 +59,9 @@ void Sistema::menuPrincipal() {
         cout << GREEN << "6. Ordenar usuarios por nombre ascendente" << RESET << endl;
         cout << GREEN << "7. Ver usuarios de nivel avanzado" << RESET << endl;
         cout << GREEN << "8. Ordenar usuarios por nivel (Shell)" << RESET << endl;   // NUEVA
-        cout << RED << "9. Salir" << RESET << endl;
+        cout << GREEN << "9. Ranking XP con MergeSort" << RESET << endl;
+        cout << GREEN << "10. Ordenar por nombre con QuickSort" << RESET << endl;
+        cout << RED << "11. Salir" << RESET << endl;
         cout << "Seleccione una opción: ";
         cin >> opcion;
 
@@ -71,12 +73,14 @@ void Sistema::menuPrincipal() {
         case 5: limpiarPantalla();mostrarRankingRachas(); break;
         case 6: limpiarPantalla();ordenarUsuariosPorNombreAsc(); break;
         case 7: limpiarPantalla(); mostrarUsuariosAvanzados(); break;
-        case 8: limpiarPantalla(); ordenarUsuariosPorNivel(); break;   // NUEVA
-        case 9: cout << RED << "Saliendo..." << RESET << endl; break;
+        case 8: limpiarPantalla(); ordenarUsuariosPorNivel(); break;   
+        case 9: limpiarPantalla(); rankingXpMergeSort(); break;
+        case 10: limpiarPantalla(); rankingNombreQuickSort(); break;
+        case 11: cout << RED << "Saliendo..." << RESET << endl; break;
         default: cout << RED << "Opcion invalida." << RESET << endl;
         }
-        if (opcion != 9) pausar();
-    } while (opcion != 9);
+        if (opcion != 11) pausar();
+    } while (opcion != 11);
 }
 
 
@@ -510,5 +514,70 @@ void Sistema::ordenarUsuariosPorNivel() {
     for (unsigned int i = 0; i < copia.tam(); i++) {
         Usuario u = copia.obtener(i);
         cout << "- " << u.getNombre() << " (nivel global: " << u.nivelGlobal() << ")" << endl;
+    }
+}
+
+//hito 1 ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+// MERGE SORT: ranking por XP (puntaje total)
+bool compararPorXpDesc(Usuario a, Usuario b) {
+    return a.obtenerProgreso()->getPuntosTotales() > b.obtenerProgreso()->getPuntosTotales();
+}
+
+void Sistema::rankingXpMergeSort() {
+    if (usuarios.estaVacia()) {
+        cout << RED << "No hay usuarios registrados." << RESET << endl;
+        return;
+    }
+
+    
+    vector<Usuario> vec;
+    auto* aux = usuarios.inicio();
+    while (aux != nullptr) {
+        vec.push_back(aux->elem);
+        aux = aux->sig;
+    }
+
+    mergeSort(vec, compararPorXpDesc);
+
+  
+    cout << YELLOW << "\n=== Ranking XP (MergeSort - mayor a menor) ===" << RESET << endl;
+    for (int i = 0; i < (int)vec.size(); i++) {
+        cout << GREEN << i + 1 << ". " << RESET
+            << vec[i].getNombre()
+            << "  |  XP: " << vec[i].obtenerProgreso()->getPuntosTotales()
+            << endl;
+    }
+}
+
+//QUICK SORT: ordenar usuarios por nombre alfabeticamente 
+
+bool compararPorNombreAlfabetico(Usuario a, Usuario b) {
+    return a.getNombre() < b.getNombre();
+}
+
+void Sistema::rankingNombreQuickSort() {
+    if (usuarios.estaVacia()) {
+        cout << RED << "No hay usuarios registrados." << RESET << endl;
+        return;
+    }
+
+    // 1. Volcar ListaDoble -> vector
+    vector<Usuario> vec;
+    auto* aux = usuarios.inicio();
+    while (aux != nullptr) {
+        vec.push_back(aux->elem);
+        aux = aux->sig;
+    }
+
+    // 2. Ordenar con QuickSort (plantilla del profe)
+    quickSort(vec, compararPorNombreAlfabetico);
+
+    // 3. Mostrar resultado
+    cout << YELLOW << "\n=== Usuarios por nombre (QuickSort - A-Z) ===" << RESET << endl;
+    for (int i = 0; i < (int)vec.size(); i++) {
+        cout << GREEN << i + 1 << ". " << RESET
+            << vec[i].getNombre()
+            << "  |  Nivel global: " << vec[i].nivelGlobal()
+            << endl;
     }
 }

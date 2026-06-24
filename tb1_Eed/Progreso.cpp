@@ -34,10 +34,12 @@ Progreso& Progreso::operator=(const Progreso& otro) {
     return *this;
 }
 
-void Progreso::actualizar(int aciertos, int total) {
+void Progreso::actualizar(int puntos, int total)
+{
     ejerciciosTotales += total;
-    puntosTotales += aciertos;
+    puntosTotales += puntos;
     leccionesComp++;
+
     porcentaje = (ejerciciosTotales > 0)
         ? (float)puntosTotales / ejerciciosTotales * 100.0f
         : 0.0f;
@@ -139,3 +141,10 @@ int Progreso::contarErroresDeEjercicio(int idEjercicio) {
     }
     return total;
 }
+//hito 1 
+
+int Progreso::getPuntosTotales() const {
+    return puntosTotales;
+}
+
+void Progreso::setPuntosTotales(int v) { puntosTotales = v; }

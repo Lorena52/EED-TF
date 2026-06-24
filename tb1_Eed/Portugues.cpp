@@ -36,6 +36,7 @@ void Portugues::iniciarEjercicios(Progreso& progreso) {
     case 2: leccion->completarOracion(progreso); break;
     case 3: leccion->traduccionAvanzada(progreso); break;
     }
+    progreso.actualizar(nivel * 10, nivel * 10);
 }
 
 void Portugues::repasoContinuo(Progreso& progreso) {
@@ -68,6 +69,8 @@ void Portugues::repasoContinuo(Progreso& progreso) {
 
     // 3) Procesar: acierto avanza barra; fallo se re-encola al final.
     int aciertos = 0;
+    //hito 1 
+    int xpGanado = 0;
     while (aciertos < cuantas && !ronda.estaVacia()) {
         Palabra* p = ronda.frente();
         ronda.desencolar();
@@ -105,12 +108,14 @@ void Portugues::repasoContinuo(Progreso& progreso) {
             p->incrementarRepaso();
             progreso.registrarAcierto();
             aciertos++;
+            xpGanado += 10;
         }
         else {
             cout << "\nIncorreto. A resposta correta era: " << correcta << endl;
             Error e(0, "Error en repaso Portugues", "2026-06-10");
             progreso.registrarError(e);
             progreso.getRacha()->reiniciar();
+            xpGanado -= 2;
             ronda.encolar(p);
         }
 
@@ -119,9 +124,10 @@ void Portugues::repasoContinuo(Progreso& progreso) {
         cout << "Exercicios: " << aciertos << "/" << cuantas << endl;
         cout << "Sequencia atual: " << progreso.getRacha()->getActual() << endl;
     }
-
+    if (xpGanado < 0) xpGanado = 0;
     cout << "\n=== Repaso continuo completado! Acertaste as "
         << cuantas << " palavras. ===" << endl;
+    progreso.actualizar(xpGanado, cuantas);
 }
 
 

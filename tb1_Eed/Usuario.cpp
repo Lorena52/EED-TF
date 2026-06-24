@@ -49,12 +49,13 @@ string Usuario::serializar() const {
         to_string(nivelPortugues) + ";" +
         to_string(nivelItaliano) + ";" +
         to_string(progreso.getRacha()->getActual()) + ";" +
-        to_string(progreso.getRacha()->getMaxima());
+        to_string(progreso.getRacha()->getMaxima())+ ";" +
+        to_string(progreso.getPuntosTotales());
 }
 
 Usuario Usuario::deserializar(const string& linea) {
     stringstream ss(linea);
-    string idTxt, nom, mail, ni, np, ni2, rActual, rMejor;
+    string idTxt, nom, mail, ni, np, ni2, rActual, rMejor, puntos;
 
     getline(ss, idTxt, ';');
     getline(ss, nom, ';');
@@ -64,6 +65,7 @@ Usuario Usuario::deserializar(const string& linea) {
     getline(ss, ni2, ';');
     getline(ss, rActual, ';');
     getline(ss, rMejor, ';');
+    getline(ss, puntos, ';');
 
     if (idTxt.empty() || ni.empty() || np.empty() || ni2.empty()) {
         throw runtime_error("Linea invalida en archivo");
@@ -74,6 +76,7 @@ Usuario Usuario::deserializar(const string& linea) {
 
     if (!rActual.empty()) u.obtenerProgreso()->setRachaActual(stoi(rActual));
     if (!rMejor.empty())  u.obtenerProgreso()->setMejorRacha(stoi(rMejor));
+    if (!puntos.empty())  u.obtenerProgreso()->setPuntosTotales(stoi(puntos));
 
     return u;
 }

@@ -50,6 +50,7 @@ void Italiano::iniciarEjercicios(Progreso& progreso) {
         leccion->traduccionAvanzada(progreso);
         break;
     }
+    progreso.actualizar(nivel * 10, nivel * 10);
 }
 
 void Italiano::repasoContinuo(Progreso& progreso) {
@@ -79,6 +80,8 @@ void Italiano::repasoContinuo(Progreso& progreso) {
     for (int i = 0; i < cuantas; i++) ronda.encolar(delNivel.obtener(i));
 
     int aciertos = 0;
+    //hito 1 
+    int xpGanado = 0;
     while (aciertos < cuantas && !ronda.estaVacia()) {
         Palabra* p = ronda.frente();
         ronda.desencolar();
@@ -116,12 +119,14 @@ void Italiano::repasoContinuo(Progreso& progreso) {
             p->incrementarRepaso();
             progreso.registrarAcierto();
             aciertos++;
+            xpGanado += 10;
         }
         else {
             cout << "\nSbagliato. La risposta corretta era: " << correcta << endl;
             Error e(0, "Error en repaso Italiano", "2026-06-10");
             progreso.registrarError(e);
             progreso.getRacha()->reiniciar();
+            xpGanado -= 2;
             ronda.encolar(p);
         }
 
@@ -130,9 +135,10 @@ void Italiano::repasoContinuo(Progreso& progreso) {
         cout << "Esercizi: " << aciertos << "/" << cuantas << endl;
         cout << "Serie attuale: " << progreso.getRacha()->getActual() << endl;
     }
-
+    if (xpGanado < 0) xpGanado = 0;
     cout << "\n=== Ripasso completato! Hai indovinato le "
         << cuantas << " parole. ===" << endl;
+    progreso.actualizar(xpGanado, cuantas);
 }
 
 void Italiano::cargarVocabulario() {
