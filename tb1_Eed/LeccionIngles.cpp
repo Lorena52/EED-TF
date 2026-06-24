@@ -9,7 +9,7 @@
 using namespace std;
 
 void LeccionIngles::ordenarOracion(Progreso& progreso) {
-    char continuar;
+    char continuar; 
     int contador = 0;
     int totalPreguntas = 3;
 
