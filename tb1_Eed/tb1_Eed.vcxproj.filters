@@ -122,6 +122,9 @@
     <ClInclude Include="Ordenamiento2.hpp">
       <Filter>Estructuras</Filter>
     </ClInclude>
+    <ClInclude Include="HashMap.hpp">
+      <Filter>Estructuras</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tb1_Eed.cpp">
