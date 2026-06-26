@@ -58,4 +58,10 @@ public:
     void buscarUsuarioHash();   // NUEVA: busca un usuario por nombre usando HashMap
 
     static void mostrarBarraProgreso(int progreso, int total);
+
+
+    //implemntaciones hito 1 
+
+    void rankingXpMergeSort();
+    void rankingNombreQuickSort();
 };
