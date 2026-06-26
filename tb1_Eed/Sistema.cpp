@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cstdlib>   
 
-
+//hola
 //COLORES AGREGADOS GRACIAS A LA IA
 #define RESET   "\033[0m"
 #define RED     "\033[31m"
