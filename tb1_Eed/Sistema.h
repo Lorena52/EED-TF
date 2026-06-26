@@ -14,6 +14,7 @@
 #include "ArchivoManager.h"
 #include "Ranking.h"
 #include "Ordenamiento.h"
+#include "HashMap.hpp"
 
 using namespace std;
 
@@ -53,6 +54,7 @@ public:
 
     void mostrarUsuariosAvanzados();
     void ordenarUsuariosPorNivel();
+    void buscarUsuarioHash();   // NUEVA: busca un usuario por nombre usando HashMap
 
     static void mostrarBarraProgreso(int progreso, int total);
 };

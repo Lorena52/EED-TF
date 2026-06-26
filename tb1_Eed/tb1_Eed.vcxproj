@@ -130,6 +130,7 @@
     <ClInclude Include="Cola.hpp" />
     <ClInclude Include="Ejercicio.h" />
     <ClInclude Include="Error.h" />
+    <ClInclude Include="HashMap.hpp" />
     <ClInclude Include="Idioma.h" />
     <ClInclude Include="Ingles.h" />
     <ClInclude Include="Italiano.h" />

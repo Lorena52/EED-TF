@@ -59,7 +59,8 @@ void Sistema::menuPrincipal() {
         cout << GREEN << "6. Ordenar usuarios por nombre ascendente" << RESET << endl;
         cout << GREEN << "7. Ver usuarios de nivel avanzado" << RESET << endl;
         cout << GREEN << "8. Ordenar usuarios por nivel (Shell)" << RESET << endl;   // NUEVA
-        cout << RED << "9. Salir" << RESET << endl;
+        cout << GREEN << "9. Buscar usuario por nombre (Hash)" << RESET << endl;    // NUEVA
+        cout << RED << "10. Salir" << RESET << endl;
         cout << "Seleccione una opción: ";
         cin >> opcion;
 
@@ -72,11 +73,12 @@ void Sistema::menuPrincipal() {
         case 6: limpiarPantalla();ordenarUsuariosPorNombreAsc(); break;
         case 7: limpiarPantalla(); mostrarUsuariosAvanzados(); break;
         case 8: limpiarPantalla(); ordenarUsuariosPorNivel(); break;   // NUEVA
-        case 9: cout << RED << "Saliendo..." << RESET << endl; break;
+        case 9: limpiarPantalla(); buscarUsuarioHash(); break;         // NUEVA
+        case 10: cout << RED << "Saliendo..." << RESET << endl; break;
         default: cout << RED << "Opcion invalida." << RESET << endl;
         }
-        if (opcion != 9) pausar();
-    } while (opcion != 9);
+        if (opcion != 10) pausar();
+    } while (opcion != 10);
 }
 
 
@@ -510,5 +512,46 @@ void Sistema::ordenarUsuariosPorNivel() {
     for (unsigned int i = 0; i < copia.tam(); i++) {
         Usuario u = copia.obtener(i);
         cout << "- " << u.getNombre() << " (nivel global: " << u.nivelGlobal() << ")" << endl;
+    }
+}
+// NUEVA: busca un usuario por nombre usando una tabla hash (HashMap).
+// A diferencia de buscarUsuario (que recorre la lista nodo por nodo, O(n)),
+// aqui se indexa cada usuario por su nombre y la busqueda es O(1) en promedio.
+void Sistema::buscarUsuarioHash() {
+    cout << YELLOW << "\n--- Buscar usuario por nombre (Hash) ---" << RESET << endl;
+
+    if (usuarios.estaVacia()) {
+        cout << RED << "No hay usuarios registrados." << RESET << endl;
+        return;
+    }
+
+    // 1) Construyo el indice: clave = nombre, valor = puntero al Usuario.
+    HashMap<string, Usuario*> indice;
+    auto* aux = usuarios.inicio();
+    while (aux != nullptr) {
+        indice.insertar(aux->elem.getNombre(), &aux->elem);
+        aux = aux->sig;
+    }
+
+    // 2) Pido el nombre a buscar.
+    string nombreBuscado;
+    cout << "Ingrese el nombre del usuario: ";
+    cin.ignore();
+    getline(cin, nombreBuscado);
+
+    // 3) Busqueda directa en la tabla hash.
+    Usuario* encontrado = nullptr;
+    if (indice.buscar(nombreBuscado, encontrado) && encontrado != nullptr) {
+        cout << GREEN << "\nUsuario encontrado:" << RESET << endl;
+        cout << "Nombre: " << encontrado->getNombre() << endl;
+        cout << "Email: " << encontrado->getEmail() << endl;
+        cout << "Puntaje total: " << encontrado->getPuntajeTotal() << endl;
+        cout << "Nivel Ingles: " << encontrado->getNivelIngles() << endl;
+        cout << "Nivel Portugues: " << encontrado->getNivelPortugues() << endl;
+        cout << "Nivel Italiano: " << encontrado->getNivelItaliano() << endl;
+        cout << "Nivel global: " << encontrado->nivelGlobal() << endl;
+    }
+    else {
+        cout << RED << "\nNo se encontro ningun usuario con ese nombre." << RESET << endl;
     }
 }
