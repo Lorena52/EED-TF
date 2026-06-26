@@ -1,7 +1,11 @@
 ﻿#include "pch.h"
 #include "Sistema.h"
+#include "Tabla.h"
+#include "Banner.h"
 #include <iostream>
 #include <cstdlib>   
+#include <vector>
+#include <string>
 
 
 //COLORES AGREGADOS GRACIAS A LA IA
@@ -38,6 +42,9 @@ void Sistema::pausar() {
 }
 
 void Sistema::iniciar() {
+    // Banner dibujado por MATRIZ de colores (estilo pixel-art),
+    // mismo concepto que DibujarMatriz del proyecto Juego Splash.
+    Banner::dibujar();
     cout << CYAN << BOLD;
     cout << "=========================================\n";
     cout << "===    Bienvenido a AprendeGo! C++    ===\n";
@@ -405,15 +412,24 @@ void Sistema::mostrarRankingRachas() {
 
     cout << "\n====== RANKING DE RACHAS (ABB inorden) ======" << endl;
 
+    // Recolectamos las filas durante el recorrido inorden del arbol
+    // y luego las mostramos en una tabla con bordes.
+    vector<vector<string>> filasRanking;
     int pos = 1;
-    // Lambda libre que captura 'pos' por referencia para numerar al recorrer.
-    arbolRanking.inorden([&pos](Ranking r) {
-        cout << pos++ << ". " << r.getNombre()
-            << " -> " << r.getMejorRacha()
-            << " [" << r.clasificacion() << "]" << endl;
+    // Lambda libre que captura 'pos' y el vector por referencia.
+    arbolRanking.inorden([&pos, &filasRanking](Ranking r) {
+        filasRanking.push_back({
+            to_string(pos++),
+            r.getNombre(),
+            to_string(r.getMejorRacha()),
+            r.clasificacion()
+            });
         });
 
-    cout << "=============================================" << endl;
+    Tabla::imprimir("RANKING DE RACHAS",
+        { "#", "Usuario", "Racha", "Categoria" },
+        filasRanking);
+
     cout << "Altura del arbol: " << arbolRanking.altura()
         << " | Nodos: " << arbolRanking.tam() << endl;
 
@@ -443,11 +459,13 @@ void Sistema::ordenarUsuariosPorNombreAsc() {
         });
 
     cout << "\n=== Usuarios ordenados por nombre (ascendente) ===" << endl;
+    vector<vector<string>> filas;
     auto* aux = usuarios.inicio();
     while (aux != nullptr) {
-        cout << aux->elem.getNombre() << " - " << aux->elem.getEmail() << endl;
+        filas.push_back({ aux->elem.getNombre(), aux->elem.getEmail() });
         aux = aux->sig;
     }
+    Tabla::imprimir("USUARIOS (A-Z)", { "Nombre", "Email" }, filas);
 }
 
 void Sistema::mostrarUsuariosAvanzados() {
@@ -464,18 +482,25 @@ void Sistema::mostrarUsuariosAvanzados() {
         };
 
     cout << "\n=== Usuarios de nivel avanzado ===" << endl;
-    int contador = 0;
+    vector<vector<string>> filas;
     auto* aux = usuarios.inicio();
     while (aux != nullptr) {
         if (esAvanzado(aux->elem)) {       // se usa la lambda
-            cout << "- " << aux->elem.getNombre() << endl;
-            contador++;
+            filas.push_back({
+                aux->elem.getNombre(),
+                to_string(aux->elem.getNivelIngles()),
+                to_string(aux->elem.getNivelPortugues()),
+                to_string(aux->elem.getNivelItaliano())
+                });
         }
         aux = aux->sig;
     }
 
-    if (contador == 0)
+    if (filas.empty())
         cout << "Ningun usuario ha alcanzado nivel avanzado todavia." << endl;
+    else
+        Tabla::imprimir("NIVEL AVANZADO",
+            { "Nombre", "Ingles", "Portugues", "Italiano" }, filas);
 }
 
 Usuario* Sistema::buscarUsuario(const std::string& nombre) {
@@ -525,8 +550,11 @@ void Sistema::ordenarUsuariosPorNivel() {
     Ordenamiento<Usuario>::shell(&copia, compararPorNivelGlobal);
 
     cout << "\n=== Usuarios por nivel global (mayor a menor) ===" << endl;
+    vector<vector<string>> filas;
     for (unsigned int i = 0; i < copia.tam(); i++) {
         Usuario u = copia.obtener(i);
-        cout << "- " << u.getNombre() << " (nivel global: " << u.nivelGlobal() << ")" << endl;
+        filas.push_back({ u.getNombre(), to_string(u.nivelGlobal()) });
     }
+    Tabla::imprimir("USUARIOS POR NIVEL GLOBAL (Shell Sort)",
+        { "Nombre", "Nivel global" }, filas);
 }

@@ -8,7 +8,8 @@ using namespace std;
 int main()
 {
 
-    SetConsoleOutputCP(1252);// Windows Latin-1 (Europa occidental)
+    // UTF-8: para que los bloques del logo y los bordes de las tablas se vean bien.
+    SetConsoleOutputCP(CP_UTF8);
 
     Sistema* sistema = new Sistema();
     sistema->iniciar();

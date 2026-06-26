@@ -122,6 +122,12 @@
     <ClInclude Include="ArbolBinario.hpp">
       <Filter>Modelo</Filter>
     </ClInclude>
+    <ClInclude Include="Banner.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
+    <ClInclude Include="Tabla.h">
+      <Filter>Modelo</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tb1_Eed.cpp">
