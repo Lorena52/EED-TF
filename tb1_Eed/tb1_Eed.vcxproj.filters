@@ -74,9 +74,6 @@
     <ClInclude Include="Idioma.h">
       <Filter>Modelo</Filter>
     </ClInclude>
-    <ClInclude Include="Ejercicio.h">
-      <Filter>Modelo</Filter>
-    </ClInclude>
     <ClInclude Include="Leccion.h">
       <Filter>Modelo</Filter>
     </ClInclude>
@@ -137,9 +134,6 @@
       <Filter>Modelo</Filter>
     </ClCompile>
     <ClCompile Include="Idioma.cpp">
-      <Filter>Modelo</Filter>
-    </ClCompile>
-    <ClCompile Include="Ejercicio.cpp">
       <Filter>Modelo</Filter>
     </ClCompile>
     <ClCompile Include="Leccion.cpp">
