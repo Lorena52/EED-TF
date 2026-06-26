@@ -126,6 +126,7 @@
     <ResourceCompile Include="app.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArbolBinario.hpp" />
     <ClInclude Include="ArchivoManager.h" />
     <ClInclude Include="Cola.hpp" />
     <ClInclude Include="Ejercicio.h" />

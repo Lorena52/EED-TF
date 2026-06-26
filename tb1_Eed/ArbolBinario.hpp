@@ -1,0 +1,112 @@
+﻿#pragma once
+#include <functional>
+
+using namespace std;
+
+// ═══════════════════════════════════════════════════════════════
+//  ArbolBinario<T>  (Arbol Binario de Busqueda - ABB)
+//
+//  Estructura de datos jerarquica generica (template) que mantiene
+//  los elementos ORDENADOS automaticamente segun un criterio de
+//  comparacion (puntero a funcion / lambda), igual que se hace en
+//  la clase Ordenamiento<T> del proyecto.
+//
+//  Reglas del ABB:
+//    - Cada nodo tiene a lo sumo dos hijos (izquierdo y derecho).
+//    - Si 'menor(x, raiz)' es true  -> x va al subarbol IZQUIERDO.
+//    - En caso contrario            -> x va al subarbol DERECHO.
+//  Esto permite que el recorrido inorden devuelva los elementos
+//  ya ordenados, sin volver a ordenar.
+//
+//  Uso en el proyecto: ordenar el ranking de rachas. Al insertar
+//  cada Ranking con el criterio "mayor racha primero", el recorrido
+//  inorden entrega el ranking listo de mejor a peor.
+//
+//  Estructura totalmente independiente: define su propio Nodo
+//  anidado y no depende de Lista ni de ningun otro header.
+// ═══════════════════════════════════════════════════════════════
+template <typename T>
+class ArbolBinario {
+public:
+    struct Nodo {
+        T     elem;
+        Nodo* izq;
+        Nodo* der;
+        Nodo(T elem) : elem(elem), izq(nullptr), der(nullptr) {}
+    };
+
+private:
+    Nodo* raiz;
+    unsigned int lon;
+    // Criterio de orden: devuelve true si 'a' debe ir antes que 'b'
+    // (es decir, a la izquierda). Mismo enfoque que Ordenamiento<T>.
+    function<bool(T, T)> menor;
+
+    // --- Auxiliares recursivos privados ---
+    void destruir(Nodo* n) {
+        if (n == nullptr) return;
+        destruir(n->izq);
+        destruir(n->der);
+        delete n;
+    }
+
+    Nodo* insertarRec(Nodo* n, T elem) {
+        if (n == nullptr) { lon++; return new Nodo(elem); }
+        if (menor(elem, n->elem)) n->izq = insertarRec(n->izq, elem);
+        else                      n->der = insertarRec(n->der, elem);
+        return n;
+    }
+
+    // Recorrido inorden (izq - nodo - der): entrega los elementos
+    // en el orden definido por el criterio 'menor'.
+    void inordenRec(Nodo* n, function<void(T)> accion) const {
+        if (n == nullptr) return;
+        inordenRec(n->izq, accion);
+        accion(n->elem);
+        inordenRec(n->der, accion);
+    }
+
+    int alturaRec(Nodo* n) const {
+        if (n == nullptr) return 0;
+        int hi = alturaRec(n->izq);
+        int hd = alturaRec(n->der);
+        return 1 + (hi > hd ? hi : hd);
+    }
+
+public:
+    // Constructor: recibe el criterio de orden (lambda o puntero a funcion).
+    ArbolBinario(function<bool(T, T)> criterio)
+        : raiz(nullptr), lon(0), menor(criterio) {
+    }
+
+    ~ArbolBinario() { destruir(raiz); }
+
+    // --- Consultas ---
+    unsigned int tam()       const { return lon; }
+    bool         estaVacio() const { return lon == 0; }
+    int          altura()    const { return alturaRec(raiz); }
+
+    // --- Operaciones ---
+    void insertar(T elem) { raiz = insertarRec(raiz, elem); }
+
+    bool buscar(T elem) const {
+        Nodo* aux = raiz;
+        while (aux != nullptr) {
+            if (!menor(elem, aux->elem) && !menor(aux->elem, elem)) return true;
+            aux = menor(elem, aux->elem) ? aux->izq : aux->der;
+        }
+        return false;
+    }
+
+    // Recorrido inorden ascendente (segun el criterio).
+    void inorden(function<void(T)> accion) const {
+        inordenRec(raiz, accion);
+    }
+
+    // Cuenta cuantos elementos cumplen un predicado (estilo Lista::contarSi).
+    int contarSi(function<bool(T)> pred) const {
+        int total = 0;
+        inordenRec(raiz, [&](T e) { if (pred(e)) total++; });
+        return total;
+    }
+};

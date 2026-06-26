@@ -14,6 +14,7 @@
 #include "ArchivoManager.h"
 #include "Ranking.h"
 #include "Ordenamiento.h"
+#include "ArbolBinario.hpp"
 
 using namespace std;
 

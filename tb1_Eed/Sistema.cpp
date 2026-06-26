@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cstdlib>   
 
-//hola
+
 //COLORES AGREGADOS GRACIAS A LA IA
 #define RESET   "\033[0m"
 #define RED     "\033[31m"
@@ -64,12 +64,12 @@ void Sistema::menuPrincipal() {
         cin >> opcion;
 
         switch (opcion) {
-        case 1: limpiarPantalla();registrarUsuario(); break;
-        case 2: limpiarPantalla();seleccionarIdioma(); break;
-        case 3: limpiarPantalla();verProgreso(); break;
-        case 4: limpiarPantalla();actualizarNivelUsuario(); break;
-        case 5: limpiarPantalla();mostrarRankingRachas(); break;
-        case 6: limpiarPantalla();ordenarUsuariosPorNombreAsc(); break;
+        case 1: limpiarPantalla(); registrarUsuario(); break;
+        case 2: limpiarPantalla(); seleccionarIdioma(); break;
+        case 3: limpiarPantalla(); verProgreso(); break;
+        case 4: limpiarPantalla(); actualizarNivelUsuario(); break;
+        case 5: limpiarPantalla(); mostrarRankingRachas(); break;
+        case 6: limpiarPantalla(); ordenarUsuariosPorNombreAsc(); break;
         case 7: limpiarPantalla(); mostrarUsuariosAvanzados(); break;
         case 8: limpiarPantalla(); ordenarUsuariosPorNivel(); break;   // NUEVA
         case 9: cout << RED << "Saliendo..." << RESET << endl; break;
@@ -97,9 +97,9 @@ void Sistema::mostrarBarraProgreso(int progreso, int total) {
     cout << (progreso * 100 / total) << "%" << endl;
 
     // Mensaje de completado SOLO cuando llega al 100 %
-        if (progreso == total) {
-            cout << MAGENTA << "\nFelicitaciones! Completado al 100%" << RESET << endl;
-        }
+    if (progreso == total) {
+        cout << MAGENTA << "\nFelicitaciones! Completado al 100%" << RESET << endl;
+    }
 }
 
 void Sistema::registrarUsuario() {
@@ -222,14 +222,14 @@ void Sistema::verProgreso() {
     cout << "  Italiano:  " << encontrado->getNivelItaliano() << endl;
 
     Progreso* prog = encontrado->obtenerProgreso();
-    
+
     cout << "\n--- Racha ---" << endl;
     prog->mostrarRacha();
 
     // Puntaje acumulado de la racha (1+2+...+actual)
     cout << "Puntaje por racha: " << prog->getRacha()->puntajeAcumulado() << endl;
 
-    
+
     prog->mostrarHistorialErrores();
 
     //Total de errores contados recursivamente sobre la pila
@@ -381,29 +381,47 @@ void Sistema::mostrarRankingRachas() {
         aux = aux->sig;
     }
 
-    //  ORDENAMIENTO
-    Ordenamiento<Ranking>::selection( &ranking,compararRacha);
-    
+    //  ORDENAMIENTO (se conserva para el guardado en archivo)
+    Ordenamiento<Ranking>::selection(&ranking, compararRacha);
+
     archivoMgr.guardarRanking(ranking);
     archivoMgr.guardarNivelesRacha(usuarios);
     cout << "Ranking guardado correctamente." << endl;
-    cout << "\n====== RANKING DE RACHAS ======" << endl;
 
-    auto* r = ranking.inicio();
+    // ---------------------------------------------------------------
+    //  ESTRUCTURA DE DATOS: ARBOL BINARIO DE BUSQUEDA (ABB)
+    //  Insertamos cada Ranking en un ABB generico usando como criterio
+    //  "mayor racha primero". El recorrido inorden del arbol devuelve
+    //  el ranking YA ORDENADO de mejor a peor, sin volver a ordenar.
+    //  El criterio es el mismo puntero a funcion 'compararRacha'.
+    // ---------------------------------------------------------------
+    ArbolBinario<Ranking> arbolRanking(compararRacha);
 
-    int pos = 1;
-
-    while (r != nullptr) {
-
-        cout << pos++ << ". " << r->elem.getNombre()
-            << " -> " << r->elem.getMejorRacha()
-            << " [" << r->elem.clasificacion() << "]" << endl;
-
-        r = r->sig;
-       
+    auto* nodoLista = ranking.inicio();
+    while (nodoLista != nullptr) {
+        arbolRanking.insertar(nodoLista->elem);
+        nodoLista = nodoLista->sig;
     }
 
-    cout << "===============================" << endl;
+    cout << "\n====== RANKING DE RACHAS (ABB inorden) ======" << endl;
+
+    int pos = 1;
+    // Lambda libre que captura 'pos' por referencia para numerar al recorrer.
+    arbolRanking.inorden([&pos](Ranking r) {
+        cout << pos++ << ". " << r.getNombre()
+            << " -> " << r.getMejorRacha()
+            << " [" << r.clasificacion() << "]" << endl;
+        });
+
+    cout << "=============================================" << endl;
+    cout << "Altura del arbol: " << arbolRanking.altura()
+        << " | Nodos: " << arbolRanking.tam() << endl;
+
+    // Lambda usada con contarSi del arbol: cuantos llegaron a categoria Oro.
+    int oro = arbolRanking.contarSi([](Ranking r) {
+        return r.clasificacion() == "Oro";
+        });
+    cout << "Usuarios en categoria Oro (racha >= 10): " << oro << endl;
 
     // Estadistica usando la lambda contarUsuariosConNivel
     cout << "\nUsuarios que alcanzaron nivel avanzado (3): "
@@ -419,7 +437,7 @@ void Sistema::ordenarUsuariosPorNombreAsc() {
         return;
     }
 
-	//LAMBDA 1 para comparar por nombre
+    //LAMBDA 1 para comparar por nombre
     usuarios.ordenar([](const Usuario& a, const Usuario& b) {
         return a.getNombre() < b.getNombre();
         });
