@@ -14,6 +14,7 @@
 #include "ArchivoManager.h"
 #include "Ranking.h"
 #include "Ordenamiento.h"
+#include "Ordenamiento2.hpp"
 #include "HashMap.hpp"
 
 using namespace std;
