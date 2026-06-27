@@ -42,13 +42,6 @@ void Sistema::pausar() {
 }
 
 void Sistema::iniciar() {
-    // Banner dibujado por MATRIZ de colores (estilo pixel-art),
-    // mismo concepto que DibujarMatriz del proyecto Juego Splash.
-    Banner::dibujar();
-    cout << CYAN << BOLD;
-    cout << "=========================================\n";
-    cout << "===    Bienvenido a AprendeGo! C++    ===\n";
-    cout << "=========================================\n" << RESET;
     menuPrincipal();
 }
 
@@ -57,18 +50,33 @@ void Sistema::menuPrincipal() {
     int opcion;
     do {
         limpiarPantalla();
-        cout << YELLOW << "\n--- Menu Principal ---" << RESET << endl;
-        cout << GREEN << "1. Registrar usuario" << RESET << endl;
-        cout << GREEN << "2. Seleccionar idioma" << RESET << endl;
-        cout << GREEN << "3. Ver progreso" << RESET << endl;
-        cout << GREEN << "4. Actualizar nivel de usuario" << RESET << endl;
-        cout << GREEN << "5. Ver ranking de rachas" << RESET << endl;
-        cout << GREEN << "6. Ordenar usuarios por nombre ascendente" << RESET << endl;
-        cout << GREEN << "7. Ver usuarios de nivel avanzado" << RESET << endl;
-        cout << GREEN << "8. Ordenar usuarios por nivel (Shell)" << RESET << endl;   // NUEVA
-        cout << RED << "9. Salir" << RESET << endl;
-        cout << "Seleccione una opción: ";
+        // Logo dibujado por MATRIZ de colores (estilo pixel-art),
+        // mismo concepto que DibujarMatriz del proyecto Juego Splash.
+        // Se redibuja en cada vuelta para que quede fijo arriba del menu.
+        Banner::dibujar();
+        // Menu centrado sobre el fondo blanco del "Form", con paleta tipo
+        // Duolingo en tonos oscuros para que se lea bien sobre blanco.
+        const string VERDE_T = "\033[38;2;46;125;50m";  // verde oscuro
+        const string GRIS_T = "\033[38;2;55;55;55m";    // gris oscuro
+        const string ROJO_T = "\033[38;2;200;40;40m";   // rojo oscuro (Salir)
+
+        Banner::lineaCentrada("===    Bienvenido a AprendeGo! C++    ===", VERDE_T);
+        Banner::lineaVacia();
+        Banner::lineaCentrada("--- Menu Principal ---", GRIS_T);
+        Banner::lineaCentrada("1. Registrar usuario", VERDE_T);
+        Banner::lineaCentrada("2. Seleccionar idioma", VERDE_T);
+        Banner::lineaCentrada("3. Ver progreso", VERDE_T);
+        Banner::lineaCentrada("4. Actualizar nivel de usuario", VERDE_T);
+        Banner::lineaCentrada("5. Ver ranking de rachas", VERDE_T);
+        Banner::lineaCentrada("6. Ordenar usuarios por nombre ascendente", VERDE_T);
+        Banner::lineaCentrada("7. Ver usuarios de nivel avanzado", VERDE_T);
+        Banner::lineaCentrada("8. Ordenar usuarios por nivel (Shell)", VERDE_T);
+        Banner::lineaCentrada("9. Salir", ROJO_T);
+        Banner::lineaVacia();
+        Banner::lineaCentrada("Seleccione una opcion y presione ENTER:", GRIS_T);
+        cout << "\033[107m\033[38;2;75;75;75m";   // fondo blanco / texto gris al teclear
         cin >> opcion;
+        cout << RESET;
 
         switch (opcion) {
         case 1: limpiarPantalla(); registrarUsuario(); break;
