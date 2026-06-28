@@ -78,6 +78,12 @@ void LeccionIngles::ordenarOracion(Progreso& progreso) {
 }
 
 
+
+
+
+
+
+
 void LeccionIngles::completarOracion(Progreso& progreso) {
     Cola<string> opciones;
     opciones.encolar("study");

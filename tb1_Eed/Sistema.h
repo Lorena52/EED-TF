@@ -18,6 +18,7 @@
 #include "HashMap.hpp"
 #include "ArbolBinario.hpp"
 #include "Banner.h"
+#include "Heap.hpp"
 
 using namespace std;
 
@@ -66,4 +67,6 @@ public:
 
     void rankingXpMergeSort();
     void rankingNombreQuickSort();
+    //heap 
+    void top3RachasHeap();
 };

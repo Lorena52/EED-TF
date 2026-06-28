@@ -71,7 +71,8 @@ void Sistema::menuPrincipal() {
         Banner::lineaCentrada("9. Buscar usuario por nombre (Hash)", VERDE_T);
         Banner::lineaCentrada("10. Ranking XP con MergeSort", VERDE_T);
         Banner::lineaCentrada("11. Ordenar por nombre con QuickSort", VERDE_T);
-        Banner::lineaCentrada("12. Salir", ROJO_T);
+        Banner::lineaCentrada("12. Top 3 usuarios con mayor racha (Heap)", VERDE_T);
+        Banner::lineaCentrada("13. Salir", ROJO_T);
         Banner::lineaVacia();
         Banner::promptCentrado("Seleccione una opcion y presione ENTER: ");
         cin >> opcion;
@@ -89,7 +90,8 @@ void Sistema::menuPrincipal() {
         case 9: limpiarPantalla(); buscarUsuarioHash(); break;
         case 10: limpiarPantalla(); rankingXpMergeSort(); break;
         case 11: limpiarPantalla(); rankingNombreQuickSort(); break;
-        case 12: Banner::lineaCentrada("Saliendo...", "\033[38;2;55;55;55m"); break;
+        case 12: limpiarPantalla(); top3RachasHeap(); break;
+        case 13: Banner::lineaCentrada("Saliendo...", "\033[38;2;55;55;55m"); break;
         default: Banner::lineaCentrada("Opcion invalida.", "\033[38;2;200;40;40m");
         }
         if (opcion != 13) pausar();
@@ -572,7 +574,7 @@ void Sistema::buscarUsuarioHash() {
     }
 }
 
-// MERGE SORT: ranking por XP (puntaje total)
+// MERGE SORT: ranking por XP 
 bool compararPorXpDesc(Usuario a, Usuario b) {
     return a.obtenerProgreso()->getPuntosTotales() > b.obtenerProgreso()->getPuntosTotales();
 }
@@ -606,6 +608,12 @@ bool compararPorNombreAlfabetico(Usuario a, Usuario b) {
     return a.getNombre() < b.getNombre();
 }
 
+bool compararRachaHeap(Usuario a, Usuario b)
+{
+    return a.obtenerProgreso()->getRacha()->getMaxima() >
+        b.obtenerProgreso()->getRacha()->getMaxima();
+}
+
 void Sistema::rankingNombreQuickSort() {
     if (usuarios.estaVacia()) {
         Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
@@ -627,5 +635,39 @@ void Sistema::rankingNombreQuickSort() {
     Banner::lineaCentrada("=== Usuarios por nombre (QuickSort - A-Z) ===", "\033[38;2;46;125;50m");
     for (int i = 0; i < (int)vec.size(); i++) {
         Banner::lineaCentrada(to_string(i + 1) + ". " + vec[i].getNombre() + "  |  Nivel global: " + to_string(vec[i].nivelGlobal()), "\033[38;2;55;55;55m");
+    }
+}
+//heap : 
+void Sistema::top3RachasHeap()
+{
+    if (usuarios.estaVacia())
+    {
+        Banner::lineaCentrada(
+            "No hay usuarios registrados.",
+            "\033[38;2;200;40;40m");
+        return;
+    }
+
+    Heap<Usuario> heap(compararRachaHeap);
+
+    auto* aux = usuarios.inicio();
+
+    while (aux != nullptr)
+    {
+        heap.insertar(aux->elem);
+        aux = aux->sig;
+    }
+
+    Banner::lineaCentrada( "===== TOP 3 USUARIOS CON MAYOR RACHA =====", "\033[38;2;46;125;50m");
+
+    int puesto = 1;
+
+    while (!heap.estaVacia() && puesto <= 3)
+    {
+        Usuario u = heap.extraer();
+
+        Banner::lineaCentrada( to_string(puesto) + ". " + u.getNombre() +  "  |  Mejor racha: " + to_string( u.obtenerProgreso()->getRacha()->getMaxima() ), "\033[38;2;55;55;55m" );
+
+        puesto++;
     }
 }
