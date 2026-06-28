@@ -535,6 +535,30 @@ void Sistema::ordenarUsuariosPorNivel() {
 // NUEVA: busca un usuario por nombre usando una tabla hash (HashMap).
 // A diferencia de buscarUsuario (que recorre la lista nodo por nodo, O(n)),
 // aqui se indexa cada usuario por su nombre y la busqueda es O(1) en promedio.
+// ===============================================================
+// ANALISIS BIG O
+// Complejidad temporal: O(n)
+//
+// Explicacion:
+// 1. Se recorre la lista de usuarios una sola vez para construir
+//    un indice utilizando un HashMap, insertando cada usuario
+//    segun su nombre como clave. Este recorrido tiene costo O(n).
+//
+// 2. Una vez construido el HashMap, la busqueda del usuario por
+//    nombre tiene una complejidad promedio de O(1), ya que el
+//    acceso a una tabla hash es constante en promedio.
+//
+// 3. Las operaciones de impresion de datos son constantes O(1).
+//
+// Por lo tanto, la complejidad total de la funcion esta dominada
+// por el recorrido inicial de todos los usuarios:
+//
+//              O(n) + O(1) + O(1) = O(n)
+//
+// Estructura de datos utilizada:
+// - ListaDoble<Usuario> para recorrer los usuarios.
+// - HashMap<string, Usuario*> para realizar la busqueda eficiente.
+// ===============================================================
 void Sistema::buscarUsuarioHash() {
     Banner::lineaCentrada("--- Buscar usuario por nombre (Hash) ---", "\033[38;2;55;55;55m");
 
@@ -578,7 +602,33 @@ void Sistema::buscarUsuarioHash() {
 bool compararPorXpDesc(Usuario a, Usuario b) {
     return a.obtenerProgreso()->getPuntosTotales() > b.obtenerProgreso()->getPuntosTotales();
 }
-
+// ===============================================================
+// ANALISIS BIG O
+// Complejidad temporal: O(n log n)
+//
+// Explicacion:
+// 1. Primero se recorren todos los usuarios para copiarlos desde
+//    la ListaDoble hacia un vector. Este recorrido tiene un costo
+//    de O(n).
+//
+// 2. Luego el vector es ordenado mediante el algoritmo MergeSort,
+//    cuya complejidad temporal es O(n log n), ya que divide el
+//    conjunto de datos en mitades y posteriormente las fusiona
+//    de manera ordenada.
+//
+// 3. Finalmente se recorre el vector ordenado para mostrar el
+//    ranking de usuarios, lo cual requiere O(n).
+//
+// La complejidad dominante corresponde al algoritmo MergeSort:
+//
+//          O(n) + O(n log n) + O(n)
+//                  = O(n log n)
+//
+// Estructuras de datos utilizadas:
+// - ListaDoble<Usuario>
+// - Vector<Usuario>
+// - Algoritmo MergeSort
+// =============================================================== 
 void Sistema::rankingXpMergeSort() {
     if (usuarios.estaVacia()) {
         Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
@@ -613,7 +663,34 @@ bool compararRachaHeap(Usuario a, Usuario b)
     return a.obtenerProgreso()->getRacha()->getMaxima() >
         b.obtenerProgreso()->getRacha()->getMaxima();
 }
-
+// ===============================================================
+// ANALISIS BIG O
+// Complejidad temporal:
+// - Caso promedio: O(n log n)
+// - Peor caso: O(n²)
+//
+// Explicacion:
+// 1. Se copian los usuarios desde la ListaDoble hacia un vector,
+//    lo que requiere un recorrido O(n).
+//
+// 2. El vector se ordena mediante QuickSort utilizando el nombre
+//    del usuario como criterio de comparación. En promedio,
+//    QuickSort trabaja en O(n log n); sin embargo, en el peor
+//    caso puede alcanzar O(n²) dependiendo de la elección del
+//    pivote.
+//
+// 3. Finalmente se imprime el ranking ordenado recorriendo el
+//    vector una sola vez (O(n)).
+//
+// La complejidad dominante es:
+//
+//          O(n log n)
+//
+// Estructuras utilizadas:
+// - ListaDoble<Usuario>
+// - Vector<Usuario>
+// - Algoritmo QuickSort
+// ===============================================================
 void Sistema::rankingNombreQuickSort() {
     if (usuarios.estaVacia()) {
         Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
@@ -638,6 +715,32 @@ void Sistema::rankingNombreQuickSort() {
     }
 }
 //heap : 
+// ===============================================================
+// ANALISIS BIG O
+// Complejidad temporal: O(n log n)
+//
+// Explicacion:
+// 1. Se recorre la ListaDoble de usuarios para insertar cada uno
+//    dentro de un Heap. Cada insercion requiere O(log n), por lo
+//    que insertar los n usuarios tiene un costo total de
+//    O(n log n).
+//
+// 2. Una vez construido el Heap, se extraen los tres usuarios con
+//    mayor racha. Cada extraccion tiene una complejidad O(log n),
+//    por lo que las tres extracciones requieren
+//    3 * O(log n), equivalente a O(log n).
+//
+// 3. La complejidad total esta dominada por la construccion del
+//    Heap, por lo que:
+//
+//          O(n log n) + O(log n)
+//                  = O(n log n)
+//
+// Estructuras de datos utilizadas:
+// - ListaDoble<Usuario> para recorrer los usuarios.
+// - Heap (cola de prioridad) para mantener ordenados los usuarios
+//   segun su mejor racha y obtener rapidamente los de mayor valor.
+// ===============================================================
 void Sistema::top3RachasHeap()
 {
     if (usuarios.estaVacia())
