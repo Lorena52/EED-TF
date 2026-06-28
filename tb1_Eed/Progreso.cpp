@@ -4,11 +4,11 @@
 Progreso::Progreso()
     : leccionesComp(0), puntosTotales(0), ejerciciosTotales(0),
     porcentaje(0.0f), fechaUltima(""), erroresSeguidos(0) {
-    racha = new Racha(); 
+    racha = new Racha();
 }
 
 Progreso::~Progreso() {
-    delete racha;          
+    delete racha;
 }
 
 Progreso::Progreso(const Progreso& otro)
@@ -105,7 +105,7 @@ void Progreso::setRachaActual(int valor) {
 }
 
 void Progreso::setMejorRacha(int valor) {
-    racha->setMejor(valor);   
+    racha->setMejor(valor);
     racha->reiniciar();
 }
 
@@ -139,3 +139,9 @@ int Progreso::contarErroresDeEjercicio(int idEjercicio) {
     }
     return total;
 }
+
+int Progreso::getPuntosTotales() const {
+    return puntosTotales;
+}
+
+void Progreso::setPuntosTotales(int v) { puntosTotales = v; }

@@ -132,6 +132,7 @@
     <ClInclude Include="Cola.hpp" />
     <ClInclude Include="Ejercicio.h" />
     <ClInclude Include="Error.h" />
+    <ClInclude Include="Hashmap.hpp" />
     <ClInclude Include="Idioma.h" />
     <ClInclude Include="Ingles.h" />
     <ClInclude Include="Italiano.h" />
@@ -143,6 +144,7 @@
     <ClInclude Include="ListaCircular.hpp" />
     <ClInclude Include="ListaDoble.hpp" />
     <ClInclude Include="Ordenamiento.h" />
+    <ClInclude Include="Ordenamiento2.hpp" />
     <ClInclude Include="Palabra.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Pila.hpp" />

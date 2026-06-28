@@ -7,7 +7,7 @@ using namespace std;
 
 class Progreso {
 private:
-    
+
     int leccionesComp;
     int puntosTotales;
     int ejerciciosTotales;
@@ -26,8 +26,8 @@ private:
 public:
     Progreso();
     ~Progreso();
-    Progreso(const Progreso& otro);            
-    Progreso& operator=(const Progreso& otro); 
+    Progreso(const Progreso& otro);
+    Progreso& operator=(const Progreso& otro);
 
     void actualizar(int aciertos, int total);
     void reiniciar();
@@ -40,6 +40,10 @@ public:
     int getLeccionesComp() const;
     int getErroresSeguidos() const;
     Racha* getRacha() const;
+
+    // Puntos totales (XP) - usado por el ranking con MergeSort.
+    void setPuntosTotales(int v);
+    int getPuntosTotales() const;
     Pila<Error> verUltimosErrores() const;
 
 

@@ -14,6 +14,8 @@
 #include "ArchivoManager.h"
 #include "Ranking.h"
 #include "Ordenamiento.h"
+#include "Ordenamiento2.hpp"
+#include "HashMap.hpp"
 #include "ArbolBinario.hpp"
 #include "Banner.h"
 
@@ -55,6 +57,13 @@ public:
 
     void mostrarUsuariosAvanzados();
     void ordenarUsuariosPorNivel();
+    void buscarUsuarioHash();   // NUEVA: busca un usuario por nombre usando HashMap
 
     static void mostrarBarraProgreso(int progreso, int total);
+
+
+    //implemntaciones hito 1 
+
+    void rankingXpMergeSort();
+    void rankingNombreQuickSort();
 };
