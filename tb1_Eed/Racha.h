@@ -1,12 +1,13 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include "Banner.h"
 using namespace std;
 
 class Racha {
 private:
-    int actual;   
-    int maxima;     
+    int actual;
+    int maxima;
 
     //RECURSIVIDAD: puntaje acumulado de la racha actual.
     int puntajeAux(int n) const {
@@ -15,7 +16,7 @@ private:
     }
 
 public:
-    Racha() : actual(0), maxima(0) {}     
+    Racha() : actual(0), maxima(0) {}
 
     void registrarAcierto() {
         actual++;
@@ -23,19 +24,21 @@ public:
     }
 
     void registrarError() {
-        actual = 0; 
+        actual = 0;
     }
 
     int puntajeAcumulado() const {
         return puntajeAux(actual);
     }
 
-    int getActual() const { return actual   ; }
+    int getActual() const { return actual; }
     int getMaxima()   const { return maxima; }
 
-    void mostrar() const { cout << "\n===== RACHA =====\n"; 
-    cout << "Racha actual: " << actual << endl; 
-    cout << "Mejor racha: " << maxima << endl; }
+    void mostrar() const {
+        Banner::lineaCentrada("===== RACHA =====", "\033[38;2;55;55;55m");
+        Banner::lineaCentrada("Racha actual: " + to_string(actual), "\033[38;2;55;55;55m");
+        Banner::lineaCentrada("Mejor racha: " + to_string(maxima), "\033[38;2;55;55;55m");
+    }
 
     void reiniciar() { actual = 0; }
     void setMejor(int valor) {

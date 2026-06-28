@@ -23,10 +23,10 @@ bool cmpPalabraAZ(Palabra* a, Palabra* b) {
 
 void Ingles::mostrarTeoria() {
     switch (nivel) {
-    case 1: cout << "Teoria basica de Ingles: saludos y frases simples." << endl; break;
-    case 2: cout << "Teoria intermedia: tiempos verbales y vocabulario." << endl; break;
-    case 3: cout << "Teoria avanzada: estructuras complejas y modismos." << endl; break;
-    default: cout << "Nivel no reconocido." << endl;
+    case 1: Banner::lineaCentrada("Teoria basica de Ingles: saludos y frases simples.", "\033[38;2;55;55;55m"); break;
+    case 2: Banner::lineaCentrada("Teoria intermedia: tiempos verbales y vocabulario.", "\033[38;2;55;55;55m"); break;
+    case 3: Banner::lineaCentrada("Teoria avanzada: estructuras complejas y modismos.", "\033[38;2;55;55;55m"); break;
+    default: Banner::lineaCentrada("Nivel no reconocido.", "\033[38;2;55;55;55m");
     }
 }
 
@@ -44,7 +44,7 @@ void Ingles::repasoContinuo(Progreso& progreso) {
     const int META = 10;   // 10 palabras por ronda
 
     if (vocabulario.estaVacia()) {
-        cout << "No hay palabras registradas." << endl;
+        Banner::lineaCentrada("No hay palabras registradas.", "\033[38;2;200;40;40m");
         return;
     }
 
@@ -58,7 +58,7 @@ void Ingles::repasoContinuo(Progreso& progreso) {
         nodo = nodo->sig;
     }
     if (delNivel.estaVacia()) {
-        cout << "No hay palabras para este nivel." << endl;
+        Banner::lineaCentrada("No hay palabras para este nivel.", "\033[38;2;200;40;40m");
         return;
     }
 
@@ -70,14 +70,18 @@ void Ingles::repasoContinuo(Progreso& progreso) {
     for (int i = 0; i < cuantas; i++) ronda.encolar(delNivel.obtener(i));
 
     // 3) Procesar la cola: acierto -> avanza barra; fallo -> se re-encola al final.
+    const string VERDE_T = "\033[38;2;46;125;50m";
+    const string GRIS_T = "\033[38;2;55;55;55m";
+    const string ROJO_T = "\033[38;2;200;40;40m";
     int aciertos = 0;
     while (aciertos < cuantas && !ronda.estaVacia()) {
         Palabra* p = ronda.frente();
         ronda.desencolar();
 
-        cout << "\n====================================" << endl;
-        cout << "Palabra en ingles: " << p->getTermino() << endl;
-        cout << "====================================" << endl;
+        Banner::lineaVacia();
+        Banner::lineaCentrada("====================================", GRIS_T);
+        Banner::lineaCentrada("Palabra en ingles: " + p->getTermino(), VERDE_T);
+        Banner::lineaCentrada("====================================", GRIS_T);
 
         // Armar 4 opciones (1 correcta + 3 distractores) y mezclarlas.
         Lista<string> opciones;
@@ -91,42 +95,46 @@ void Ingles::repasoContinuo(Progreso& progreso) {
         auto* on = opciones.inicio();
         int indice = 1;
         while (on != nullptr) {
-            cout << indice << ". " << on->elem << endl;
+            Banner::lineaCentrada(to_string(indice) + ". " + on->elem, GRIS_T);
             on = on->sig;
             indice++;
         }
 
         int respuesta;
-        cout << "\nSeleccione la opcion correcta (1-4): ";
+        Banner::lineaVacia();
+        Banner::promptCentrado("Seleccione la opcion correcta (1-4): ");
         cin >> respuesta;
+        cout << Banner::RESET;
 
         if (respuesta < 1 || respuesta > 4) {
-            cout << "Opcion invalida. La palabra se repetira al final." << endl;
+            Banner::lineaCentrada("Opcion invalida. La palabra se repetira al final.", ROJO_T);
             ronda.encolar(p);   // vuelve al final
         }
         else if (opciones.obtener(respuesta - 1) == correcta) {
-            cout << "\nCorrecto! :)" << endl;
+            Banner::lineaCentrada("Correcto! :)", VERDE_T);
             p->incrementarRepaso();
             progreso.registrarAcierto();
             aciertos++;   // SOLO aqui avanza la barra
         }
         else {
-            cout << "\nIncorrecto. La respuesta correcta era: " << correcta << endl;
+            Banner::lineaCentrada("Incorrecto. La respuesta correcta era: " + correcta, ROJO_T);
             Error e(0, "Error en repaso Ingles", "2026-05-09");
             progreso.registrarError(e);
             progreso.getRacha()->reiniciar();
             ronda.encolar(p);   // la fallada reaparece al final de la ronda
         }
 
-        // Barra de progreso + contador + racha (igual que en iniciar leccion).
-        cout << "\nProgreso del repaso:" << endl;
+        // Barra de progreso + contador + racha (centrados).
+        Banner::lineaVacia();
+        Banner::lineaCentrada("Progreso del repaso:", GRIS_T);
         Sistema::mostrarBarraProgreso(aciertos, cuantas);
-        cout << "Ejercicios: " << aciertos << "/" << cuantas << endl;
-        cout << "Racha actual: " << progreso.getRacha()->getActual() << endl;
+        Banner::lineaCentrada("Ejercicios: " + to_string(aciertos) + "/" + to_string(cuantas), GRIS_T);
+        Banner::lineaCentrada("Racha actual: " + to_string(progreso.getRacha()->getActual()), GRIS_T);
     }
 
-    cout << "\n" << "=== Repaso continuo completado! Acertaste las "
-        << cuantas << " palabras. ===" << endl;
+    Banner::lineaVacia();
+    Banner::lineaCentrada("=== Repaso continuo completado! Acertaste las "
+        + to_string(cuantas) + " palabras. ===", VERDE_T);
 }
 
 void Ingles::cargarVocabulario() {
@@ -179,7 +187,7 @@ void Ingles::mostrarDiccionarioRecursivo(ListaCircular<Palabra>::Nodo* nodo,
 
 void Ingles::diccionario() {
     if (vocabulario.estaVacia()) {
-        cout << "Diccionario vacio. Cargue vocabulario primero." << endl;
+        Banner::lineaCentrada("Diccionario vacio. Cargue vocabulario primero.", "\033[38;2;200;40;40m");
         return;
     }
 
@@ -194,7 +202,7 @@ void Ingles::diccionario() {
     // INSERTION SORT: ideal para listas pequenias como el vocabulario
     Ordenamiento<Palabra*>::insertion(&ordenado, cmpPalabraAZ);
 
-    cout << "\n=== Diccionario de Ingles (orden alfabetico) ===\n";
+    Banner::lineaCentrada("=== Diccionario de Ingles (orden alfabetico) ===", "\033[38;2;55;55;55m");
     for (unsigned int i = 0; i < ordenado.tam(); i++) {
         ordenado.obtener(i)->mostrar();
     }

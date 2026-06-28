@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClCompile Include="ArchivoManager.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="Banner.cpp" />
     <ClCompile Include="Ejercicio.cpp" />
     <ClCompile Include="Error.cpp" />
     <ClCompile Include="Idioma.cpp" />

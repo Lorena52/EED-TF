@@ -15,31 +15,32 @@
 #include "Ranking.h"
 #include "Ordenamiento.h"
 #include "ArbolBinario.hpp"
+#include "Banner.h"
 
 using namespace std;
 
 class Sistema {
-private:   
-    ListaDoble<Usuario> usuarios;  
-    ArchivoManager archivoMgr;     
-    Idioma* idiomaSeleccionado;  
-  
+private:
+    ListaDoble<Usuario> usuarios;
+    ArchivoManager archivoMgr;
+    Idioma* idiomaSeleccionado;
+
     Usuario* usuarioActivo;
     Usuario* buscarUsuario(const std::string& nombre);
 
     int contarUsuariosConNivel(int nivelMin);
 
-    
+
 public:
-  
+
     Sistema();
     ~Sistema();
 
     void limpiarPantalla();
     void pausar();
 
-    void iniciar();         
-    void menuPrincipal(); 
+    void iniciar();
+    void menuPrincipal();
 
 
 

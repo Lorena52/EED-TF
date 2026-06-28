@@ -33,12 +33,17 @@ Sistema::~Sistema() {
 
 void Sistema::limpiarPantalla() {
     system("cls");
+    // Tras limpiar, pinta el fondo blanco del "Form" para que TODAS las
+    // pantallas tengan el mismo fondo (la matriz/Form) de forma uniforme.
+    Banner::fondoForm();
 }
 
 void Sistema::pausar() {
-    cout << "\nPresione ENTER para continuar...";
+    Banner::lineaVacia();
+    Banner::promptCentrado("Presione ENTER para continuar...");
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
+    cout << RESET;
 }
 
 void Sistema::iniciar() {
@@ -49,7 +54,7 @@ void Sistema::iniciar() {
 void Sistema::menuPrincipal() {
     int opcion;
     do {
-        limpiarPantalla();
+        system("cls");   // Banner::dibujar() ya pinta el fondo blanco + logo
         // Logo dibujado por MATRIZ de colores (estilo pixel-art),
         // mismo concepto que DibujarMatriz del proyecto Juego Splash.
         // Se redibuja en cada vuelta para que quede fijo arriba del menu.
@@ -96,24 +101,22 @@ void Sistema::menuPrincipal() {
 
 
 void Sistema::mostrarBarraProgreso(int progreso, int total) {
+    if (total <= 0) total = 1;
     int ancho = 30;
     int completado = (progreso * ancho) / total;
 
-    cout << BLUE << "[";
-    cout << GREEN; // activar color una sola vez
-    for (int i = 0; i < completado; i++) {
-        cout << "#";
-    }
-    cout << RESET; //cerrar color después de los completados
-    for (int i = completado; i < ancho; i++) {
-        cout << "-";
-    }
-    cout << BLUE << "] " << RESET;
-    cout << (progreso * 100 / total) << "%" << endl;
+    // Construir la barra como texto: [#####-----] NN%
+    string barra = "[";
+    for (int i = 0; i < completado; i++) barra += "#";
+    for (int i = completado; i < ancho; i++) barra += "-";
+    barra += "] " + to_string(progreso * 100 / total) + "%";
 
-    // Mensaje de completado SOLO cuando llega al 100 %
+    // Centrada sobre el fondo blanco, en verde oscuro.
+    Banner::lineaCentrada(barra, "\033[38;2;46;125;50m");
+
     if (progreso == total) {
-        cout << MAGENTA << "\nFelicitaciones! Completado al 100%" << RESET << endl;
+        Banner::lineaCentrada("Felicitaciones! Completado al 100%",
+            "\033[38;2;46;125;50m");
     }
 }
 
@@ -121,27 +124,27 @@ void Sistema::registrarUsuario() {
     string nombre, email;
     int ni, np, ni2;
 
-    cout << "Ingrese nombre: ";
+    Banner::promptCentrado("Ingrese nombre: ");
     cin >> nombre;
 
     ListaDoble<Usuario>::Nodo* aux = usuarios.inicio();
 
     while (aux != nullptr) {
         if (aux->elem.getNombre() == nombre) {
-            cout << "Ya existe un usuario con ese nombre. Intente otro." << endl;
+            Banner::lineaCentrada("Ya existe un usuario con ese nombre. Intente otro.", "\033[38;2;200;40;40m");
             return;
         }
         aux = aux->sig;
     }
 
-    cout << "Ingrese email: ";
+    Banner::promptCentrado("Ingrese email: ");
     cin >> email;
 
-    cout << "Nivel de Inglés (1-3): ";
+    Banner::promptCentrado("Nivel de Ingles (1-3): ");
     cin >> ni;
-    cout << "Nivel de Portugués (1-3): ";
+    Banner::promptCentrado("Nivel de Portugues (1-3): ");
     cin >> np;
-    cout << "Nivel de Italiano (1-3): ";
+    Banner::promptCentrado("Nivel de Italiano (1-3): ");
     cin >> ni2;
 
     Usuario nuevo(usuarios.tam() + 1, nombre, email, ni, np, ni2);
@@ -156,36 +159,49 @@ void Sistema::registrarUsuario() {
 
     archivoMgr.guardarNivelesPortugues(usuarios);
     archivoMgr.guardarNivelesRacha(usuarios);
-    cout << "Usuario registrado con éxito." << endl;
+    Banner::lineaCentrada("Usuario registrado con exito.", "\033[38;2;55;55;55m");
 }
 
 
 void Sistema::seleccionarIdioma() {
+    const string VERDE_T = "\033[38;2;46;125;50m";
+    const string GRIS_T = "\033[38;2;55;55;55m";
+    const string ROJO_T = "\033[38;2;200;40;40m";
+
     if (usuarios.estaVacia()) {
-        cout << RED << "Primero registre un usuario." << RESET << endl;
+        Banner::lineaCentrada("Primero registre un usuario.", ROJO_T);
         return;
     }
 
+    Banner::lineaCentrada("--- Seleccionar idioma ---", VERDE_T);
+    Banner::lineaVacia();
+
     string nombreBuscado;
-    cout << "Ingrese su nombre para continuar: ";
+    Banner::promptCentrado("Ingrese su nombre para continuar: ");
     cin >> nombreBuscado;
 
     Usuario* usuarioEncontrado = buscarUsuario(nombreBuscado);
     if (!usuarioEncontrado) {
-        cout << RED << "No existe un usuario con ese nombre." << RESET << endl;
+        Banner::lineaVacia();
+        Banner::lineaCentrada("No existe un usuario con ese nombre.", ROJO_T);
         return;
     }
 
-    usuarioActivo = usuarioEncontrado;   // <-- AGREGA ESTA LINEA
+    usuarioActivo = usuarioEncontrado;
 
-    cout << GREEN << "Bienvenida(o), " << usuarioEncontrado->getNombre() << "!" << RESET << endl;
+    Banner::lineaVacia();
+    Banner::lineaCentrada("Bienvenida(o), " + usuarioEncontrado->getNombre() + "!", VERDE_T);
+    Banner::lineaVacia();
 
     int opcion;
-    cout << BLUE << "\nSeleccione idioma:" << RESET << endl;
-    cout << "1. Inglés [EN]" << endl;
-    cout << "2. Portugués [PT]" << endl;
-    cout << "3. Italiano [IT]" << endl;
+    Banner::lineaCentrada("Seleccione idioma:", GRIS_T);
+    Banner::lineaCentrada("1. Ingles [EN]", VERDE_T);
+    Banner::lineaCentrada("2. Portugues [PT]", VERDE_T);
+    Banner::lineaCentrada("3. Italiano [IT]", VERDE_T);
+    Banner::lineaVacia();
+    Banner::promptCentrado("Opcion: ");
     cin >> opcion;
+    cout << RESET;
 
     delete idiomaSeleccionado;
 
@@ -206,7 +222,7 @@ void Sistema::seleccionarIdioma() {
         idiomaSeleccionado->cargarVocabulario();
         break;
     default:
-        cout << RED << "Opción inválida." << RESET << endl;
+        Banner::lineaCentrada("Opcion invalida.", ROJO_T);
         return;
     }
 
@@ -215,60 +231,66 @@ void Sistema::seleccionarIdioma() {
 
 void Sistema::verProgreso() {
     if (usuarios.estaVacia()) {
-        cout << "No hay usuarios registrados." << endl;
+        Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
         return;
     }
 
     // Pide nombre igual que seleccionarIdioma
     string nombreBuscado;
-    cout << "Ingrese su nombre: ";
+    Banner::promptCentrado("Ingrese su nombre: ");
     cin >> nombreBuscado;
 
     Usuario* encontrado = buscarUsuario(nombreBuscado);
-    if (!encontrado) { cout << "Usuario no encontrado." << endl; return; }
+    if (!encontrado) { Banner::lineaCentrada("Usuario no encontrado.", "\033[38;2;200;40;40m"); return; }
 
-    cout << "\n========== Progreso de " << encontrado->getNombre()
-        << " ==========" << endl;
+    Banner::lineaCentrada("========== Progreso de " + encontrado->getNombre() + " ==========", "\033[38;2;55;55;55m");
 
     // Niveles guardados del usuario
-    cout << "Niveles registrados:" << endl;
-    cout << "  Ingles:    " << encontrado->getNivelIngles() << endl;
-    cout << "  Portugues: " << encontrado->getNivelPortugues() << endl;
-    cout << "  Italiano:  " << encontrado->getNivelItaliano() << endl;
+    Banner::lineaCentrada("Niveles registrados:", "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("Ingles:    " + to_string(encontrado->getNivelIngles()), "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("Portugues: " + to_string(encontrado->getNivelPortugues()), "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("Italiano:  " + to_string(encontrado->getNivelItaliano()), "\033[38;2;55;55;55m");
 
     Progreso* prog = encontrado->obtenerProgreso();
 
-    cout << "\n--- Racha ---" << endl;
+    Banner::lineaCentrada("\n--- Racha ---", "\033[38;2;55;55;55m");
     prog->mostrarRacha();
 
     // Puntaje acumulado de la racha (1+2+...+actual)
-    cout << "Puntaje por racha: " << prog->getRacha()->puntajeAcumulado() << endl;
+    Banner::lineaCentrada("Puntaje por racha: " + to_string(prog->getRacha()->puntajeAcumulado()), "\033[38;2;55;55;55m");
 
 
     prog->mostrarHistorialErrores();
 
     //Total de errores contados recursivamente sobre la pila
-    cout << "\nTotal de errores cometidos: " << prog->contarErrores() << endl;
-    cout << "Nivel global: " << encontrado->nivelGlobal() << endl;
-    cout << "Porcentaje de avance: "
-        << prog->calcularPorcentaje(prog->getLeccionesComp(), prog->getLeccionesComp() + prog->contarErrores())
-        << "%" << endl;
-    cout << "Errores en repaso (ejercicio 0): "
-        << prog->contarErroresDeEjercicio(0) << endl;
+    Banner::lineaCentrada("Total de errores cometidos: " + to_string(prog->contarErrores()), "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("Nivel global: " + to_string(encontrado->nivelGlobal()), "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("Porcentaje de avance: "
+        + to_string(prog->calcularPorcentaje(prog->getLeccionesComp(), prog->getLeccionesComp() + prog->contarErrores()))
+        + "%", "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("Errores en repaso (ejercicio 0): "
+        + to_string(prog->contarErroresDeEjercicio(0)), "\033[38;2;55;55;55m");
 
 
-    cout << "=================================" << endl;
+    Banner::lineaCentrada("=================================", "\033[38;2;55;55;55m");
 }
 
 void Sistema::iniciarLecciones() {
     if (!idiomaSeleccionado) return;
+    const string VERDE_T = "\033[38;2;46;125;50m";
+    const string GRIS_T = "\033[38;2;55;55;55m";
+    const string ROJO_T = "\033[38;2;200;40;40m";
 
     int modo;
-    cout << CYAN << "\n¿Qué desea hacer?" << RESET << endl;
-    cout << "1. Repaso continuo de palabras" << endl;
-    cout << "2. Iniciar lección" << endl;
-    cout << "3. Ver diccionario" << endl;
+    Banner::lineaVacia();
+    Banner::lineaCentrada("Que desea hacer?", GRIS_T);
+    Banner::lineaCentrada("1. Repaso continuo de palabras", VERDE_T);
+    Banner::lineaCentrada("2. Iniciar leccion", VERDE_T);
+    Banner::lineaCentrada("3. Ver diccionario", VERDE_T);
+    Banner::lineaVacia();
+    Banner::promptCentrado("Opcion: ");
     cin >> modo;
+    cout << RESET;
     limpiarPantalla();
 
     if (modo == 1) {
@@ -279,13 +301,14 @@ void Sistema::iniciarLecciones() {
         //Ahora iniciarEjercicios maneja todo el flujo y la barra
         idiomaSeleccionado->iniciarEjercicios(*(usuarioActivo->obtenerProgreso()));
 
-        cout << endl << MAGENTA << "=== ¡Lección completada! ===" << RESET << endl;
+        Banner::lineaVacia();
+        Banner::lineaCentrada("=== Leccion completada! ===", VERDE_T);
     }
     else if (modo == 3) {
         idiomaSeleccionado->diccionario();
     }
     else {
-        cout << RED << "Opción inválida." << RESET << endl;
+        Banner::lineaCentrada("Opcion invalida.", ROJO_T);
     }
 
     archivoMgr.guardarUsuarios(usuarios);
@@ -295,35 +318,35 @@ void Sistema::iniciarLecciones() {
 
 void Sistema::actualizarNivelUsuario() {
     if (usuarios.estaVacia()) {
-        cout << "No hay usuarios registrados." << endl;
+        Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
         return;
     }
 
     string nombreBuscado;
-    cout << "Ingrese el nombre del usuario: ";
+    Banner::promptCentrado("Ingrese el nombre del usuario: ");
     cin >> nombreBuscado;
 
     Usuario* usuarioEncontrado = buscarUsuario(nombreBuscado);   // <-- ESTA linea
 
     if (!usuarioEncontrado) {
-        cout << "Usuario no encontrado." << endl;
+        Banner::lineaCentrada("Usuario no encontrado.", "\033[38;2;200;40;40m");
         return;
     }
 
-    cout << "Usuario encontrado: " << usuarioEncontrado->getNombre() << endl;
-    cout << "Niveles actuales:" << endl;
-    cout << "Inglés: " << usuarioEncontrado->getNivelIngles() << endl;
-    cout << "Portugués: " << usuarioEncontrado->getNivelPortugues() << endl;
-    cout << "Italiano: " << usuarioEncontrado->getNivelItaliano() << endl;
+    Banner::lineaCentrada("Usuario encontrado: " + usuarioEncontrado->getNombre(), "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("Niveles actuales:", "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("Ingles: " + to_string(usuarioEncontrado->getNivelIngles()), "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("Portugues: " + to_string(usuarioEncontrado->getNivelPortugues()), "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("Italiano: " + to_string(usuarioEncontrado->getNivelItaliano()), "\033[38;2;55;55;55m");
 
     int opcionIdioma, nuevoNivel;
-    cout << "\nSeleccione idioma a actualizar:" << endl;
-    cout << "1. Inglés" << endl;
-    cout << "2. Portugués" << endl;
-    cout << "3. Italiano" << endl;
+    Banner::lineaCentrada("\nSeleccione idioma a actualizar:", "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("1. Ingles", "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("2. Portugues", "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("3. Italiano", "\033[38;2;55;55;55m");
     cin >> opcionIdioma;
 
-    cout << "Ingrese nuevo nivel (1=Base, 2=Intermedio, 3=Avanzado): ";
+    Banner::promptCentrado("Ingrese nuevo nivel (1=Base, 2=Intermedio, 3=Avanzado): ");
     cin >> nuevoNivel;
 
     switch (opcionIdioma) {
@@ -348,7 +371,7 @@ void Sistema::actualizarNivelUsuario() {
         }
         break;
     default:
-        cout << "Opción inválida." << endl;
+        Banner::lineaCentrada("Opcion invalida.", "\033[38;2;200;40;40m");
         return;
     }
 
@@ -361,7 +384,7 @@ void Sistema::actualizarNivelUsuario() {
 
     archivoMgr.guardarNivelesPortugues(usuarios);
 
-    cout << "Nivel actualizado correctamente." << endl;
+    Banner::lineaCentrada("Nivel actualizado correctamente.", "\033[38;2;55;55;55m");
 }
 bool compararRacha(Ranking a, Ranking b) {
 
@@ -375,7 +398,7 @@ void Sistema::mostrarRankingRachas() {
 
     if (usuarios.estaVacia()) {
 
-        cout << "No hay usuarios registrados." << endl;
+        Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
         return;
     }
 
@@ -401,7 +424,7 @@ void Sistema::mostrarRankingRachas() {
 
     archivoMgr.guardarRanking(ranking);
     archivoMgr.guardarNivelesRacha(usuarios);
-    cout << "Ranking guardado correctamente." << endl;
+    Banner::lineaCentrada("Ranking guardado correctamente.", "\033[38;2;55;55;55m");
 
     // ---------------------------------------------------------------
     //  ESTRUCTURA DE DATOS: ARBOL BINARIO DE BUSQUEDA (ABB)
@@ -418,7 +441,7 @@ void Sistema::mostrarRankingRachas() {
         nodoLista = nodoLista->sig;
     }
 
-    cout << "\n====== RANKING DE RACHAS (ABB inorden) ======" << endl;
+    Banner::lineaCentrada("====== RANKING DE RACHAS (ABB inorden) ======", "\033[38;2;46;125;50m");
 
     // Recolectamos las filas durante el recorrido inorden del arbol
     // y luego las mostramos en una tabla con bordes.
@@ -438,26 +461,26 @@ void Sistema::mostrarRankingRachas() {
         { "#", "Usuario", "Racha", "Categoria" },
         filasRanking);
 
-    cout << "Altura del arbol: " << arbolRanking.altura()
-        << " | Nodos: " << arbolRanking.tam() << endl;
+    Banner::lineaCentrada("Altura del arbol: " + to_string(arbolRanking.altura())
+        + " | Nodos: " + to_string(arbolRanking.tam()), "\033[38;2;55;55;55m");
 
     // Lambda usada con contarSi del arbol: cuantos llegaron a categoria Oro.
     int oro = arbolRanking.contarSi([](Ranking r) {
         return r.clasificacion() == "Oro";
         });
-    cout << "Usuarios en categoria Oro (racha >= 10): " << oro << endl;
+    Banner::lineaCentrada("Usuarios en categoria Oro (racha >= 10): " + to_string(oro), "\033[38;2;55;55;55m");
 
     // Estadistica usando la lambda contarUsuariosConNivel
-    cout << "\nUsuarios que alcanzaron nivel avanzado (3): "
-        << contarUsuariosConNivel(3) << endl;
-    cout << "Usuarios en nivel intermedio o mas (2): "
-        << contarUsuariosConNivel(2) << endl;
+    Banner::lineaCentrada("Usuarios que alcanzaron nivel avanzado (3): "
+        + to_string(contarUsuariosConNivel(3)), "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("Usuarios en nivel intermedio o mas (2): "
+        + to_string(contarUsuariosConNivel(2)), "\033[38;2;55;55;55m");
 }
 
 
 void Sistema::ordenarUsuariosPorNombreAsc() {
     if (usuarios.estaVacia()) {
-        cout << "No hay usuarios registrados." << endl;
+        Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
         return;
     }
 
@@ -466,7 +489,7 @@ void Sistema::ordenarUsuariosPorNombreAsc() {
         return a.getNombre() < b.getNombre();
         });
 
-    cout << "\n=== Usuarios ordenados por nombre (ascendente) ===" << endl;
+    Banner::lineaCentrada("=== Usuarios ordenados por nombre (ascendente) ===", "\033[38;2;46;125;50m");
     vector<vector<string>> filas;
     auto* aux = usuarios.inicio();
     while (aux != nullptr) {
@@ -478,7 +501,7 @@ void Sistema::ordenarUsuariosPorNombreAsc() {
 
 void Sistema::mostrarUsuariosAvanzados() {
     if (usuarios.estaVacia()) {
-        cout << "No hay usuarios registrados." << endl;
+        Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
         return;
     }
 
@@ -489,7 +512,7 @@ void Sistema::mostrarUsuariosAvanzados() {
             || u.getNivelItaliano() == 3;
         };
 
-    cout << "\n=== Usuarios de nivel avanzado ===" << endl;
+    Banner::lineaCentrada("=== Usuarios de nivel avanzado ===", "\033[38;2;46;125;50m");
     vector<vector<string>> filas;
     auto* aux = usuarios.inicio();
     while (aux != nullptr) {
@@ -505,7 +528,7 @@ void Sistema::mostrarUsuariosAvanzados() {
     }
 
     if (filas.empty())
-        cout << "Ningun usuario ha alcanzado nivel avanzado todavia." << endl;
+        Banner::lineaCentrada("Ningun usuario ha alcanzado nivel avanzado todavia.", "\033[38;2;55;55;55m");
     else
         Tabla::imprimir("NIVEL AVANZADO",
             { "Nombre", "Ingles", "Portugues", "Italiano" }, filas);
@@ -542,7 +565,7 @@ int Sistema::contarUsuariosConNivel(int nivelMin) {
 
 void Sistema::ordenarUsuariosPorNivel() {
     if (usuarios.estaVacia()) {
-        cout << "No hay usuarios registrados." << endl;
+        Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
         return;
     }
 
@@ -557,7 +580,7 @@ void Sistema::ordenarUsuariosPorNivel() {
     // SHELL SORT: eficiente para volumenes medianos
     Ordenamiento<Usuario>::shell(&copia, compararPorNivelGlobal);
 
-    cout << "\n=== Usuarios por nivel global (mayor a menor) ===" << endl;
+    Banner::lineaCentrada("=== Usuarios por nivel global (mayor a menor) ===", "\033[38;2;46;125;50m");
     vector<vector<string>> filas;
     for (unsigned int i = 0; i < copia.tam(); i++) {
         Usuario u = copia.obtener(i);

@@ -187,6 +187,9 @@
     <ClCompile Include="LeccionIngles.cpp">
       <Filter>Modelo</Filter>
     </ClCompile>
+    <ClCompile Include="Banner.cpp">
+      <Filter>Modelo</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="app.ico">

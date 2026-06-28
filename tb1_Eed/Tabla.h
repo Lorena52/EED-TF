@@ -2,21 +2,22 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "Banner.h"
 
 using namespace std;
 
 // ===============================================================
 //  Tabla  -  Dibuja tablas/cuadros con bordes en consola.
-//  Calcula el ancho de cada columna automaticamente y alinea todo.
-//  No es estructura de datos: es solo presentacion visual.
+//  Cada fila se arma como un string y se imprime CENTRADA sobre el
+//  fondo blanco (usando Banner::lineaCentrada), para combinar con el
+//  estilo del resto de la app. Usa bordes ASCII (+ - |) que se ven
+//  en cualquier consola (los caracteres de caja Unicode salian '?').
 // ===============================================================
 namespace Tabla {
 
-    const string T_RESET = "\033[0m";
-    const string T_CYAN = "\033[36m";
-    const string T_GREEN = "\033[32m";
-    const string T_YELLOW = "\033[33m";
-    const string T_BOLD = "\033[1m";
+    // Colores de texto (paleta tipo Duolingo, oscuros para fondo blanco)
+    const string T_VERDE = "\033[38;2;46;125;50m";
+    const string T_GRIS = "\033[38;2;55;55;55m";
 
     inline string repetir(const string& s, int n) {
         string r;
@@ -41,33 +42,24 @@ namespace Tabla {
         return anchos;
     }
 
-    inline void dibujarBorde(const vector<int>& anchos, char tipo) {
-        string izq, mid, der, hor = "\u2500";
-        if (tipo == 't') { izq = "\u250C"; mid = "\u252C"; der = "\u2510"; }
-        else if (tipo == 'm') { izq = "\u251C"; mid = "\u253C"; der = "\u2524"; }
-        else { izq = "\u2514"; mid = "\u2534"; der = "\u2518"; }
-
-        cout << T_CYAN << izq;
+    // Borde horizontal: +-----+-----+  (ASCII)
+    inline string bordeStr(const vector<int>& anchos) {
+        string s = "+";
         for (size_t c = 0; c < anchos.size(); c++) {
-            cout << repetir(hor, anchos[c] + 2);
-            cout << (c + 1 < anchos.size() ? mid : der);
+            s += repetir("-", anchos[c] + 2);
+            s += "+";
         }
-        cout << T_RESET << endl;
+        return s;
     }
 
-    inline void dibujarFila(const vector<string>& celdas,
-        const vector<int>& anchos,
-        bool esHeader = false) {
-        cout << T_CYAN << "\u2502" << T_RESET;
+    // Fila de contenido: | celda | celda |
+    inline string filaStr(const vector<string>& celdas, const vector<int>& anchos) {
+        string s = "|";
         for (size_t c = 0; c < anchos.size(); c++) {
             string contenido = (c < celdas.size()) ? celdas[c] : "";
-            cout << " ";
-            if (esHeader) cout << T_YELLOW << T_BOLD;
-            else          cout << T_GREEN;
-            cout << ajustar(contenido, anchos[c]) << T_RESET;
-            cout << " " << T_CYAN << "\u2502" << T_RESET;
+            s += " " + ajustar(contenido, anchos[c]) + " |";
         }
-        cout << endl;
+        return s;
     }
 
     inline void imprimir(const string& titulo,
@@ -75,21 +67,24 @@ namespace Tabla {
         const vector<vector<string>>& filas) {
         vector<int> anchos = calcularAnchos(headers, filas);
 
+        Banner::lineaVacia();
         if (!titulo.empty())
-            cout << "\n" << T_CYAN << T_BOLD << titulo << T_RESET << endl;
+            Banner::lineaCentrada(titulo, T_VERDE);
 
-        dibujarBorde(anchos, 't');
-        dibujarFila(headers, anchos, true);
-        dibujarBorde(anchos, 'm');
+        // Todo centrado sobre el fondo blanco
+        Banner::lineaCentrada(bordeStr(anchos), T_GRIS);
+        Banner::lineaCentrada(filaStr(headers, anchos), T_VERDE);
+        Banner::lineaCentrada(bordeStr(anchos), T_GRIS);
+
         if (filas.empty()) {
             vector<string> vacia(headers.size(), "");
             if (!vacia.empty()) vacia[0] = "(sin datos)";
-            dibujarFila(vacia, anchos, false);
+            Banner::lineaCentrada(filaStr(vacia, anchos), T_GRIS);
         }
         else {
             for (const auto& fila : filas)
-                dibujarFila(fila, anchos, false);
+                Banner::lineaCentrada(filaStr(fila, anchos), T_GRIS);
         }
-        dibujarBorde(anchos, 'b');
+        Banner::lineaCentrada(bordeStr(anchos), T_GRIS);
     }
 }

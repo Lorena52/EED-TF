@@ -8,6 +8,11 @@
 #include "Sistema.h"
 using namespace std;
 
+// Colores (paleta tipo Duolingo, oscuros para leer sobre fondo blanco)
+static const string V_T = "\033[38;2;46;125;50m";   // verde
+static const string G_T = "\033[38;2;55;55;55m";    // gris
+static const string R_T = "\033[38;2;200;40;40m";   // rojo
+
 void LeccionIngles::ordenarOracion(Progreso& progreso) {
     char continuar;
     int contador = 0;
@@ -28,12 +33,15 @@ void LeccionIngles::ordenarOracion(Progreso& progreso) {
         for (unsigned int i = 0; i < correcta.tam(); i++) mezclada.insertarFinal(correcta.obtener(i));
         Ordenamiento<string>::mezclar(&mezclada);
 
-        cout << "Order the sentence:" << endl;
-        for (unsigned int i = 0; i < mezclada.tam(); i++) cout << i + 1 << ") " << mezclada.obtener(i) << endl;
+        Banner::lineaVacia();
+        Banner::lineaCentrada("Order the sentence:", G_T);
+        for (unsigned int i = 0; i < mezclada.tam(); i++)
+            Banner::lineaCentrada(to_string(i + 1) + ") " + mezclada.obtener(i), G_T);
 
         int respuestas[10];
-        cout << "Enter the correct order: ";
+        Banner::promptCentrado("Enter the correct order: ");
         for (unsigned int i = 0; i < correcta.tam(); i++) cin >> respuestas[i];
+        cout << Banner::RESET;
 
         bool correcto = true;
         for (unsigned int i = 0; i < correcta.tam(); i++) {
@@ -41,32 +49,31 @@ void LeccionIngles::ordenarOracion(Progreso& progreso) {
         }
 
         if (correcto) {
-            cout << "Correcto!" << endl;
+            Banner::lineaCentrada("Correcto!", V_T);
             progreso.registrarAcierto();
             progreso.actualizar(1, 1);
 
-            //Avanza barra solo si es correcto
             contador++;
             Sistema sistema;
             sistema.mostrarBarraProgreso(contador, totalPreguntas);
 
-            //Mostrar racha actual
-            cout << "\n--- Racha actual ---" << endl;
+            Banner::lineaVacia();
+            Banner::lineaCentrada("--- Racha actual ---", G_T);
             progreso.getRacha()->mostrar();
         }
         else {
-            cout << "Incorrecto." << endl;
+            Banner::lineaCentrada("Incorrecto.", R_T);
             Error e(1, "Orden incorrecto", "2026-05-09");
             progreso.registrarError(e);
             progreso.actualizar(0, 1);
 
-            //Reiniciar racha si falla
             progreso.getRacha()->reiniciar();
-            cout << "\n--- Racha reiniciada a 0 ---" << endl;
+            Banner::lineaCentrada("--- Racha reiniciada a 0 ---", R_T);
         }
 
-        cout << "Continue? (y/n): ";
+        Banner::promptCentrado("Continue? (y/n): ");
         cin >> continuar;
+        cout << Banner::RESET;
     } while (continuar == 'y' || continuar == 'Y');
 }
 
@@ -77,68 +84,80 @@ void LeccionIngles::completarOracion(Progreso& progreso) {
     opciones.encolar("eat");
     opciones.encolar("play");
 
-    cout << "Complete the sentence: I ___ English." << endl;
+    Banner::lineaVacia();
+    Banner::lineaCentrada("Complete the sentence: I ___ English.", G_T);
     int i = 1;
-    opciones.mostrarCon([&](string palabra) { cout << i++ << ") " << palabra << endl; });
+    opciones.mostrarCon([&](string palabra) {
+        Banner::lineaCentrada(to_string(i++) + ") " + palabra, G_T);
+        });
 
-    int opcion; cin >> opcion;
+    int opcion;
+    Banner::promptCentrado("Opcion: ");
+    cin >> opcion;
+    cout << Banner::RESET;
     if (opcion == 1) {
-        cout << "Correcto!" << endl;
+        Banner::lineaCentrada("Correcto!", V_T);
         progreso.registrarAcierto();
         progreso.actualizar(1, 1);
 
         Sistema sistema;
         sistema.mostrarBarraProgreso(1, 1);
 
-        cout << "\n--- Racha actual ---" << endl;
+        Banner::lineaVacia();
+        Banner::lineaCentrada("--- Racha actual ---", G_T);
         progreso.getRacha()->mostrar();
     }
     else {
-        cout << "Incorrecto." << endl;
+        Banner::lineaCentrada("Incorrecto.", R_T);
         Error e(2, "Palabra incorrecta", "2026-05-08");
         progreso.registrarError(e);
         progreso.actualizar(0, 1);
 
         progreso.getRacha()->reiniciar();
-        cout << "\n--- Racha reiniciada a 0 ---" << endl;
+        Banner::lineaCentrada("--- Racha reiniciada a 0 ---", R_T);
     }
-
 }
 
 
 void LeccionIngles::traduccionAvanzada(Progreso& progreso) {
-    cout << "\n=== Advanced Translation Exercise ===" << endl;
+    Banner::lineaVacia();
+    Banner::lineaCentrada("=== Advanced Translation Exercise ===", V_T);
 
     struct Frase { string ingles; string espanol; };
     Frase frases[] = {
-        {"Despite the rain, they continued playing football.", "A pesar de la lluvia, continuaron jugando fútbol."},
+        {"Despite the rain, they continued playing football.", "A pesar de la lluvia, continuaron jugando futbol."},
         {"She has been working on this project for three months.", "Ella ha estado trabajando en este proyecto por tres meses."},
-        {"If I had known, I would have helped you.", "Si lo hubiera sabido, te habría ayudado."}
+        {"If I had known, I would have helped you.", "Si lo hubiera sabido, te habria ayudado."}
     };
 
     int total = 3, correctas = 0;
     for (int i = 0; i < total; i++) {
-        cout << "\nTranslate into Spanish:\n" << frases[i].ingles << endl;
+        Banner::lineaVacia();
+        Banner::lineaCentrada("Translate into Spanish:", G_T);
+        Banner::lineaCentrada(frases[i].ingles, G_T);
         string respuesta;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        Banner::promptCentrado("Respuesta: ");
         getline(cin, respuesta);
+        cout << Banner::RESET;
 
         if (respuesta == frases[i].espanol) {
-            cout << "Correct!" << endl;
+            Banner::lineaCentrada("Correct!", V_T);
             progreso.registrarAcierto();
             correctas++;
 
-            // Barra solo si es correcto
             Sistema sistema;
             sistema.mostrarBarraProgreso(correctas, total);
         }
         else {
-            cout << "Incorrect. Correct answer:\n" << frases[i].espanol << endl;
+            Banner::lineaCentrada("Incorrect. Correct answer:", R_T);
+            Banner::lineaCentrada(frases[i].espanol, G_T);
             Error e(i + 1, "Wrong translation", "2026-05-10");
             progreso.registrarError(e);
         }
     }
 
-    cout << "\nYou got " << correctas << " out of " << total << "." << endl;
+    Banner::lineaVacia();
+    Banner::lineaCentrada("You got " + to_string(correctas) + " out of " + to_string(total) + ".", V_T);
     progreso.actualizar(correctas, total);
 }

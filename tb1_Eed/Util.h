@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <functional>
+#include "Banner.h"
 
 using namespace std;
 
@@ -42,7 +43,7 @@ template <typename Estructura, typename FuncSerializar>
 void guardarArchivo(Estructura* est, string ruta, FuncSerializar serializar) {
     ofstream archivo(ruta);
     if (!archivo.is_open()) {
-        cout << "No se pudo abrir el archivo." << endl;
+        Banner::lineaCentrada("No se pudo abrir el archivo.", "\033[38;2;200;40;40m");
         return;
     }
     auto aux = est->inicio();
@@ -51,7 +52,7 @@ void guardarArchivo(Estructura* est, string ruta, FuncSerializar serializar) {
         aux = aux->sig;
     }
     archivo.close();
-    cout << "Datos guardados en " << ruta << endl;
+    Banner::lineaCentrada("Datos guardados en " + ruta, "\033[38;2;55;55;55m");
 }
 
 
@@ -64,7 +65,7 @@ template <typename Estructura, typename FuncSerializar>
 void guardarArchivoCircular(Estructura* est, string ruta, FuncSerializar serializar) {
     ofstream archivo(ruta);
     if (!archivo.is_open()) {
-        cout << "No se pudo abrir el archivo." << endl;
+        Banner::lineaCentrada("No se pudo abrir el archivo.", "\033[38;2;200;40;40m");
         return;
     }
     auto aux = est->primero();
@@ -74,7 +75,7 @@ void guardarArchivoCircular(Estructura* est, string ruta, FuncSerializar seriali
         aux = aux->sig;
     }
     archivo.close();
-    cout << "Datos guardados en " << ruta << endl;
+    Banner::lineaCentrada("Datos guardados en " + ruta, "\033[38;2;55;55;55m");
 }
 
 
@@ -93,7 +94,7 @@ template <typename FuncDeserializar, typename FuncAgregar>
 void cargarArchivo(string ruta, FuncDeserializar deserializar, FuncAgregar agregar) {
     ifstream archivo(ruta);
     if (!archivo.is_open()) {
-        cout << "No se pudo abrir el archivo." << endl;
+        Banner::lineaCentrada("No se pudo abrir el archivo.", "\033[38;2;200;40;40m");
         return;
     }
     string linea;
@@ -104,5 +105,5 @@ void cargarArchivo(string ruta, FuncDeserializar deserializar, FuncAgregar agreg
         cargados++;
     }
     archivo.close();
-    cout << cargados << " elementos cargados desde " << ruta << endl;
+    Banner::lineaCentrada(to_string(cargados) + " elementos cargados desde " + ruta, "\033[38;2;55;55;55m");
 }

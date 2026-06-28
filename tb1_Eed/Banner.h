@@ -1,10 +1,6 @@
 ﻿#pragma once
 #include <iostream>
 #include <string>
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-#include <Windows.h>
 
 using namespace std;
 
@@ -58,25 +54,10 @@ namespace Banner {
         {5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5}
     };
 
-    // --- Dimensiones reales de la ventana ---
-    inline int anchoConsola() {
-        CONSOLE_SCREEN_BUFFER_INFO info;
-        HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-        if (h != INVALID_HANDLE_VALUE && GetConsoleScreenBufferInfo(h, &info)) {
-            int a = info.srWindow.Right - info.srWindow.Left + 1;
-            if (a > 0) return a;
-        }
-        return 100;
-    }
-    inline int altoConsola() {
-        CONSOLE_SCREEN_BUFFER_INFO info;
-        HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-        if (h != INVALID_HANDLE_VALUE && GetConsoleScreenBufferInfo(h, &info)) {
-            int a = info.srWindow.Bottom - info.srWindow.Top + 1;
-            if (a > 0) return a;
-        }
-        return 30;
-    }
+    // --- Dimensiones reales de la ventana (implementadas en Banner.cpp,
+    //     donde se incluye <Windows.h> aislado) ---
+    int anchoConsola();
+    int altoConsola();
 
     // Linea de texto CENTRADA sobre el fondo blanco del form.
     inline void lineaCentrada(const string& texto, const string& colorTexto) {
@@ -121,6 +102,31 @@ namespace Banner {
             for (int i = 0; i < der; i++) cout << " ";
             cout << RESET << "\n";
         }
+    }
+
+    // Muestra un texto (prompt) centrado sobre el fondo blanco y deja el
+    // cursor en una linea centrada, manteniendo fondo blanco/texto oscuro
+    // mientras el usuario escribe. Usar antes de un cin.
+    inline void promptCentrado(const string& texto) {
+        int ancho = anchoConsola();
+        int izq = (ancho - (int)texto.size()) / 2;
+        if (izq < 0) izq = 0;
+        cout << FONDO_FORM;
+        for (int i = 0; i < izq; i++) cout << " ";
+        cout << TXT_OSCURO << texto;
+        // se deja el fondo/texto activos para que lo escrito se vea oscuro
+        cout << "\033[107m\033[38;2;55;55;55m";
+    }
+
+    // Pinta SOLO el fondo blanco del "Form" en toda la pantalla y deja el
+    // cursor arriba con color de texto oscuro. Se usa en las demas pantallas
+    // (sin logo): da el mismo fondo blanco uniforme en toda la app.
+    inline void fondoForm() {
+        cout << FONDO_FORM;
+        int alto = altoConsola();
+        for (int i = 0; i < alto; i++) lineaVacia();
+        cout << "\033[H";                  // cursor arriba a la izquierda
+        cout << FONDO_FORM << TXT_OSCURO;  // fondo blanco + texto oscuro
     }
 
     // Pinta el "Windows Form": fondo blanco en toda la pantalla + logo arriba.

@@ -15,16 +15,16 @@ Portugues::Portugues() : Idioma("PT", "Portugués") {
 void Portugues::mostrarTeoria() {
     switch (nivel) {
     case 1:
-        cout << "Teoria básica de Português: cumprimentos e frases simples." << endl;
+        Banner::lineaCentrada("Teoria básica de Português: cumprimentos e frases simples.", "\033[38;2;55;55;55m");
         break;
     case 2:
-        cout << "Teoria intermediária: tempos verbais e vocabulário." << endl;
+        Banner::lineaCentrada("Teoria intermediária: tempos verbais e vocabulário.", "\033[38;2;55;55;55m");
         break;
     case 3:
-        cout << "Teoria avançada: estruturas complexas e expressões idiomáticas." << endl;
+        Banner::lineaCentrada("Teoria avançada: estruturas complexas e expressões idiomáticas.", "\033[38;2;55;55;55m");
         break;
     default:
-        cout << "Nível não reconhecido." << endl;
+        Banner::lineaCentrada("Nível não reconhecido.", "\033[38;2;55;55;55m");
     }
 }
 
@@ -42,7 +42,7 @@ void Portugues::repasoContinuo(Progreso& progreso) {
     const int META = 10;
 
     if (vocabulario.estaVacia()) {
-        cout << "Nao ha palavras registradas." << endl;
+        Banner::lineaCentrada("Nao ha palavras registradas.", "\033[38;2;200;40;40m");
         return;
     }
 
@@ -56,7 +56,7 @@ void Portugues::repasoContinuo(Progreso& progreso) {
         nodo = nodo->sig;
     }
     if (delNivel.estaVacia()) {
-        cout << "Nao ha palavras para este nivel." << endl;
+        Banner::lineaCentrada("Nao ha palavras para este nivel.", "\033[38;2;200;40;40m");
         return;
     }
 
@@ -68,13 +68,17 @@ void Portugues::repasoContinuo(Progreso& progreso) {
 
     // 3) Procesar: acierto avanza barra; fallo se re-encola al final.
     int aciertos = 0;
+    const string VERDE_T = "\033[38;2;46;125;50m";
+    const string GRIS_T = "\033[38;2;55;55;55m";
+    const string ROJO_T = "\033[38;2;200;40;40m";
     while (aciertos < cuantas && !ronda.estaVacia()) {
         Palabra* p = ronda.frente();
         ronda.desencolar();
 
-        cout << "\n====================================" << endl;
-        cout << "Palavra em portugues: " << p->getTermino() << endl;
-        cout << "====================================" << endl;
+        Banner::lineaVacia();
+        Banner::lineaCentrada("====================================", GRIS_T);
+        Banner::lineaCentrada("Palavra em portugues: " + p->getTermino(), VERDE_T);
+        Banner::lineaCentrada("====================================", GRIS_T);
 
         Lista<string> opciones;
         string correcta = p->getTraduccion();
@@ -87,41 +91,44 @@ void Portugues::repasoContinuo(Progreso& progreso) {
         auto* on = opciones.inicio();
         int indice = 1;
         while (on != nullptr) {
-            cout << indice << ". " << on->elem << endl;
+            Banner::lineaCentrada(to_string(indice) + ". " + on->elem, GRIS_T);
             on = on->sig;
             indice++;
         }
 
         int resposta;
-        cout << "\nSelecione a opcao correta (1-4): ";
+        Banner::lineaVacia();
+        Banner::promptCentrado("Selecione a opcao correta (1-4): ");
         cin >> resposta;
+        cout << Banner::RESET;
 
         if (resposta < 1 || resposta > 4) {
-            cout << "Opcao invalida. A palavra voltara ao final." << endl;
+            Banner::lineaCentrada("Opcao invalida. A palavra voltara ao final.", ROJO_T);
             ronda.encolar(p);
         }
         else if (opciones.obtener(resposta - 1) == correcta) {
-            cout << "\nCorreto! :)" << endl;
+            Banner::lineaCentrada("Correto! :)", VERDE_T);
             p->incrementarRepaso();
             progreso.registrarAcierto();
             aciertos++;
         }
         else {
-            cout << "\nIncorreto. A resposta correta era: " << correcta << endl;
+            Banner::lineaCentrada("Incorreto. A resposta correta era: " + correcta, ROJO_T);
             Error e(0, "Error en repaso Portugues", "2026-06-10");
             progreso.registrarError(e);
             progreso.getRacha()->reiniciar();
             ronda.encolar(p);
         }
 
-        cout << "\nProgreso do repaso:" << endl;
+        Banner::lineaVacia();
+        Banner::lineaCentrada("Progreso do repaso:", GRIS_T);
         Sistema::mostrarBarraProgreso(aciertos, cuantas);
-        cout << "Exercicios: " << aciertos << "/" << cuantas << endl;
-        cout << "Sequencia atual: " << progreso.getRacha()->getActual() << endl;
+        Banner::lineaCentrada("Exercicios: " + to_string(aciertos) + "/" + to_string(cuantas), GRIS_T);
+        Banner::lineaCentrada("Sequencia atual: " + to_string(progreso.getRacha()->getActual()), GRIS_T);
     }
 
-    cout << "\n=== Repaso continuo completado! Acertaste as "
-        << cuantas << " palavras. ===" << endl;
+    Banner::lineaCentrada("=== Repaso continuo completado! Acertaste as "
+        + to_string(cuantas) + " palavras. ===", "\033[38;2;46;125;50m");
 }
 
 
@@ -167,11 +174,11 @@ void Portugues::cargarVocabulario() {
 
 void Portugues::diccionario() {
     if (vocabulario.estaVacia()) {
-        cout << "Diccionario vacío. Cargue vocabulario primero." << endl;
+        Banner::lineaCentrada("Diccionario vacío. Cargue vocabulario primero.", "\033[38;2;55;55;55m");
         return;
     }
 
-    cout << "\n=== Diccionario de Português ===\n";
+    Banner::lineaCentrada("=== Diccionario de Português ===", "\033[38;2;55;55;55m");
     auto aux = vocabulario.primero();
     unsigned int n = vocabulario.tam();
 
