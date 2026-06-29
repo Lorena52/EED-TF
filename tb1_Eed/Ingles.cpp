@@ -10,7 +10,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-//mensaje 
+#include "Hashmap.hpp"
+
 using namespace std;
 
 Ingles::Ingles() : Idioma("EN", "Ingles") {
@@ -73,6 +74,11 @@ void Ingles::repasoContinuo(Progreso& progreso) {
     const string VERDE_T = "\033[38;2;46;125;50m";
     const string GRIS_T = "\033[38;2;55;55;55m";
     const string ROJO_T = "\033[38;2;200;40;40m";
+
+    // HashMap que cuenta cuantas veces el usuario falla cada palabra.
+    // Clave = palabra en ingles, Valor = numero de fallos.
+    HashMap<string, int> fallosPorPalabra;
+
     int aciertos = 0;
     while (aciertos < cuantas && !ronda.estaVacia()) {
         Palabra* p = ronda.frente();
@@ -121,6 +127,13 @@ void Ingles::repasoContinuo(Progreso& progreso) {
             Error e(0, "Error en repaso Ingles", "2026-05-09");
             progreso.registrarError(e);
             progreso.getRacha()->reiniciar();
+
+            // Se cuenta el fallo de esta palabra en el HashMap.
+            // Si ya existia se incrementa; si no, se inserta con valor 1.
+            int vecesFallada = 0;
+            fallosPorPalabra.buscar(p->getTermino(), vecesFallada);
+            fallosPorPalabra.insertar(p->getTermino(), vecesFallada + 1);
+
             ronda.encolar(p);   // la fallada reaparece al final de la ronda
         }
 
@@ -135,6 +148,37 @@ void Ingles::repasoContinuo(Progreso& progreso) {
     Banner::lineaVacia();
     Banner::lineaCentrada("=== Repaso continuo completado! Acertaste las "
         + to_string(cuantas) + " palabras. ===", VERDE_T);
+
+    // ===== REPORTE: palabras que mas te costaron (usa el HashMap) =====
+    // Se recorre la tabla hash y se muestran las palabras con mas fallos,
+    // para que el usuario sepa cuales debe repasar mas (repaso inteligente).
+    if (fallosPorPalabra.tam() > 0) {
+        Banner::lineaVacia();
+        Banner::lineaCentrada("===== PALABRAS QUE DEBES REPASAR =====", GRIS_T);
+
+        // Busca la palabra con mayor numero de fallos recorriendo el HashMap.
+        string peorPalabra = "";
+        int maxFallos = 0;
+
+        fallosPorPalabra.recorrer([&](string palabra, int fallos) {
+            Banner::lineaCentrada(palabra + " -> fallada " + to_string(fallos)
+                + " vez(ces)", ROJO_T);
+            if (fallos > maxFallos) {
+                maxFallos = fallos;
+                peorPalabra = palabra;
+            }
+            });
+
+        if (peorPalabra != "") {
+            Banner::lineaVacia();
+            Banner::lineaCentrada("La que mas te costo fue: \"" + peorPalabra
+                + "\". Te recomendamos repasarla primero.", VERDE_T);
+        }
+    }
+    else {
+        Banner::lineaVacia();
+        Banner::lineaCentrada("No fallaste ninguna palabra. Excelente!", VERDE_T);
+    }
 }
 
 void Ingles::cargarVocabulario() {
