@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "Progreso.h"
+#include "Banner.h"
 
 Progreso::Progreso()
     : leccionesComp(0), puntosTotales(0), ejerciciosTotales(0),
@@ -34,9 +35,9 @@ Progreso& Progreso::operator=(const Progreso& otro) {
     return *this;
 }
 
-void Progreso::actualizar(int aciertos, int total) {
+void Progreso::actualizar(int puntos, int total) {
     ejerciciosTotales += total;
-    puntosTotales += aciertos;
+    puntosTotales += puntos;
     leccionesComp++;
     porcentaje = (ejerciciosTotales > 0)
         ? (float)puntosTotales / ejerciciosTotales * 100.0f
@@ -64,13 +65,13 @@ void Progreso::registrarError(const Error& e) {
 }
 
 void Progreso::mostrarHistorialErrores() {
-    cout << "\n===== ERRORES =====\n";
+    Banner::lineaCentrada("===== ERRORES =====", "\033[38;2;55;55;55m");
 
     // LAMBDA 3: define como se imprime un error (formato en un solo lugar)
     auto formatearError = [](const Error& e) {
-        cout << "Error en ejercicio " << e.getIdEjercicio()
-            << ": " << e.getDetalle()
-            << " (" << e.getFecha() << ")" << endl;
+        Banner::lineaCentrada("Error en ejercicio " + to_string(e.getIdEjercicio())
+            + ": " + e.getDetalle()
+            + " (" + e.getFecha() + ")", "\033[38;2;200;40;40m");
         };
 
     auto aux = errores.inicio();
@@ -80,7 +81,7 @@ void Progreso::mostrarHistorialErrores() {
     }
 
     if (errores.inicio() == nullptr) {
-        cout << "Sin errores registrados. Buen trabajo!" << endl;
+        Banner::lineaCentrada("Sin errores registrados. Buen trabajo!", "\033[38;2;46;125;50m");
     }
 }
 
@@ -139,7 +140,6 @@ int Progreso::contarErroresDeEjercicio(int idEjercicio) {
     }
     return total;
 }
-
 int Progreso::getPuntosTotales() const {
     return puntosTotales;
 }
