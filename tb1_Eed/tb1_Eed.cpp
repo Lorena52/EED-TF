@@ -26,5 +26,7 @@ int main()
     Sistema* sistema = new Sistema();
     sistema->iniciar();
     delete sistema;
+
+    system("pause>=0");
     return 0;
 }
