@@ -18,7 +18,7 @@ Usuario::Usuario(int i, const string& n, const string& e,
 }
 
 Usuario::~Usuario() {
-    // ✅ ya no se libera idiomaActual, porque Sistema maneja los idiomas
+    // ya no se libera idiomaActual, porque Sistema maneja los idiomas
 }
 
 string Usuario::getNombre() const { return nombre; }
