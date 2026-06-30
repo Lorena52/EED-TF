@@ -19,7 +19,7 @@
 #include "ArbolBinario.hpp"
 #include "Banner.h"
 #include "Heap.hpp"
-
+#include "Diseño.h"
 using namespace std;
 
 class Sistema {

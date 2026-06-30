@@ -53,6 +53,7 @@ void Sistema::menuPrincipal() {
     int opcion;
     do {
         system("cls");
+       
         Banner::dibujar();
         const string VERDE_T = "[38;2;46;125;50m";
         const string GRIS_T = "[38;2;55;55;55m";
@@ -73,9 +74,13 @@ void Sistema::menuPrincipal() {
         Banner::lineaCentrada("11. Ordenar por nombre con QuickSort", VERDE_T);
         Banner::lineaCentrada("12. Top 3 usuarios con mayor racha (Heap)", VERDE_T);
         Banner::lineaCentrada("13. Salir", ROJO_T);
+        Diseño::mostrar();
         Banner::lineaVacia();
         Banner::promptCentrado("Seleccione una opcion y presione ENTER: ");
         cin >> opcion;
+       
+       
+        system("pause");
         cout << RESET;
 
         switch (opcion) {
