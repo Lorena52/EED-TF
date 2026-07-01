@@ -20,6 +20,8 @@
 #include "Banner.h"
 #include "Heap.hpp"
 #include "Diseño.h"
+//piloto grafo 
+#include "MallaLecciones.h"
 using namespace std;
 
 class Sistema {
@@ -33,7 +35,8 @@ private:
 
     int contarUsuariosConNivel(int nivelMin);
 
-
+    // piloto grafo 
+    MallaLecciones mallaLecciones;
 public:
 
     Sistema();
@@ -69,4 +72,6 @@ public:
     void rankingNombreQuickSort();
     //heap 
     void top3RachasHeap();
+	//piloto grafo
+    void verMallaAprendizaje();
 };

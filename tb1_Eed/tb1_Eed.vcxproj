@@ -132,6 +132,7 @@
     <ClInclude Include="Cola.hpp" />
     <ClInclude Include="Ejercicio.h" />
     <ClInclude Include="Error.h" />
+    <ClInclude Include="Grafo.hpp" />
     <ClInclude Include="Hashmap.hpp" />
     <ClInclude Include="Heap.hpp" />
     <ClInclude Include="Idioma.h" />
@@ -144,6 +145,8 @@
     <ClInclude Include="Lista.hpp" />
     <ClInclude Include="ListaCircular.hpp" />
     <ClInclude Include="ListaDoble.hpp" />
+    <ClInclude Include="MallaLecciones.h" />
+    <ClInclude Include="NodoLeccion.h" />
     <ClInclude Include="Ordenamiento.h" />
     <ClInclude Include="Ordenamiento2.hpp" />
     <ClInclude Include="Palabra.h" />
@@ -172,6 +175,8 @@
     <ClCompile Include="LeccionIngles.cpp" />
     <ClCompile Include="LeccionItaliano.cpp" />
     <ClCompile Include="LeccionPortugues.cpp" />
+    <ClCompile Include="MallaLecciones.cpp" />
+    <ClCompile Include="NodoLeccion.cpp" />
     <ClCompile Include="Palabra.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

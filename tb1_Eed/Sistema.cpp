@@ -22,6 +22,7 @@ using namespace std;
 
 Sistema::Sistema() : idiomaSeleccionado(nullptr), usuarioActivo(nullptr) {
     archivoMgr.cargarUsuarios(usuarios);
+    mallaLecciones.cargarDatos();
 }
 
 Sistema::~Sistema() {
@@ -73,7 +74,8 @@ void Sistema::menuPrincipal() {
         Banner::lineaCentrada("10. Ranking XP con MergeSort", VERDE_T);
         Banner::lineaCentrada("11. Ordenar por nombre con QuickSort", VERDE_T);
         Banner::lineaCentrada("12. Top 3 usuarios con mayor racha (Heap)", VERDE_T);
-        Banner::lineaCentrada("13. Salir", ROJO_T);
+        Banner::lineaCentrada("13. Mapa de aprendizaje (Grafo)", VERDE_T);
+        Banner::lineaCentrada("14. Salir", ROJO_T);
         Diseño::mostrar();
         Banner::lineaVacia();
         Banner::promptCentrado("Seleccione una opcion y presione ENTER: ");
@@ -96,11 +98,12 @@ void Sistema::menuPrincipal() {
         case 10: limpiarPantalla(); rankingXpMergeSort(); break;
         case 11: limpiarPantalla(); rankingNombreQuickSort(); break;
         case 12: limpiarPantalla(); top3RachasHeap(); break;
-        case 13: Banner::lineaCentrada("Saliendo...", "\033[38;2;55;55;55m"); break;
+        case 13: limpiarPantalla(); verMallaAprendizaje(); break;
+        case 14: Banner::lineaCentrada("Saliendo...", "\033[38;2;55;55;55m"); break;
         default: Banner::lineaCentrada("Opcion invalida.", "\033[38;2;200;40;40m");
         }
-        if (opcion != 13) pausar();
-    } while (opcion != 13);
+        if (opcion != 14) pausar();
+    } while (opcion != 14);
 }
 
 
@@ -323,6 +326,20 @@ void Sistema::actualizarNivelUsuario() {
 
     Banner::promptCentrado("Ingrese nuevo nivel (1=Base, 2=Intermedio, 3=Avanzado): ");
     cin >> nuevoNivel;
+    // aqui bloquedo si es que quiere un nivel nuevo o ses de un nivel 1  a 4 
+    {
+        string nombreIdiomaSel = (opcionIdioma == 1) ? "Ingles" : (opcionIdioma == 2) ? "Portugues" : (opcionIdioma == 3) ? "Italiano" : "";
+        int idiomaIdx = mallaLecciones.idiomaIdxPorNombre(nombreIdiomaSel);
+        int nivelActualIdioma = (opcionIdioma == 1) ? usuarioEncontrado->getNivelIngles()
+            : (opcionIdioma == 2) ? usuarioEncontrado->getNivelPortugues()
+            : (opcionIdioma == 3) ? usuarioEncontrado->getNivelItaliano()
+            : -1;
+        if (idiomaIdx != -1 && !mallaLecciones.esNivelDesbloqueado(idiomaIdx, nivelActualIdioma, nuevoNivel)) {
+            Banner::lineaCentrada("===== NIVEL BLOQUEADO =====", "\033[38;2;200;40;40m");
+            cout << mallaLecciones.mensajeBloqueo(idiomaIdx, nivelActualIdioma, nuevoNivel);
+            return;
+        }
+    }
 
     switch (opcionIdioma) {
     case 1:
@@ -778,4 +795,42 @@ void Sistema::top3RachasHeap()
 
         puesto++;
     }
+}
+// hito 2 esta guiado por ordenar - completra - traduccion avanzada 
+
+void Sistema::verMallaAprendizaje() {
+    int opcion = -1;
+    do {
+        Banner::lineaCentrada("===== MAPA DE APRENDISAJE =====", "\033[38;2;46;125;50m");
+        Banner::lineaVacia();
+        mallaLecciones.listarLecciones();
+        Banner::lineaVacia();
+        cout << "   1. Ver orden sugerido de aprendisaje \n";
+        
+        cout << "   2. Ver prerrequisitos de una leccion\n";
+        cout << "   0. Volver al menu principal\n";
+        cout << "   Opcion: ";
+        cin >> opcion;
+        switch (opcion) {
+        case 1:
+            mallaLecciones.ordenSugerido();
+            break;
+        case 2: {
+            int n;
+            cout << "Ingrese la leccion: ";
+            cin >> n;
+            if (n >= 0 && n < mallaLecciones.cantidadNodos())
+                mallaLecciones.prerrequisitosDe(n);
+            else
+                cout << "Leccion invalida.\n";
+            break;
+        }
+        case 0:
+            break;
+        default:
+            cout << "Opcion invalida\n";
+        }
+        if (opcion != 0)
+            pausar();
+    } while (opcion != 0);
 }
