@@ -17,6 +17,5 @@ public:
     virtual void ordenarOracion(Progreso& progreso) = 0;
     virtual void completarOracion(Progreso& progreso) = 0;
     virtual void traduccionAvanzada(Progreso& progreso) = 0;
-
 };
 

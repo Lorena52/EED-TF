@@ -6,7 +6,7 @@
 #include <string>
 #include <iostream>
 #include <cstdlib>   
-
+#include <ctime>
 
 
 //COLORES AGREGADOS GRACIAS A LA IA
@@ -47,9 +47,7 @@ void Sistema::pausar() {
 }
 
 void Sistema::iniciar() {
-    pantallaBienvenida();
     menuPrincipal();
-
 }
 
 
@@ -57,7 +55,7 @@ void Sistema::menuPrincipal() {
     int opcion;
     do {
         system("cls");
-       
+
         Banner::dibujar();
         const string VERDE_T = "[38;2;46;125;50m";
         const string GRIS_T = "[38;2;55;55;55m";
@@ -78,13 +76,15 @@ void Sistema::menuPrincipal() {
         Banner::lineaCentrada("11. Ordenar por nombre con QuickSort", VERDE_T);
         Banner::lineaCentrada("12. Top 3 usuarios con mayor racha (Heap)", VERDE_T);
         Banner::lineaCentrada("13. Mapa de aprendizaje (Grafo)", VERDE_T);
-        Banner::lineaCentrada("14. Salir", ROJO_T);
-        Diseño::Pinguino();
+        Banner::lineaCentrada("14. Ranking de rachas (Arbol AVL balanceado)", VERDE_T);
+        Banner::lineaCentrada("15. Generar datos aleatorios (Dataset)", VERDE_T);
+        Banner::lineaCentrada("16. Salir", ROJO_T);
+        Diseño::mostrar();
         Banner::lineaVacia();
         Banner::promptCentrado("Seleccione una opcion y presione ENTER: ");
         cin >> opcion;
-       
-       
+
+
         system("pause");
         cout << RESET;
 
@@ -102,11 +102,13 @@ void Sistema::menuPrincipal() {
         case 11: limpiarPantalla(); rankingNombreQuickSort(); break;
         case 12: limpiarPantalla(); top3RachasHeap(); break;
         case 13: limpiarPantalla(); verMallaAprendizaje(); break;
-        case 14: Banner::lineaCentrada("Saliendo...", "\033[38;2;55;55;55m"); break;
+        case 14: limpiarPantalla(); mostrarRankingRachasAVL(); break;
+        case 15: limpiarPantalla(); generarDatasetAleatorio(); break;
+        case 16: Banner::lineaCentrada("Saliendo...", "\033[38;2;55;55;55m"); break;
         default: Banner::lineaCentrada("Opcion invalida.", "\033[38;2;200;40;40m");
         }
-        if (opcion != 14) pausar();
-    } while (opcion != 14);
+        if (opcion != 16) pausar();
+    } while (opcion != 16);
 }
 
 
@@ -126,17 +128,8 @@ void Sistema::mostrarBarraProgreso(int progreso, int total) {
 void Sistema::registrarUsuario() {
     string nombre, email;
     int ni, np, ni2;
-    Banner::lineaVacia();
-    Banner::lineaCentrada("==============================================", "\033[38;2;46;125;50m");
-    Banner::lineaCentrada("        REGISTRO DE NUEVO ESTUDIANTE", "\033[38;2;46;125;50m");
-    Banner::lineaCentrada("==============================================", "\033[38;2;46;125;50m");
-    Banner::lineaVacia();
 
-    Banner::lineaCentrada("Complete la siguiente informacion para crear", "\033[38;2;55;55;55m");
-    Banner::lineaCentrada("su cuenta en AprendeGo!", "\033[38;2;55;55;55m");
-    Banner::lineaVacia();
-
-    Banner::promptCentrado("|Ingrese nombre: ");
+    Banner::promptCentrado("Ingrese nombre: ");
     cin >> nombre;
 
     ListaDoble<Usuario>::Nodo* aux = usuarios.inicio();
@@ -162,24 +155,16 @@ void Sistema::registrarUsuario() {
     Usuario nuevo(usuarios.tam() + 1, nombre, email, ni, np, ni2);
     usuarios.insertarFinal(nuevo);
 
-    cout << endl << endl ;
-
-    cout << "\n\n";
-     Diseño::DiseñoSesion();
-     cout << endl;
-     Banner::lineaCentrada("   "+ nombre + ", estoy listo para aprender contigo! :)", "\033[38;2;55;55;55m");
-     cout << endl << endl;
     archivoMgr.guardarUsuarios(usuarios);
     //_____
     archivoMgr.guardarNivelesIngles(usuarios);
     //ita
     archivoMgr.guardarNivelesItaliano(usuarios);
     //port
-    
-    
+
     archivoMgr.guardarNivelesPortugues(usuarios);
     archivoMgr.guardarNivelesRacha(usuarios);
-    
+    Banner::lineaCentrada("Usuario registrado con exito.", "\033[38;2;55;55;55m");
 }
 
 
@@ -438,7 +423,7 @@ void Sistema::mostrarRankingRachas() {
     archivoMgr.guardarNivelesRacha(usuarios);
     Banner::lineaCentrada("Ranking guardado correctamente.", "[38;2;46;125;50m");
 
-   
+
     ArbolBinario<Ranking> arbolRanking(compararRacha);     // (1) O(1)
     auto* nodoLista = ranking.inicio();
     while (nodoLista != nullptr) {                         // (2) O(n log n) prom. / O(n²) peor caso
@@ -449,7 +434,7 @@ void Sistema::mostrarRankingRachas() {
     vector<vector<string>> filasRanking;
     int pos = 1;
     arbolRanking.inorden([&pos, &filasRanking](Ranking r) {       // (3) O(n)
-        filasRanking.push_back({                                  
+        filasRanking.push_back({
             to_string(pos++),
             r.getNombre(),
             to_string(r.getMejorRacha()),
@@ -581,7 +566,7 @@ void Sistema::buscarUsuarioHash() {
         return;
     }
 
-   
+
     HashMap<string, Usuario*> indice;                                                 // (1) O(1)
     auto* aux = usuarios.inicio();                                                    // (2) O(1)  
     while (aux != nullptr) {                                                          // (3) O(n)
@@ -688,7 +673,7 @@ void Sistema::top3RachasHeap()
         aux = aux->sig;
     }
 
-    Banner::lineaCentrada( "===== TOP 3 USUARIOS CON MAYOR RACHA =====", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada("===== TOP 3 USUARIOS CON MAYOR RACHA =====", "\033[38;2;46;125;50m");
 
     int puesto = 1;
 
@@ -696,7 +681,7 @@ void Sistema::top3RachasHeap()
     {
         Usuario u = heap.extraer();                                //     3 extracciones, cada una O(log n)
 
-        Banner::lineaCentrada( to_string(puesto) + ". " + u.getNombre() +  "  |  Mejor racha: " + to_string( u.obtenerProgreso()->getRacha()->getMaxima() ), "\033[38;2;55;55;55m" );
+        Banner::lineaCentrada(to_string(puesto) + ". " + u.getNombre() + "  |  Mejor racha: " + to_string(u.obtenerProgreso()->getRacha()->getMaxima()), "\033[38;2;55;55;55m");
 
         puesto++;
     }
@@ -711,7 +696,7 @@ void Sistema::verMallaAprendizaje() {
         mallaLecciones.listarLecciones();
         Banner::lineaVacia();
         cout << "   1. Ver orden sugerido de aprendisaje \n";
-        
+
         cout << "   2. Ver prerrequisitos de una leccion\n";
         cout << "   0. Volver al menu principal\n";
         cout << "   Opcion: ";
@@ -740,33 +725,168 @@ void Sistema::verMallaAprendizaje() {
     } while (opcion != 0);
 }
 
-//interfaz
-void Sistema::pantallaBienvenida() {
 
-    system("cls");
-    cout << "\n\n";
-    cout << endl << endl << endl << endl << endl << endl << endl << endl;
-    Diseño::Logo();
+// ═══════════════════════════════════════════════════════════════
+//  RANKING DE RACHAS CON ARBOL BINARIO BALANCEADO (AVL)
+//
+//  Misma logica que mostrarRankingRachas() pero usando ArbolAVL:
+//  como el ranking se inserta ya ordenado (peor caso para un ABB
+//  comun, que degeneraria en lista con altura n), el AVL aplica
+//  rotaciones y garantiza altura O(log n). Al final se comparan
+//  las alturas de ambos arboles para evidenciar el balanceo.
+// ═══════════════════════════════════════════════════════════════
+void Sistema::mostrarRankingRachasAVL() {
 
-    
-
-
-   
-    Banner::lineaVacia();
-    Banner::lineaCentrada("Bienvenido a AprendeGo!", "\033[38;2;46;125;50m");
-    Banner::lineaCentrada("Cargando...", "\033[38;2;46;125;50m");
-
-  
-
-    cout << "                                  [";
-
-    for (int i = 0; i < 20; i++) {
-        cout << "\033[42m  \033[0m";   
-        _sleep(120);
+    if (usuarios.estaVacia()) {
+        Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
+        return;
     }
 
-    cout << "]";
+    // 1) Construir la lista de rankings a partir de los usuarios   O(n)
+    Lista<Ranking> ranking;
+    auto* aux = usuarios.inicio();
+    while (aux != nullptr) {
+        Usuario u = aux->elem;
+        ranking.insertarFinal(
+            Ranking(u.getNombre(), u.obtenerProgreso()->getRacha()->getMaxima())
+        );
+        aux = aux->sig;
+    }
 
-    _sleep(500);
-    system("cls");
+    // 2) Insertar en el AVL: cada insercion es O(log n) GARANTIZADO
+    //    (el arbol se rebalancea solo con rotaciones).             O(n log n)
+    ArbolAVL<Ranking> arbolAVL(compararRacha);
+    auto* nodoLista = ranking.inicio();
+    while (nodoLista != nullptr) {
+        arbolAVL.insertar(nodoLista->elem);
+        nodoLista = nodoLista->sig;
+    }
+
+    // 3) Recorrido inorden: entrega el ranking ya ordenado         O(n)
+    vector<vector<string>> filasRanking;
+    int pos = 1;
+    arbolAVL.inorden([&pos, &filasRanking](Ranking r) {
+        filasRanking.push_back({
+            to_string(pos++),
+            r.getNombre(),
+            to_string(r.getMejorRacha()),
+            r.clasificacion()
+            });
+        });
+
+    Tabla::imprimir("RANKING DE RACHAS (ARBOL AVL BALANCEADO)",
+        { "#", "Usuario", "Racha", "Categoria" }, filasRanking);
+
+    // 4) Evidencia del balanceo: comparar contra el ABB comun
+    ArbolBinario<Ranking> arbolABB(compararRacha);
+    nodoLista = ranking.inicio();
+    while (nodoLista != nullptr) {
+        arbolABB.insertar(nodoLista->elem);
+        nodoLista = nodoLista->sig;
+    }
+
+    Banner::lineaCentrada("Nodos: " + to_string(arbolAVL.tam())
+        + " | Altura AVL: " + to_string(arbolAVL.altura())
+        + " | Altura ABB sin balancear: " + to_string(arbolABB.altura()),
+        "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("Rotaciones aplicadas por el AVL: "
+        + to_string(arbolAVL.getRotaciones()), "\033[38;2;55;55;55m");
+    Banner::lineaCentrada(string("Arbol balanceado (|FE| <= 1 en todo nodo): ")
+        + (arbolAVL.estaBalanceado() ? "SI" : "NO"), "\033[38;2;46;125;50m");
+
+    int oro = arbolAVL.contarSi([](Ranking r) { return r.clasificacion() == "Oro"; });   // O(n)
+    Banner::lineaCentrada("Usuarios en categoria Oro (racha >= 10): " + to_string(oro),
+        "\033[38;2;55;55;55m");
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+//  GENERADOR DE DATASET (datos aleatorios)
+//
+//  Permite generar N usuarios con datos aleatorios (nombre, email,
+//  niveles de idioma, racha y puntaje) para poblar la aplicacion y
+//  probar las estructuras de datos (arboles, hash, ordenamientos,
+//  heap, grafo) con volumenes grandes sin registrar uno por uno.
+//  Los datos se persisten con ArchivoManager como en el registro
+//  normal de usuarios.
+// ═══════════════════════════════════════════════════════════════
+void Sistema::generarDatasetAleatorio() {
+
+    // Pools de nombres y apellidos para combinar aleatoriamente
+    const vector<string> nombres = {
+        "Luis", "Maria", "Jose", "Ana", "Carlos", "Lucia", "Jorge", "Rosa",
+        "Pedro", "Carmen", "Diego", "Sofia", "Miguel", "Valeria", "Andres",
+        "Camila", "Ricardo", "Fernanda", "Hugo", "Daniela"
+    };
+    const vector<string> apellidos = {
+        "Garcia", "Torres", "Quispe", "Ramos", "Flores", "Rojas", "Diaz",
+        "Vargas", "Castro", "Mendoza", "Paredes", "Salazar", "Chavez", "Luna"
+    };
+    const vector<string> dominios = { "gmail.com", "hotmail.com", "outlook.com", "upc.edu.pe" };
+
+    int cantidad;
+    Banner::promptCentrado("Cuantos usuarios aleatorios desea generar? (1-100): ");
+    cin >> cantidad;
+
+    if (cin.fail() || cantidad < 1 || cantidad > 100) {
+        cin.clear();
+        cin.ignore(1000, '\n');
+        Banner::lineaCentrada("Cantidad invalida. Debe ser entre 1 y 100.", "\033[38;2;200;40;40m");
+        return;
+    }
+
+    srand((unsigned)time(nullptr));   // semilla para datos distintos en cada ejecucion
+
+    int generados = 0;
+    int intentos = 0;
+
+    while (generados < cantidad && intentos < cantidad * 20) {
+        intentos++;
+
+        // Nombre aleatorio: Nombre + Apellido + sufijo numerico
+        string nombre = nombres[rand() % nombres.size()]
+            + apellidos[rand() % apellidos.size()]
+            + to_string(rand() % 1000);
+
+        // Verificar que no exista (mismo criterio que registrarUsuario)
+        bool existe = false;
+        auto* aux = usuarios.inicio();
+        while (aux != nullptr) {
+            if (aux->elem.getNombre() == nombre) { existe = true; break; }
+            aux = aux->sig;
+        }
+        if (existe) continue;
+
+        // Email derivado del nombre + dominio aleatorio
+        string email = nombre + "@" + dominios[rand() % dominios.size()];
+
+        // Niveles de idioma aleatorios (1-3), igual que el registro manual
+        int ni = 1 + rand() % 3;
+        int np = 1 + rand() % 3;
+        int ni2 = 1 + rand() % 3;
+
+        Usuario nuevo((int)usuarios.tam() + 1, nombre, email, ni, np, ni2);
+
+        // Progreso aleatorio: racha y puntaje para alimentar
+        // rankings (ABB/AVL), heap y ordenamientos
+        int mejorRacha = rand() % 21;            // 0 a 20
+        int puntaje = rand() % 501;           // 0 a 500 XP
+        nuevo.obtenerProgreso()->setMejorRacha(mejorRacha);
+        nuevo.agregarPuntaje(puntaje);
+
+        usuarios.insertarFinal(nuevo);
+        generados++;
+    }
+
+    // Persistencia igual que en registrarUsuario()
+    archivoMgr.guardarUsuarios(usuarios);
+    archivoMgr.guardarNivelesIngles(usuarios);
+    archivoMgr.guardarNivelesItaliano(usuarios);
+    archivoMgr.guardarNivelesPortugues(usuarios);
+    archivoMgr.guardarNivelesRacha(usuarios);
+
+    Banner::lineaCentrada("Se generaron " + to_string(generados)
+        + " usuarios aleatorios correctamente.", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada("Total de usuarios en el sistema: "
+        + to_string(usuarios.tam()), "\033[38;2;55;55;55m");
 }

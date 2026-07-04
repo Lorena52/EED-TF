@@ -17,6 +17,7 @@
 #include "Ordenamiento2.hpp"
 #include "HashMap.hpp"
 #include "ArbolBinario.hpp"
+#include "ArbolAVL.hpp"
 #include "Banner.h"
 #include "Heap.hpp"
 #include "Diseño.h"
@@ -72,9 +73,12 @@ public:
     void rankingNombreQuickSort();
     //heap 
     void top3RachasHeap();
-	//piloto grafo
+    //piloto grafo
     void verMallaAprendizaje();
-    // intefaz 
-    void pantallaBienvenida();
-   
+
+    // Arbol binario BALANCEADO (AVL): ranking de rachas con altura O(log n)
+    void mostrarRankingRachasAVL();
+
+    // GENERADOR DE DATASET: crea usuarios con datos aleatorios
+    void generarDatasetAleatorio();
 };

@@ -1,4 +1,4 @@
-leito;3
-2;0
-Kassandra;0
+leito;10
+Kassandra;6
 juan;0
+shayli;0
