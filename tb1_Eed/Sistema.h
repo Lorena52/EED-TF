@@ -74,4 +74,7 @@ public:
     void top3RachasHeap();
 	//piloto grafo
     void verMallaAprendizaje();
+    // intefaz 
+    void pantallaBienvenida();
+   
 };

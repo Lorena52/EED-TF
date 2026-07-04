@@ -8,6 +8,7 @@
 #include <cstdlib>   
 
 
+
 //COLORES AGREGADOS GRACIAS A LA IA
 #define RESET   "\033[0m"
 #define RED     "\033[31m"
@@ -46,7 +47,9 @@ void Sistema::pausar() {
 }
 
 void Sistema::iniciar() {
+    pantallaBienvenida();
     menuPrincipal();
+
 }
 
 
@@ -76,7 +79,7 @@ void Sistema::menuPrincipal() {
         Banner::lineaCentrada("12. Top 3 usuarios con mayor racha (Heap)", VERDE_T);
         Banner::lineaCentrada("13. Mapa de aprendizaje (Grafo)", VERDE_T);
         Banner::lineaCentrada("14. Salir", ROJO_T);
-        Diseño::mostrar();
+        Diseño::Pinguino();
         Banner::lineaVacia();
         Banner::promptCentrado("Seleccione una opcion y presione ENTER: ");
         cin >> opcion;
@@ -718,4 +721,35 @@ void Sistema::verMallaAprendizaje() {
         if (opcion != 0)
             pausar();
     } while (opcion != 0);
+}
+
+//interfaz
+void Sistema::pantallaBienvenida() {
+
+    system("cls");
+    cout << "\n\n";
+    cout << endl << endl << endl << endl << endl << endl << endl << endl;
+    Diseño::Logo();
+
+    
+
+
+   
+    Banner::lineaVacia();
+    Banner::lineaCentrada("Bienvenido a AprendeGo!", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada("Cargando...", "\033[38;2;46;125;50m");
+
+  
+
+    cout << "                                  [";
+
+    for (int i = 0; i < 20; i++) {
+        cout << "\033[42m  \033[0m";   
+        _sleep(120);
+    }
+
+    cout << "]";
+
+    _sleep(500);
+    system("cls");
 }
