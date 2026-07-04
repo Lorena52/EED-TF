@@ -99,20 +99,20 @@ int MallaLecciones::idiomaIdxPorNombre(const string& nombre) const {
 }
 
 bool MallaLecciones::esNivelDesbloqueado(int idiomaIdx, int nivelActual, int nivelDeseado) {
-    if (idiomaIdx < 0 || idiomaIdx >= IDIOMAS) return false;
-    if (nivelDeseado <= nivelActual) return true;   // puede repetir tambien retrocede 
+    if (idiomaIdx < 0 || idiomaIdx >= IDIOMAS) return false;        // (1) O(1)
+    if (nivelDeseado <= nivelActual) return true;                   // (2) O(1)
 
-    int origen = indice(idiomaIdx, nivelActual);
-    int destino = indice(idiomaIdx, nivelDeseado);
-    return g->ady[origen][destino] != 0;  
+    int origen = indice(idiomaIdx, nivelActual);                     // (3) O(1)
+    int destino = indice(idiomaIdx, nivelDeseado);                   // (4) O(1)
+    return g->ady[origen][destino] != 0;                            // (5) O(1)
 }
 
 string MallaLecciones::mensajeBloqueo(int idiomaIdx, int nivelActual, int nivelDeseado) {
-    int destino = indice(idiomaIdx, nivelDeseado);
-    string msg = "No puedes pasar directo a '" + g->obtener(destino).detalle() +
+    int destino = indice(idiomaIdx, nivelDeseado);                                       // (1) O(1)    
+    string msg = "No puedes pasar directo a '" + g->obtener(destino).detalle() +         // (2) O(1)
         "'. Segun la malla de lecciones, primero debes completar:\n";
-    for (int i = 0; i < g->n; i++)
-        if (g->ady[i][destino] != 0)
-            msg += "      - " + g->obtener(i).detalle() + "\n";
+    for (int i = 0; i < g->n; i++)                                                       // (3) O(V)
+        if (g->ady[i][destino] != 0)                                                    // (4) O(1)
+            msg += "      - " + g->obtener(i).detalle() + "\n";                          // (5) O(1)
     return msg;
 }

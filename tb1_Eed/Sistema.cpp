@@ -418,20 +418,18 @@ void Sistema::mostrarRankingRachas() {
     archivoMgr.guardarNivelesRacha(usuarios);
     Banner::lineaCentrada("Ranking guardado correctamente.", "[38;2;46;125;50m");
 
-    // ESTRUCTURA DE DATOS: ARBOL BINARIO DE BUSQUEDA (ABB)
-    // Cada Ranking entra al ABB con criterio "mayor racha primero";
-    // el recorrido inorden devuelve el ranking ya ordenado.
-    ArbolBinario<Ranking> arbolRanking(compararRacha);
+   
+    ArbolBinario<Ranking> arbolRanking(compararRacha);     // (1) O(1)
     auto* nodoLista = ranking.inicio();
-    while (nodoLista != nullptr) {
-        arbolRanking.insertar(nodoLista->elem);
+    while (nodoLista != nullptr) {                         // (2) O(n log n) prom. / O(n²) peor caso
+        arbolRanking.insertar(nodoLista->elem);            // cada insertar: O(log n) prom. / O(n) peor caso
         nodoLista = nodoLista->sig;
     }
 
     vector<vector<string>> filasRanking;
     int pos = 1;
-    arbolRanking.inorden([&pos, &filasRanking](Ranking r) {
-        filasRanking.push_back({
+    arbolRanking.inorden([&pos, &filasRanking](Ranking r) {       // (3) O(n)
+        filasRanking.push_back({                                  
             to_string(pos++),
             r.getNombre(),
             to_string(r.getMejorRacha()),
@@ -443,9 +441,9 @@ void Sistema::mostrarRankingRachas() {
         { "#", "Usuario", "Racha", "Categoria" }, filasRanking);
 
     Banner::lineaCentrada("Altura del arbol: " + to_string(arbolRanking.altura())
-        + " | Nodos: " + to_string(arbolRanking.tam()), "[38;2;55;55;55m");
+        + " | Nodos: " + to_string(arbolRanking.tam()), "[38;2;55;55;55m");  //// (4) O(n) cada una (si recorren el árbol)
 
-    int oro = arbolRanking.contarSi([](Ranking r) { return r.clasificacion() == "Oro"; });
+    int oro = arbolRanking.contarSi([](Ranking r) { return r.clasificacion() == "Oro"; });    // (5) O(n)
     Banner::lineaCentrada("Usuarios en categoria Oro (racha >= 10): " + to_string(oro), "[38;2;55;55;55m");
 
     Banner::lineaCentrada("Usuarios que alcanzaron nivel avanzado (3): "
@@ -554,33 +552,7 @@ void Sistema::ordenarUsuariosPorNivel() {
         Banner::lineaCentrada("- " + u.getNombre() + " (nivel global: " + to_string(u.nivelGlobal()) + ")", "\033[38;2;55;55;55m");
     }
 }
-// NUEVA: busca un usuario por nombre usando una tabla hash (HashMap).
-// A diferencia de buscarUsuario (que recorre la lista nodo por nodo, O(n)),
-// aqui se indexa cada usuario por su nombre y la busqueda es O(1) en promedio.
-// ===============================================================
-// ANALISIS BIG O
-// Complejidad temporal: O(n)
-//
-// Explicacion:
-// 1. Se recorre la lista de usuarios una sola vez para construir
-//    un indice utilizando un HashMap, insertando cada usuario
-//    segun su nombre como clave. Este recorrido tiene costo O(n).
-//
-// 2. Una vez construido el HashMap, la busqueda del usuario por
-//    nombre tiene una complejidad promedio de O(1), ya que el
-//    acceso a una tabla hash es constante en promedio.
-//
-// 3. Las operaciones de impresion de datos son constantes O(1).
-//
-// Por lo tanto, la complejidad total de la funcion esta dominada
-// por el recorrido inicial de todos los usuarios:
-//
-//              O(n) + O(1) + O(1) = O(n)
-//
-// Estructura de datos utilizada:
-// - ListaDoble<Usuario> para recorrer los usuarios.
-// - HashMap<string, Usuario*> para realizar la busqueda eficiente.
-// ===============================================================
+
 void Sistema::buscarUsuarioHash() {
     Banner::lineaCentrada("--- Buscar usuario por nombre (Hash) ---", "\033[38;2;55;55;55m");
 
@@ -589,23 +561,22 @@ void Sistema::buscarUsuarioHash() {
         return;
     }
 
-    // 1) Construyo el indice: clave = nombre, valor = puntero al Usuario.
-    HashMap<string, Usuario*> indice;
-    auto* aux = usuarios.inicio();
-    while (aux != nullptr) {
-        indice.insertar(aux->elem.getNombre(), &aux->elem);
-        aux = aux->sig;
+   
+    HashMap<string, Usuario*> indice;                                                 // (1) O(1)
+    auto* aux = usuarios.inicio();                                                    // (2) O(1)  
+    while (aux != nullptr) {                                                          // (3) O(n)
+        indice.insertar(aux->elem.getNombre(), &aux->elem);                           // (4) O(1) promedio
+        aux = aux->sig;                                                               // (5) O(1)
     }
 
-    // 2) Pido el nombre a buscar.
+
     string nombreBuscado;
     Banner::promptCentrado("Ingrese el nombre del usuario: ");
     cin.ignore();
-    getline(cin, nombreBuscado);
+    getline(cin, nombreBuscado);                                                      // (6) O(1)
 
-    // 3) Busqueda directa en la tabla hash.
     Usuario* encontrado = nullptr;
-    if (indice.buscar(nombreBuscado, encontrado) && encontrado != nullptr) {
+    if (indice.buscar(nombreBuscado, encontrado) && encontrado != nullptr) {         // (7) O(1) promedio
         Banner::lineaCentrada("Usuario encontrado:", "\033[38;2;46;125;50m");
         Banner::lineaCentrada("Nombre: " + encontrado->getNombre(), "\033[38;2;55;55;55m");
         Banner::lineaCentrada("Email: " + encontrado->getEmail(), "\033[38;2;55;55;55m");
@@ -620,37 +591,11 @@ void Sistema::buscarUsuarioHash() {
     }
 }
 
-// MERGE SORT: ranking por XP 
+
 bool compararPorXpDesc(Usuario a, Usuario b) {
     return a.obtenerProgreso()->getPuntosTotales() > b.obtenerProgreso()->getPuntosTotales();
 }
-// ===============================================================
-// ANALISIS BIG O
-// Complejidad temporal: O(n log n)
-//
-// Explicacion:
-// 1. Primero se recorren todos los usuarios para copiarlos desde
-//    la ListaDoble hacia un vector. Este recorrido tiene un costo
-//    de O(n).
-//
-// 2. Luego el vector es ordenado mediante el algoritmo MergeSort,
-//    cuya complejidad temporal es O(n log n), ya que divide el
-//    conjunto de datos en mitades y posteriormente las fusiona
-//    de manera ordenada.
-//
-// 3. Finalmente se recorre el vector ordenado para mostrar el
-//    ranking de usuarios, lo cual requiere O(n).
-//
-// La complejidad dominante corresponde al algoritmo MergeSort:
-//
-//          O(n) + O(n log n) + O(n)
-//                  = O(n log n)
-//
-// Estructuras de datos utilizadas:
-// - ListaDoble<Usuario>
-// - Vector<Usuario>
-// - Algoritmo MergeSort
-// =============================================================== 
+
 void Sistema::rankingXpMergeSort() {
     if (usuarios.estaVacia()) {
         Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
@@ -658,18 +603,18 @@ void Sistema::rankingXpMergeSort() {
     }
 
 
-    vector<Usuario> vec;
+    vector<Usuario> vec;                                                     // (1) O(1)
     auto* aux = usuarios.inicio();
-    while (aux != nullptr) {
+    while (aux != nullptr) {                                                 // (2) O(n)
         vec.push_back(aux->elem);
         aux = aux->sig;
     }
 
-    mergeSort(vec, compararPorXpDesc);
+    mergeSort(vec, compararPorXpDesc);                                      // (3) O(n log n)
 
 
     Banner::lineaCentrada("=== Ranking XP (MergeSort - mayor a menor) ===", "\033[38;2;46;125;50m");
-    for (int i = 0; i < (int)vec.size(); i++) {
+    for (int i = 0; i < (int)vec.size(); i++) {                              // (4) O(n)
         Banner::lineaCentrada(to_string(i + 1) + ". " + vec[i].getNombre() + "  |  XP: " + to_string(vec[i].obtenerProgreso()->getPuntosTotales()), "\033[38;2;55;55;55m");
     }
 }
@@ -685,84 +630,24 @@ bool compararRachaHeap(Usuario a, Usuario b)
     return a.obtenerProgreso()->getRacha()->getMaxima() >
         b.obtenerProgreso()->getRacha()->getMaxima();
 }
-// ===============================================================
-// ANALISIS BIG O
-// Complejidad temporal:
-// - Caso promedio: O(n log n)
-// - Peor caso: O(n²)
-//
-// Explicacion:
-// 1. Se copian los usuarios desde la ListaDoble hacia un vector,
-//    lo que requiere un recorrido O(n).
-//
-// 2. El vector se ordena mediante QuickSort utilizando el nombre
-//    del usuario como criterio de comparación. En promedio,
-//    QuickSort trabaja en O(n log n); sin embargo, en el peor
-//    caso puede alcanzar O(n²) dependiendo de la elección del
-//    pivote.
-//
-// 3. Finalmente se imprime el ranking ordenado recorriendo el
-//    vector una sola vez (O(n)).
-//
-// La complejidad dominante es:
-//
-//          O(n log n)
-//
-// Estructuras utilizadas:
-// - ListaDoble<Usuario>
-// - Vector<Usuario>
-// - Algoritmo QuickSort
-// ===============================================================
 void Sistema::rankingNombreQuickSort() {
     if (usuarios.estaVacia()) {
         Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
         return;
     }
 
-    // 1. Volcar ListaDoble -> vector
-    vector<Usuario> vec;
-    auto* aux = usuarios.inicio();
+    vector<Usuario> vec;                                         // (1) O(1)
+    auto* aux = usuarios.inicio();                               // (2) O(n)
     while (aux != nullptr) {
         vec.push_back(aux->elem);
         aux = aux->sig;
     }
-
-    // 2. Ordenar con QuickSort (plantilla del profe)
-    quickSort(vec, compararPorNombreAlfabetico);
-
-    // 3. Mostrar resultado
+    quickSort(vec, compararPorNombreAlfabetico);                 // (3) O(n log n) prom. / O(n²) peor caso
     Banner::lineaCentrada("=== Usuarios por nombre (QuickSort - A-Z) ===", "\033[38;2;46;125;50m");
-    for (int i = 0; i < (int)vec.size(); i++) {
+    for (int i = 0; i < (int)vec.size(); i++) {                 // (4) O(n)
         Banner::lineaCentrada(to_string(i + 1) + ". " + vec[i].getNombre() + "  |  Nivel global: " + to_string(vec[i].nivelGlobal()), "\033[38;2;55;55;55m");
     }
 }
-//heap : 
-// ===============================================================
-// ANALISIS BIG O
-// Complejidad temporal: O(n log n)
-//
-// Explicacion:
-// 1. Se recorre la ListaDoble de usuarios para insertar cada uno
-//    dentro de un Heap. Cada insercion requiere O(log n), por lo
-//    que insertar los n usuarios tiene un costo total de
-//    O(n log n).
-//
-// 2. Una vez construido el Heap, se extraen los tres usuarios con
-//    mayor racha. Cada extraccion tiene una complejidad O(log n),
-//    por lo que las tres extracciones requieren
-//    3 * O(log n), equivalente a O(log n).
-//
-// 3. La complejidad total esta dominada por la construccion del
-//    Heap, por lo que:
-//
-//          O(n log n) + O(log n)
-//                  = O(n log n)
-//
-// Estructuras de datos utilizadas:
-// - ListaDoble<Usuario> para recorrer los usuarios.
-// - Heap (cola de prioridad) para mantener ordenados los usuarios
-//   segun su mejor racha y obtener rapidamente los de mayor valor.
-// ===============================================================
 void Sistema::top3RachasHeap()
 {
     if (usuarios.estaVacia())
@@ -773,11 +658,11 @@ void Sistema::top3RachasHeap()
         return;
     }
 
-    Heap<Usuario> heap(compararRachaHeap);
+    Heap<Usuario> heap(compararRachaHeap);                          // (1) O(1)
 
     auto* aux = usuarios.inicio();
 
-    while (aux != nullptr)
+    while (aux != nullptr)                                         // (2) O(n log n)
     {
         heap.insertar(aux->elem);
         aux = aux->sig;
@@ -787,9 +672,9 @@ void Sistema::top3RachasHeap()
 
     int puesto = 1;
 
-    while (!heap.estaVacia() && puesto <= 3)
+    while (!heap.estaVacia() && puesto <= 3)                        // (3) O(log n)
     {
-        Usuario u = heap.extraer();
+        Usuario u = heap.extraer();                                //     3 extracciones, cada una O(log n)
 
         Banner::lineaCentrada( to_string(puesto) + ". " + u.getNombre() +  "  |  Mejor racha: " + to_string( u.obtenerProgreso()->getRacha()->getMaxima() ), "\033[38;2;55;55;55m" );
 

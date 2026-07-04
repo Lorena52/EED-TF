@@ -102,23 +102,23 @@ public:
         return dist;
     }
 
-    // ORDEN TOPOLOGICO (grados de entrada): respeta las dependencias
+    
     vector<int> ordenarPorRequisitos() {
-        vector<int> entran(n, 0);
-        for (int i = 0; i < n; i++)
+        vector<int> entran(n, 0);                           // (1) O(V)
+        for (int i = 0; i < n; i++)                         // (2) O(V²)
             for (int j = 0; j < n; j++)
                 if (ady[i][j] != 0) entran[j]++;
 
         queue<int> cola;
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n; i++)                          // (3) O(V)
             if (entran[i] == 0) cola.push(i);
 
         vector<int> orden;
-        while (!cola.empty()) {
+        while (!cola.empty()) {                            // (4) O(V²)
             int actual = cola.front();
             cola.pop();
             orden.push_back(actual);
-            for (int v = 0; v < n; v++)
+            for (int v = 0; v < n; v++)                      //     recorre TODA la fila por cada nodo
                 if (ady[actual][v] != 0 && --entran[v] == 0)
                     cola.push(v);
         }
