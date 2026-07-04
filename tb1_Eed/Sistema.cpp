@@ -126,8 +126,17 @@ void Sistema::mostrarBarraProgreso(int progreso, int total) {
 void Sistema::registrarUsuario() {
     string nombre, email;
     int ni, np, ni2;
+    Banner::lineaVacia();
+    Banner::lineaCentrada("==============================================", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada("        REGISTRO DE NUEVO ESTUDIANTE", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada("==============================================", "\033[38;2;46;125;50m");
+    Banner::lineaVacia();
 
-    Banner::promptCentrado("Ingrese nombre: ");
+    Banner::lineaCentrada("Complete la siguiente informacion para crear", "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("su cuenta en AprendeGo!", "\033[38;2;55;55;55m");
+    Banner::lineaVacia();
+
+    Banner::promptCentrado("|Ingrese nombre: ");
     cin >> nombre;
 
     ListaDoble<Usuario>::Nodo* aux = usuarios.inicio();
@@ -153,16 +162,24 @@ void Sistema::registrarUsuario() {
     Usuario nuevo(usuarios.tam() + 1, nombre, email, ni, np, ni2);
     usuarios.insertarFinal(nuevo);
 
+    cout << endl << endl ;
+
+    cout << "\n\n";
+     Diseño::DiseñoSesion();
+     cout << endl;
+     Banner::lineaCentrada("   "+ nombre + ", estoy listo para aprender contigo! :)", "\033[38;2;55;55;55m");
+     cout << endl << endl;
     archivoMgr.guardarUsuarios(usuarios);
     //_____
     archivoMgr.guardarNivelesIngles(usuarios);
     //ita
     archivoMgr.guardarNivelesItaliano(usuarios);
     //port
-
+    
+    
     archivoMgr.guardarNivelesPortugues(usuarios);
     archivoMgr.guardarNivelesRacha(usuarios);
-    Banner::lineaCentrada("Usuario registrado con exito.", "\033[38;2;55;55;55m");
+    
 }
 
 

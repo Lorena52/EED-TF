@@ -9,12 +9,13 @@ public:
 
     static string color(int v) {
         switch (v) {
+        case 1: return "\033[41m";              // rojo
         case 2: return "\033[48;2;180;180;180m"; // plomo
         case 3: return "\033[42m";               // verde
-        case 5: return "\033[48;2;255;140;0m";  // naranja
-        case 6: return "\033[40m";              // negro
-        case 7: return "\033[48;2;255;182;193m";// rosado
-        default: return "\033[107m";            // blanco
+        case 5: return "\033[48;2;255;140;0m";   // naranja
+        case 6: return "\033[40m";               // negro
+        case 7: return "\033[48;2;255;182;193m"; // rosado
+        default: return "\033[107m";             // blanco
         }
     }
 
@@ -54,6 +55,7 @@ public:
 
         cout << "\033[0m";
     }
+   
 
     static void Pinguino() {
 
@@ -125,7 +127,7 @@ public:
 
         for (int f = 0; f < 22; f++) {
 
-            // Espacios para centrar horizontalmente
+           
             cout << string(35, ' ');
 
             for (int c = 0; c < 21; c++) {
@@ -141,6 +143,46 @@ public:
         cout << "\033[0m";
     }
 
+
+ static void DiseñoSesion() {
+    
+    
+        int logo[16][13] =
+        {
+        {0,0,0,0,0,1,0,1,0,0,0,0,0},
+        {0,0,0,0,1,1,1,1,1,0,0,0,0},
+        {0,0,0,0,1,1,1,1,1,0,0,0,0},
+        {0,0,0,0,0,1,1,1,0,0,0,0,0},
+        {0,0,0,0,0,0,1,0,0,0,0,0,0},
+        {0,0,0,0,6,6,6,6,6,0,0,0,0},
+        {0,0,0,6,0,0,0,0,0,6,0,0,0},
+        {0,0,6,6,0,0,0,0,0,0,6,0,0},
+        {0,0,6,0,0,0,0,0,0,0,6,0,0},
+        {0,0,6,0,6,0,5,0,6,0,6,0,0},
+        {0,0,6,7,0,5,5,5,0,7,6,0,0},
+        {0,6,6,0,0,0,0,0,0,0,6,6,0},
+        {6,6,6,0,0,0,0,0,0,0,6,6,6},
+        {0,0,6,0,0,0,0,0,0,0,6,0,0},
+        {0,0,0,6,0,0,0,0,0,6,0,0,0},
+        {0,0,5,5,6,6,6,6,6,5,5,0,0}
+        };
+        cout << "\033[107m";
+
+        for (int f = 0; f < 16; f++) {
+
+            cout << string(45, ' ');  
+
+            for (int c = 0; c < 13; c++) {
+                cout << color(logo[f][c]) << "  ";
+            }
+
+            cout << "\033[107m";
+            cout << string(80, ' ');
+            cout << '\n';
+        }
+
+        cout << "\033[0m";
+    }
 
 
 };
