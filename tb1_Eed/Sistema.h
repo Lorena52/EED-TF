@@ -81,4 +81,7 @@ public:
 
     // GENERADOR DE DATASET: crea usuarios con datos aleatorios
     void generarDatasetAleatorio();
+       // intefaz 
+    void pantallaBienvenida();
+   
 };

@@ -47,6 +47,7 @@ void Sistema::pausar() {
 }
 
 void Sistema::iniciar() {
+    pantallaBienvenida();
     menuPrincipal();
 }
 
@@ -79,7 +80,7 @@ void Sistema::menuPrincipal() {
         Banner::lineaCentrada("14. Ranking de rachas (Arbol AVL balanceado)", VERDE_T);
         Banner::lineaCentrada("15. Generar datos aleatorios (Dataset)", VERDE_T);
         Banner::lineaCentrada("16. Salir", ROJO_T);
-        Diseño::mostrar();
+        Diseño::Pinguino();
         Banner::lineaVacia();
         Banner::promptCentrado("Seleccione una opcion y presione ENTER: ");
         cin >> opcion;
@@ -128,8 +129,17 @@ void Sistema::mostrarBarraProgreso(int progreso, int total) {
 void Sistema::registrarUsuario() {
     string nombre, email;
     int ni, np, ni2;
+    Banner::lineaVacia();
+    Banner::lineaCentrada("==============================================", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada("        REGISTRO DE NUEVO ESTUDIANTE", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada("==============================================", "\033[38;2;46;125;50m");
+    Banner::lineaVacia();
 
-    Banner::promptCentrado("Ingrese nombre: ");
+    Banner::lineaCentrada("Complete la siguiente informacion para crear", "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("su cuenta en AprendeGo!", "\033[38;2;55;55;55m");
+    Banner::lineaVacia();
+
+    Banner::promptCentrado("|Ingrese nombre: ");
     cin >> nombre;
 
     ListaDoble<Usuario>::Nodo* aux = usuarios.inicio();
@@ -155,6 +165,13 @@ void Sistema::registrarUsuario() {
     Usuario nuevo(usuarios.tam() + 1, nombre, email, ni, np, ni2);
     usuarios.insertarFinal(nuevo);
 
+    cout << endl << endl;
+
+    cout << "\n\n";
+    Diseño::DiseñoSesion();
+    cout << endl;
+    Banner::lineaCentrada("   " + nombre + ", estoy listo para aprender contigo! :)", "\033[38;2;55;55;55m");
+    cout << endl << endl;
     archivoMgr.guardarUsuarios(usuarios);
     //_____
     archivoMgr.guardarNivelesIngles(usuarios);
@@ -162,9 +179,10 @@ void Sistema::registrarUsuario() {
     archivoMgr.guardarNivelesItaliano(usuarios);
     //port
 
+
     archivoMgr.guardarNivelesPortugues(usuarios);
     archivoMgr.guardarNivelesRacha(usuarios);
-    Banner::lineaCentrada("Usuario registrado con exito.", "\033[38;2;55;55;55m");
+
 }
 
 
@@ -889,4 +907,35 @@ void Sistema::generarDatasetAleatorio() {
         + " usuarios aleatorios correctamente.", "\033[38;2;46;125;50m");
     Banner::lineaCentrada("Total de usuarios en el sistema: "
         + to_string(usuarios.tam()), "\033[38;2;55;55;55m");
+}
+
+//interfaz
+void Sistema::pantallaBienvenida() {
+
+    system("cls");
+    cout << "\n\n";
+    cout << endl << endl << endl << endl << endl << endl << endl << endl;
+    Diseño::Logo();
+
+
+
+
+
+    Banner::lineaVacia();
+    Banner::lineaCentrada("Bienvenido a AprendeGo!", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada("Cargando...", "\033[38;2;46;125;50m");
+
+
+
+    cout << "                                  [";
+
+    for (int i = 0; i < 20; i++) {
+        cout << "\033[42m  \033[0m";
+        _sleep(120);
+    }
+
+    cout << "]";
+
+    _sleep(500);
+    system("cls");
 }
