@@ -116,3 +116,30 @@ string MallaLecciones::mensajeBloqueo(int idiomaIdx, int nivelActual, int nivelD
             msg += "      - " + g->obtener(i).detalle() + "\n";                          // (5) O(1)
     return msg;
 }
+// ==========================================================
+//  siguienteNivel  -  usa el GRAFO (matriz de adyacencia)
+//  para encontrar el nodo destino conectado desde el nodo
+//  (idiomaIdx, nivelActual). Al recorrer la fila de adyacencia
+//  del origen, el primer destino con arista != 0 dentro del
+//  mismo idioma es el siguiente nivel desbloqueado.
+// ==========================================================
+int MallaLecciones::siguienteNivel(int idiomaIdx, int nivelActual) {
+    if (idiomaIdx < 0 || idiomaIdx >= IDIOMAS) return -1;
+    if (nivelActual < 1 || nivelActual >= NIVELES) return -1;
+
+    int origen = indice(idiomaIdx, nivelActual);
+    for (int destino = 0; destino < g->n; destino++) {
+        if (g->ady[origen][destino] != 0) {
+            int idiomaDestino = destino / NIVELES;
+            int nivelDestino = (destino % NIVELES) + 1;
+            if (idiomaDestino == idiomaIdx) return nivelDestino;
+        }
+    }
+    return -1;
+}
+
+string MallaLecciones::detalleNodo(int idiomaIdx, int nivel) {
+    if (idiomaIdx < 0 || idiomaIdx >= IDIOMAS) return "";
+    if (nivel < 1 || nivel > NIVELES) return "";
+    return g->obtener(indice(idiomaIdx, nivel)).detalle();
+}

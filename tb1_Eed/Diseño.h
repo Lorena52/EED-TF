@@ -257,6 +257,50 @@ public:
      cout << "\033[0m";
  }
 
+ // Dibuja el diseño de sesion (corazón + pinguino) CENTRADO
+ // dinamicamente al ancho de la consola, en la posicion actual del cursor.
+ // No usa padding fijo, asi que no deja franjas negras.
+ static void DiseñoSesionCentrado(int anchoConsola) {
 
+     int logo[16][13] =
+     {
+     {0,0,0,0,0,1,0,1,0,0,0,0,0},
+     {0,0,0,0,1,1,1,1,1,0,0,0,0},
+     {0,0,0,0,1,1,1,1,1,0,0,0,0},
+     {0,0,0,0,0,1,1,1,0,0,0,0,0},
+     {0,0,0,0,0,0,1,0,0,0,0,0,0},
+     {0,0,0,0,6,6,6,6,6,0,0,0,0},
+     {0,0,0,6,0,0,0,0,0,6,0,0,0},
+     {0,0,6,6,0,0,0,0,0,0,6,0,0},
+     {0,0,6,0,0,0,0,0,0,0,6,0,0},
+     {0,0,6,0,6,0,5,0,6,0,6,0,0},
+     {0,0,6,7,0,5,5,5,0,7,6,0,0},
+     {0,6,6,0,0,0,0,0,0,0,6,6,0},
+     {6,6,6,0,0,0,0,0,0,0,6,6,6},
+     {0,0,6,0,0,0,0,0,0,0,6,0,0},
+     {0,0,0,6,0,0,0,0,0,6,0,0,0},
+     {0,0,5,5,6,6,6,6,6,5,5,0,0}
+     };
+
+     int anchoDiseno = 13 * 2;   // 13 cols * 2 chars por pixel
+     int izq = (anchoConsola - anchoDiseno) / 2;
+     if (izq < 0) izq = 0;
+     int der = anchoConsola - anchoDiseno - izq;
+     if (der < 0) der = 0;
+
+     for (int f = 0; f < 16; f++) {
+         cout << "\033[107m";                       // fondo blanco a la izquierda
+         for (int i = 0; i < izq; i++) cout << " ";
+
+         for (int c = 0; c < 13; c++) {
+             cout << color(logo[f][c]) << "  ";
+         }
+
+         cout << "\033[107m";                       // fondo blanco a la derecha
+         for (int i = 0; i < der; i++) cout << " ";
+         cout << "\n";
+     }
+     cout << "\033[0m\033[107m";                    // reset + fondo blanco
+ }
 
 };

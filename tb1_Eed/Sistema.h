@@ -33,7 +33,7 @@ private:
 
     Usuario* usuarioActivo;
     Usuario* buscarUsuario(const std::string& nombre);
-
+    int idiomaActualIdx = -1;   // 0=Ingles, 1=Italiano, 2=Portugues, -1=ninguno
     int contarUsuariosConNivel(int nivelMin);
 
     // piloto grafo 

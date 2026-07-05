@@ -56,5 +56,13 @@ public:
     int  idiomaIdxPorNombre(const string& nombre) const;  
 
     int  cantidadNodos() const;
-    void mostrarMenuIdiomas();          
+    void mostrarMenuIdiomas();     
+
+    // Usa la matriz de adyacencia del GRAFO para averiguar cual es
+    // el siguiente nivel desde (idiomaIdx, nivelActual).
+    // Devuelve el nuevo nivel (2 o 3), o -1 si ya esta en el maximo.
+    int siguienteNivel(int idiomaIdx, int nivelActual);
+
+    // Detalle textual del nodo (idioma, nivel) para el mensaje al usuario.
+    string detalleNodo(int idiomaIdx, int nivel);
 };

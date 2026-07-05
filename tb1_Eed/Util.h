@@ -52,7 +52,7 @@ void guardarArchivo(Estructura* est, string ruta, FuncSerializar serializar) {
         aux = aux->sig;
     }
     archivo.close();
-    Banner::lineaCentrada("Datos guardados en " + ruta, "\033[38;2;55;55;55m");
+  
 }
 
 
@@ -75,7 +75,6 @@ void guardarArchivoCircular(Estructura* est, string ruta, FuncSerializar seriali
         aux = aux->sig;
     }
     archivo.close();
-    Banner::lineaCentrada("Datos guardados en " + ruta, "\033[38;2;55;55;55m");
 }
 
 

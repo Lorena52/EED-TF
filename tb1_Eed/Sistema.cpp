@@ -162,23 +162,72 @@ void Sistema::registrarUsuario() {
         }
     } while (!esGmailValido(email));
 
-    Banner::promptCentrado("Nivel de Ingles (1-3): ");
-    cin >> ni;
-    Banner::promptCentrado("Nivel de Portugues (1-3): ");
-    cin >> np;
-    Banner::promptCentrado("Nivel de Italiano (1-3): ");
-    cin >> ni2;
+    // Lambda de validacion: nivel debe estar entre 1 y 3.
+     // Tambien atrapa entradas no numericas (letras, simbolos).
+    auto esNivelValido = [](int n) {
+        return n >= 1 && n <= 3;
+        };
+
+    // Nivel de Ingles
+    do {
+        Banner::promptCentrado("Nivel de Ingles (1-3): ");
+        cin >> ni;
+        if (cin.fail()) {                           // el usuario escribio algo no numerico
+            cin.clear();                            // limpia el flag de error
+            cin.ignore(1000, '\n');                 // descarta lo que quedo en el buffer
+            ni = -1;                                // fuerza a que falle la validacion
+        }
+        if (!esNivelValido(ni)) {
+            Banner::lineaCentrada("Nivel invalido. Debe ser 1, 2 o 3. Intente nuevamente.",
+                "\033[38;2;200;40;40m");
+        }
+    } while (!esNivelValido(ni));
+
+    // Nivel de Portugues
+    do {
+        Banner::promptCentrado("Nivel de Portugues (1-3): ");
+        cin >> np;
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            np = -1;
+        }
+        if (!esNivelValido(np)) {
+            Banner::lineaCentrada("Nivel invalido. Debe ser 1, 2 o 3. Intente nuevamente.",
+                "\033[38;2;200;40;40m");
+        }
+    } while (!esNivelValido(np));
+
+    // Nivel de Italiano
+    do {
+        Banner::promptCentrado("Nivel de Italiano (1-3): ");
+        cin >> ni2;
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore(1000, '\n');
+            ni2 = -1;
+        }
+        if (!esNivelValido(ni2)) {
+            Banner::lineaCentrada("Nivel invalido. Debe ser 1, 2 o 3. Intente nuevamente.",
+                "\033[38;2;200;40;40m");
+        }
+    } while (!esNivelValido(ni2));
 
     Usuario nuevo(usuarios.tam() + 1, nombre, email, ni, np, ni2);
     usuarios.insertarFinal(nuevo);
 
-    cout << endl << endl;
+    Banner::lineaVacia();
+    Banner::lineaVacia();
 
-    cout << "\n\n";
-    Diseño::DiseñoSesion();
-    cout << endl;
-    Banner::lineaCentrada("   " + nombre + ", estoy listo para aprender contigo! :)", "\033[38;2;55;55;55m");
-    cout << endl << endl;
+    // Dibujar el diseño de sesion CENTRADO al ancho de la consola.
+    // Se dibuja "en flujo" (donde este el cursor), sin posicion fija,
+    // asi nunca pisa nada ni queda cortado.
+    Diseño::DiseñoSesionCentrado(Banner::anchoConsola());
+
+    Banner::lineaVacia();
+    Banner::lineaCentrada(nombre + ", estoy listo para aprender contigo! :)",
+        "\033[38;2;55;55;55m");
+    Banner::lineaVacia();
     archivoMgr.guardarUsuarios(usuarios);
     //_____
     archivoMgr.guardarNivelesIngles(usuarios);
@@ -229,16 +278,19 @@ void Sistema::seleccionarIdioma() {
         idiomaSeleccionado = new Ingles();
         idiomaSeleccionado->setNivel(usuarioEncontrado->getNivelIngles());
         idiomaSeleccionado->cargarVocabulario();
+        idiomaActualIdx = 0;   // Ingles
         break;
     case 2:
         idiomaSeleccionado = new Portugues();
         idiomaSeleccionado->setNivel(usuarioEncontrado->getNivelPortugues());
         idiomaSeleccionado->cargarVocabulario();
+        idiomaActualIdx = 2;   // Portugues
         break;
     case 3:
         idiomaSeleccionado = new Italiano();
         idiomaSeleccionado->setNivel(usuarioEncontrado->getNivelItaliano());
         idiomaSeleccionado->cargarVocabulario();
+        idiomaActualIdx = 1;   // Italiano
         break;
     default:
         Banner::lineaCentrada("Opcion invalida.", "\033[38;2;200;40;40m");
@@ -311,6 +363,54 @@ void Sistema::iniciarLecciones() {
         idiomaSeleccionado->iniciarEjercicios(*(usuarioActivo->obtenerProgreso()));
 
         Banner::lineaCentrada("=== Leccion completada! ===", "\033[38;2;46;125;50m");
+        // ==========================================================
+        //  AVANCE DE NIVEL USANDO EL GRAFO (MallaLecciones)
+        //  El grafo tiene aristas nivel N -> nivel N+1 por idioma.
+        //  Al terminar la leccion, consultamos siguienteNivel() y si
+        //  existe conexion en el grafo, avanzamos al usuario y
+        //  mostramos el mensaje de transicion.
+        // ==========================================================
+        if (idiomaActualIdx >= 0 && usuarioActivo != nullptr) {
+            int nivelActual = idiomaSeleccionado->getNivel();
+            int nivelSiguiente = mallaLecciones.siguienteNivel(idiomaActualIdx, nivelActual);
+
+            Banner::lineaVacia();
+            Banner::lineaCentrada("======================================================",
+                "\033[38;2;46;125;50m");
+            Banner::lineaCentrada(
+                "Completaste el nivel " + to_string(nivelActual)
+                + " (" + mallaLecciones.detalleNodo(idiomaActualIdx, nivelActual) + ")",
+                "\033[38;2;46;125;50m");
+
+            if (nivelSiguiente > 0) {
+                // Actualizar el nivel en el usuario segun el idioma
+                switch (idiomaActualIdx) {
+                case 0: usuarioActivo->setNivelIngles(nivelSiguiente);    break;
+                case 1: usuarioActivo->setNivelItaliano(nivelSiguiente);  break;
+                case 2: usuarioActivo->setNivelPortugues(nivelSiguiente); break;
+                }
+                idiomaSeleccionado->setNivel(nivelSiguiente);
+                idiomaSeleccionado->cargarVocabulario();
+
+                Banner::lineaCentrada(
+                    "Avanzando automaticamente al nivel " + to_string(nivelSiguiente)
+                    + ": " + mallaLecciones.detalleNodo(idiomaActualIdx, nivelSiguiente),
+                    "\033[38;2;46;125;50m");
+                Banner::lineaCentrada(
+                    "(desbloqueado por el grafo de la malla de aprendizaje)",
+                    "\033[38;2;55;55;55m");
+            }
+            else {
+                Banner::lineaCentrada(
+                    "Felicitaciones! Dominaste completamente este idioma.",
+                    "\033[38;2;46;125;50m");
+                Banner::lineaCentrada(
+                    "(no hay mas nodos alcanzables desde tu nivel actual en el grafo)",
+                    "\033[38;2;55;55;55m");
+            }
+            Banner::lineaCentrada("======================================================",
+                "\033[38;2;46;125;50m");
+        }
     }
     else if (modo == 3) {
         idiomaSeleccionado->diccionario();
