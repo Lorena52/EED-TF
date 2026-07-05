@@ -57,8 +57,11 @@ public:
     void verProgreso();
     void actualizarNivelUsuario();
 
-    void ordenarUsuariosPorNombreAsc();
-    void mostrarRankingRachas();
+    void ordenarPorNombre();              // menu unificado (pregunta metodo)
+    void ordenarUsuariosPorNombreAsc();   // interna 1: MergeSort de lista
+    void mostrarRankingRachas();          // menu unificado (pregunta estructura)
+    void rankingRachasABB();              // interna 1: Arbol Binario comun (ABB)
+    void rankingRachasAVL();              // interna 2: Arbol AVL balanceado
 
     void mostrarUsuariosAvanzados();
     void mostrarTodosUsuarios();   // NUEVA: tabla con todos los usuarios registrados
@@ -77,12 +80,9 @@ public:
     //piloto grafo
     void verMallaAprendizaje();
 
-    // Arbol binario BALANCEADO (AVL): ranking de rachas con altura O(log n)
-    void mostrarRankingRachasAVL();
-
     // GENERADOR DE DATASET: crea usuarios con datos aleatorios
     void generarDatasetAleatorio();
-       // intefaz 
+    // intefaz 
     void pantallaBienvenida();
-   
+
 };

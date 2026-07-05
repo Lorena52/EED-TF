@@ -68,26 +68,21 @@ void Sistema::menuPrincipal() {
         Banner::lineaCentrada("2. Seleccionar idioma", VERDE_T);
         Banner::lineaCentrada("3. Ver progreso", VERDE_T);
         Banner::lineaCentrada("4. Actualizar nivel de usuario", VERDE_T);
-        Banner::lineaCentrada("5. Ver ranking de rachas", VERDE_T);
-        Banner::lineaCentrada("6. Ordenar usuarios por nombre ascendente", VERDE_T);
+        Banner::lineaCentrada("5. Ver ranking de rachas (elegir ABB o AVL)", VERDE_T);
+        Banner::lineaCentrada("6. Ordenar usuarios por nombre (elegir metodo)", VERDE_T);
         Banner::lineaCentrada("7. Ver usuarios de nivel avanzado", VERDE_T);
         Banner::lineaCentrada("8. Ordenar usuarios por nivel (Shell)", VERDE_T);
         Banner::lineaCentrada("9. Buscar usuario por nombre (Hash)", VERDE_T);
         Banner::lineaCentrada("10. Ranking XP con MergeSort", VERDE_T);
-        Banner::lineaCentrada("11. Ordenar por nombre con QuickSort", VERDE_T);
-        Banner::lineaCentrada("12. Top 3 usuarios con mayor racha (Heap)", VERDE_T);
-        Banner::lineaCentrada("13. Mapa de aprendizaje (Grafo)", VERDE_T);
-        Banner::lineaCentrada("14. Ranking de rachas (Arbol AVL balanceado)", VERDE_T);
-        Banner::lineaCentrada("15. Generar datos aleatorios (Dataset)", VERDE_T);
-        Banner::lineaCentrada("16. Mostrar todos los usuarios registrados", VERDE_T);
-        Banner::lineaCentrada("17. Salir", ROJO_T);
-        Diseño::PinguinoEnPosicion(13, 8);
+        Banner::lineaCentrada("11. Top 3 usuarios con mayor racha (Heap)", VERDE_T);
+        Banner::lineaCentrada("12. Mapa de aprendizaje (Grafo)", VERDE_T);
+        Banner::lineaCentrada("13. Generar datos aleatorios (Dataset)", VERDE_T);
+        Banner::lineaCentrada("14. Mostrar todos los usuarios registrados", VERDE_T);
+        Banner::lineaCentrada("0. Salir", ROJO_T);
         Banner::lineaVacia();
         Banner::promptCentrado("Seleccione una opcion y presione ENTER: ");
         cin >> opcion;
 
-
-        system("pause");
         cout << RESET;
 
         switch (opcion) {
@@ -96,22 +91,20 @@ void Sistema::menuPrincipal() {
         case 3: limpiarPantalla(); verProgreso(); break;
         case 4: limpiarPantalla(); actualizarNivelUsuario(); break;
         case 5: limpiarPantalla(); mostrarRankingRachas(); break;
-        case 6: limpiarPantalla(); ordenarUsuariosPorNombreAsc(); break;
+        case 6: limpiarPantalla(); ordenarPorNombre(); break;
         case 7: limpiarPantalla(); mostrarUsuariosAvanzados(); break;
         case 8: limpiarPantalla(); ordenarUsuariosPorNivel(); break;   // NUEVA
         case 9: limpiarPantalla(); buscarUsuarioHash(); break;
         case 10: limpiarPantalla(); rankingXpMergeSort(); break;
-        case 11: limpiarPantalla(); rankingNombreQuickSort(); break;
-        case 12: limpiarPantalla(); top3RachasHeap(); break;
-        case 13: limpiarPantalla(); verMallaAprendizaje(); break;
-        case 14: limpiarPantalla(); mostrarRankingRachasAVL(); break;
-        case 15: limpiarPantalla(); generarDatasetAleatorio(); break;
-        case 16: limpiarPantalla(); mostrarTodosUsuarios(); break;
-        case 17: Banner::lineaCentrada("Saliendo...", "\033[38;2;55;55;55m"); break;
+        case 11: limpiarPantalla(); top3RachasHeap(); break;
+        case 12: limpiarPantalla(); verMallaAprendizaje(); break;
+        case 13: limpiarPantalla(); generarDatasetAleatorio(); break;
+        case 14: limpiarPantalla(); mostrarTodosUsuarios(); break;
+        case 0: Banner::lineaCentrada("Saliendo...", "\033[38;2;55;55;55m"); break;
         default: Banner::lineaCentrada("Opcion invalida.", "\033[38;2;200;40;40m");
         }
-        if (opcion != 17) pausar();
-    } while (opcion != 17);
+        if (opcion != 0) pausar();
+    } while (opcion != 0);
 }
 
 void Sistema::mostrarBarraProgreso(int progreso, int total) {
@@ -422,28 +415,47 @@ bool compararPorNivelGlobal(Usuario a, Usuario b) {
     return a.nivelGlobal() > b.nivelGlobal();
 }
 
+// ===============================================================
+//  RANKING DE RACHAS - MENU UNIFICADO (antes opciones 5 y 14)
+//  Pregunta al usuario con que estructura quiere ver el ranking.
+// ===============================================================
 void Sistema::mostrarRankingRachas() {
-
     if (usuarios.estaVacia()) {
-
         Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
         return;
     }
 
+    int opcion = -1;
+    do {
+        Banner::lineaCentrada("===== RANKING DE RACHAS =====", "\033[38;2;46;125;50m");
+        Banner::lineaVacia();
+        Banner::lineaCentrada("De que forma desea ver el ranking?", "\033[38;2;55;55;55m");
+        Banner::lineaCentrada("1. Arbol Binario comun (ABB)", "\033[38;2;55;55;55m");
+        Banner::lineaCentrada("2. Arbol AVL balanceado", "\033[38;2;55;55;55m");
+        Banner::lineaCentrada("0. Volver al menu principal", "\033[38;2;55;55;55m");
+        Banner::promptCentrado("Opcion: ");
+        cin >> opcion;
+
+        switch (opcion) {
+        case 1: limpiarPantalla(); rankingRachasABB(); break;
+        case 2: limpiarPantalla(); rankingRachasAVL(); break;
+        case 0: break;
+        default:
+            Banner::lineaCentrada("Opcion invalida.", "\033[38;2;200;40;40m");
+        }
+        if (opcion != 0) pausar();
+    } while (opcion != 0);
+}
+
+// --- Ranking usando ARBOL BINARIO COMUN (ABB) ------------------
+void Sistema::rankingRachasABB() {
     Lista<Ranking> ranking;
-
     auto* aux = usuarios.inicio();
-
     while (aux != nullptr) {
-
         Usuario u = aux->elem;
-
         ranking.insertarFinal(
-
-            Ranking(u.getNombre(), u.obtenerProgreso()->getRacha()->getMaxima()
-            )
+            Ranking(u.getNombre(), u.obtenerProgreso()->getRacha()->getMaxima())
         );
-
         aux = aux->sig;
     }
 
@@ -452,12 +464,11 @@ void Sistema::mostrarRankingRachas() {
 
     archivoMgr.guardarRanking(ranking);
     archivoMgr.guardarNivelesRacha(usuarios);
-    Banner::lineaCentrada("Ranking guardado correctamente.", "[38;2;46;125;50m");
-
+    Banner::lineaCentrada("Ranking guardado correctamente.", "\033[38;2;46;125;50m");
 
     ArbolBinario<Ranking> arbolRanking(compararRacha);     // (1) O(1)
     auto* nodoLista = ranking.inicio();
-    while (nodoLista != nullptr) {                         // (2) O(n log n) prom. / O(n²) peor caso
+    while (nodoLista != nullptr) {                         // (2) O(n log n) prom. / O(n^2) peor caso
         arbolRanking.insertar(nodoLista->elem);            // cada insertar: O(log n) prom. / O(n) peor caso
         nodoLista = nodoLista->sig;
     }
@@ -473,21 +484,118 @@ void Sistema::mostrarRankingRachas() {
             });
         });
 
-    Tabla::imprimir("RANKING DE RACHAS",
+    Tabla::imprimir("RANKING DE RACHAS (ARBOL BINARIO COMUN - ABB)",
         { "#", "Usuario", "Racha", "Categoria" }, filasRanking);
 
-    Banner::lineaCentrada("Altura del arbol: " + to_string(arbolRanking.altura())
-        + " | Nodos: " + to_string(arbolRanking.tam()), "[38;2;55;55;55m");  //// (4) O(n) cada una (si recorren el árbol)
+    // DIFERENCIA: en el ABB la altura degenera porque entra ya ordenado
+    Banner::lineaCentrada("Altura del ABB: " + to_string(arbolRanking.altura())
+        + " | Nodos: " + to_string(arbolRanking.tam())
+        + "  (sin rotaciones: puede degenerar en lista)", "\033[38;2;55;55;55m");  // (4) O(n)
 
     int oro = arbolRanking.contarSi([](Ranking r) { return r.clasificacion() == "Oro"; });    // (5) O(n)
-    Banner::lineaCentrada("Usuarios en categoria Oro (racha >= 10): " + to_string(oro), "[38;2;55;55;55m");
+    Banner::lineaCentrada("Usuarios en categoria Oro (racha >= 10): " + to_string(oro), "\033[38;2;55;55;55m");
 
     Banner::lineaCentrada("Usuarios que alcanzaron nivel avanzado (3): "
-        + to_string(contarUsuariosConNivel(3)), "[38;2;55;55;55m");
+        + to_string(contarUsuariosConNivel(3)), "\033[38;2;55;55;55m");
     Banner::lineaCentrada("Usuarios en nivel intermedio o mas (2): "
-        + to_string(contarUsuariosConNivel(2)), "[38;2;55;55;55m");
+        + to_string(contarUsuariosConNivel(2)), "\033[38;2;55;55;55m");
 }
 
+// --- Ranking usando ARBOL AVL BALANCEADO -----------------------
+//  Misma logica que el ABB pero usando ArbolAVL: como el ranking se
+//  inserta ya ordenado (peor caso para un ABB comun, que degeneraria
+//  en lista con altura n), el AVL aplica rotaciones y garantiza altura
+//  O(log n). Al final se comparan las alturas de ambos arboles para
+//  evidenciar el balanceo.
+void Sistema::rankingRachasAVL() {
+    // 1) Construir la lista de rankings a partir de los usuarios   O(n)
+    Lista<Ranking> ranking;
+    auto* aux = usuarios.inicio();
+    while (aux != nullptr) {
+        Usuario u = aux->elem;
+        ranking.insertarFinal(
+            Ranking(u.getNombre(), u.obtenerProgreso()->getRacha()->getMaxima())
+        );
+        aux = aux->sig;
+    }
+
+    // 2) Insertar en el AVL: cada insercion es O(log n) GARANTIZADO  O(n log n)
+    ArbolAVL<Ranking> arbolAVL(compararRacha);
+    auto* nodoLista = ranking.inicio();
+    while (nodoLista != nullptr) {
+        arbolAVL.insertar(nodoLista->elem);
+        nodoLista = nodoLista->sig;
+    }
+
+    // 3) Recorrido inorden: entrega el ranking ya ordenado          O(n)
+    vector<vector<string>> filasRanking;
+    int pos = 1;
+    arbolAVL.inorden([&pos, &filasRanking](Ranking r) {
+        filasRanking.push_back({
+            to_string(pos++),
+            r.getNombre(),
+            to_string(r.getMejorRacha()),
+            r.clasificacion()
+            });
+        });
+
+    Tabla::imprimir("RANKING DE RACHAS (ARBOL AVL BALANCEADO)",
+        { "#", "Usuario", "Racha", "Categoria" }, filasRanking);
+
+    // 4) DIFERENCIA: comparar contra el ABB comun y mostrar rotaciones
+    ArbolBinario<Ranking> arbolABB(compararRacha);
+    nodoLista = ranking.inicio();
+    while (nodoLista != nullptr) {
+        arbolABB.insertar(nodoLista->elem);
+        nodoLista = nodoLista->sig;
+    }
+
+    Banner::lineaCentrada("Nodos: " + to_string(arbolAVL.tam())
+        + " | Altura AVL: " + to_string(arbolAVL.altura())
+        + " | Altura ABB sin balancear: " + to_string(arbolABB.altura()),
+        "\033[38;2;55;55;55m");
+    Banner::lineaCentrada("Rotaciones aplicadas por el AVL: "
+        + to_string(arbolAVL.getRotaciones()), "\033[38;2;55;55;55m");
+    Banner::lineaCentrada(string("Arbol balanceado (|FE| <= 1 en todo nodo): ")
+        + (arbolAVL.estaBalanceado() ? "SI" : "NO"), "\033[38;2;46;125;50m");
+
+    int oro = arbolAVL.contarSi([](Ranking r) { return r.clasificacion() == "Oro"; });   // O(n)
+    Banner::lineaCentrada("Usuarios en categoria Oro (racha >= 10): " + to_string(oro),
+        "\033[38;2;55;55;55m");
+}
+
+
+// ===============================================================
+//  ORDENAR POR NOMBRE - MENU UNIFICADO (antes opciones 6 y 11)
+//  Pregunta con que algoritmo ordenar la lista de usuarios.
+// ===============================================================
+void Sistema::ordenarPorNombre() {
+    if (usuarios.estaVacia()) {
+        Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
+        return;
+    }
+
+    int opcion = -1;
+    do {
+        Banner::lineaCentrada("===== ORDENAR USUARIOS POR NOMBRE =====", "\033[38;2;46;125;50m");
+        Banner::lineaVacia();
+        Banner::lineaCentrada("Con que metodo desea ordenar?", "\033[38;2;55;55;55m");
+        Banner::lineaCentrada("1. MergeSort (sobre la lista enlazada)", "\033[38;2;55;55;55m");
+        Banner::lineaCentrada("2. QuickSort (sobre vector)", "\033[38;2;55;55;55m");
+        Banner::lineaCentrada("0. Volver al menu principal", "\033[38;2;55;55;55m");
+        Banner::promptCentrado("Opcion: ");
+        cin >> opcion;
+
+        switch (opcion) {
+        case 1: limpiarPantalla(); ordenarUsuariosPorNombreAsc(); break;
+        case 2: limpiarPantalla(); rankingNombreQuickSort();      break;
+        case 0: break;
+        default:
+            Banner::lineaCentrada("Opcion invalida.", "\033[38;2;200;40;40m");
+        }
+        if (opcion != 0) pausar();
+    } while (opcion != 0);
+}
 
 void Sistema::ordenarUsuariosPorNombreAsc() {
     if (usuarios.estaVacia()) {
@@ -784,80 +892,6 @@ void Sistema::verMallaAprendizaje() {
 
 
 // ═══════════════════════════════════════════════════════════════
-//  RANKING DE RACHAS CON ARBOL BINARIO BALANCEADO (AVL)
-//
-//  Misma logica que mostrarRankingRachas() pero usando ArbolAVL:
-//  como el ranking se inserta ya ordenado (peor caso para un ABB
-//  comun, que degeneraria en lista con altura n), el AVL aplica
-//  rotaciones y garantiza altura O(log n). Al final se comparan
-//  las alturas de ambos arboles para evidenciar el balanceo.
-// ═══════════════════════════════════════════════════════════════
-void Sistema::mostrarRankingRachasAVL() {
-
-    if (usuarios.estaVacia()) {
-        Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
-        return;
-    }
-
-    // 1) Construir la lista de rankings a partir de los usuarios   O(n)
-    Lista<Ranking> ranking;
-    auto* aux = usuarios.inicio();
-    while (aux != nullptr) {
-        Usuario u = aux->elem;
-        ranking.insertarFinal(
-            Ranking(u.getNombre(), u.obtenerProgreso()->getRacha()->getMaxima())
-        );
-        aux = aux->sig;
-    }
-
-    // 2) Insertar en el AVL: cada insercion es O(log n) GARANTIZADO
-    //    (el arbol se rebalancea solo con rotaciones).             O(n log n)
-    ArbolAVL<Ranking> arbolAVL(compararRacha);
-    auto* nodoLista = ranking.inicio();
-    while (nodoLista != nullptr) {
-        arbolAVL.insertar(nodoLista->elem);
-        nodoLista = nodoLista->sig;
-    }
-
-    // 3) Recorrido inorden: entrega el ranking ya ordenado         O(n)
-    vector<vector<string>> filasRanking;
-    int pos = 1;
-    arbolAVL.inorden([&pos, &filasRanking](Ranking r) {
-        filasRanking.push_back({
-            to_string(pos++),
-            r.getNombre(),
-            to_string(r.getMejorRacha()),
-            r.clasificacion()
-            });
-        });
-
-    Tabla::imprimir("RANKING DE RACHAS (ARBOL AVL BALANCEADO)",
-        { "#", "Usuario", "Racha", "Categoria" }, filasRanking);
-
-    // 4) Evidencia del balanceo: comparar contra el ABB comun
-    ArbolBinario<Ranking> arbolABB(compararRacha);
-    nodoLista = ranking.inicio();
-    while (nodoLista != nullptr) {
-        arbolABB.insertar(nodoLista->elem);
-        nodoLista = nodoLista->sig;
-    }
-
-    Banner::lineaCentrada("Nodos: " + to_string(arbolAVL.tam())
-        + " | Altura AVL: " + to_string(arbolAVL.altura())
-        + " | Altura ABB sin balancear: " + to_string(arbolABB.altura()),
-        "\033[38;2;55;55;55m");
-    Banner::lineaCentrada("Rotaciones aplicadas por el AVL: "
-        + to_string(arbolAVL.getRotaciones()), "\033[38;2;55;55;55m");
-    Banner::lineaCentrada(string("Arbol balanceado (|FE| <= 1 en todo nodo): ")
-        + (arbolAVL.estaBalanceado() ? "SI" : "NO"), "\033[38;2;46;125;50m");
-
-    int oro = arbolAVL.contarSi([](Ranking r) { return r.clasificacion() == "Oro"; });   // O(n)
-    Banner::lineaCentrada("Usuarios en categoria Oro (racha >= 10): " + to_string(oro),
-        "\033[38;2;55;55;55m");
-}
-
-
-// ═══════════════════════════════════════════════════════════════
 //  GENERADOR DE DATASET (datos aleatorios)
 //
 //  Permite generar N usuarios con datos aleatorios (nombre, email,
@@ -929,7 +963,7 @@ void Sistema::generarDatasetAleatorio() {
         int mejorRacha = rand() % 21;            // 0 a 20
         int puntaje = rand() % 501;           // 0 a 500 XP
         nuevo.obtenerProgreso()->setMejorRacha(mejorRacha);
-        nuevo.agregarPuntaje(puntaje);
+        nuevo.agregarPuntaje(puntaje);           // llena Usuario y Progreso (XP)
 
         usuarios.insertarFinal(nuevo);
         generados++;
@@ -941,6 +975,22 @@ void Sistema::generarDatasetAleatorio() {
     archivoMgr.guardarNivelesItaliano(usuarios);
     archivoMgr.guardarNivelesPortugues(usuarios);
     archivoMgr.guardarNivelesRacha(usuarios);
+
+    // Resumen del XP generado (evidencia de la mejora: XP en el dataset)
+    {
+        int totalXp = 0, maxXp = 0;
+        auto* p = usuarios.inicio();
+        while (p != nullptr) {
+            int xp = p->elem.obtenerProgreso()->getPuntosTotales();
+            totalXp += xp;
+            if (xp > maxXp) maxXp = xp;
+            p = p->sig;
+        }
+        Banner::lineaCentrada("XP total acumulado en el sistema: " + to_string(totalXp),
+            "\033[38;2;55;55;55m");
+        Banner::lineaCentrada("XP maximo de un usuario: " + to_string(maxXp),
+            "\033[38;2;55;55;55m");
+    }
 
     Banner::lineaCentrada("Se generaron " + to_string(generados)
         + " usuarios aleatorios correctamente.", "\033[38;2;46;125;50m");

@@ -32,6 +32,8 @@ Progreso* Usuario::obtenerProgreso() {
 
 void Usuario::agregarPuntaje(int n) {
     puntajeTotal += n;
+    // Mantener sincronizado el XP del Progreso (lo usa el ranking XP MergeSort)
+    progreso.setPuntosTotales(progreso.getPuntosTotales() + n);
 }
 
 int Usuario::getNivelIngles() const { return nivelIngles; }
@@ -50,12 +52,13 @@ string Usuario::serializar() const {
         to_string(nivelPortugues) + ";" +
         to_string(nivelItaliano) + ";" +
         to_string(progreso.getRacha()->getActual()) + ";" +
-        to_string(progreso.getRacha()->getMaxima());
+        to_string(progreso.getRacha()->getMaxima()) + ";" +
+        to_string(progreso.getPuntosTotales());   // XP
 }
 
 Usuario Usuario::deserializar(const string& linea) {
     stringstream ss(linea);
-    string idTxt, nom, mail, ni, np, ni2, rActual, rMejor;
+    string idTxt, nom, mail, ni, np, ni2, rActual, rMejor, xpTxt;
 
     getline(ss, idTxt, ';');
     getline(ss, nom, ';');
@@ -65,6 +68,7 @@ Usuario Usuario::deserializar(const string& linea) {
     getline(ss, ni2, ';');
     getline(ss, rActual, ';');
     getline(ss, rMejor, ';');
+    getline(ss, xpTxt, ';');   // XP (puede no existir en archivos viejos)
 
     if (idTxt.empty() || ni.empty() || np.empty() || ni2.empty()) {
         throw runtime_error("Linea invalida en archivo");
@@ -75,6 +79,7 @@ Usuario Usuario::deserializar(const string& linea) {
 
     if (!rActual.empty()) u.obtenerProgreso()->setRachaActual(stoi(rActual));
     if (!rMejor.empty())  u.obtenerProgreso()->setMejorRacha(stoi(rMejor));
+    if (!xpTxt.empty())   u.obtenerProgreso()->setPuntosTotales(stoi(xpTxt));
 
     return u;
 }
