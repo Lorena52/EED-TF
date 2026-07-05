@@ -21,7 +21,7 @@ void LeccionPortugues::ordenarOracion(Progreso& progreso) {
         srand(time(nullptr));
 
         Lista<string> correcta;
-        int tipo = rand() % 3;
+        int tipo = rand() % 5;
 
         if (tipo == 0) {
             correcta.insertarFinal("Eu"); correcta.insertarFinal("estudo"); correcta.insertarFinal("portugues");
@@ -29,8 +29,14 @@ void LeccionPortugues::ordenarOracion(Progreso& progreso) {
         else if (tipo == 1) {
             correcta.insertarFinal("Ela"); correcta.insertarFinal("gosta"); correcta.insertarFinal("de"); correcta.insertarFinal("musica");
         }
-        else {
+        else if (tipo == 2) {
             correcta.insertarFinal("Nos"); correcta.insertarFinal("jogamos"); correcta.insertarFinal("futebol");
+        }
+        else if (tipo == 3) {
+            correcta.insertarFinal("Ele"); correcta.insertarFinal("le"); correcta.insertarFinal("livros");
+        }
+        else {
+            correcta.insertarFinal("Voce"); correcta.insertarFinal("fala"); correcta.insertarFinal("portugues");
         }
 
         Lista<string> mezclada;
@@ -170,25 +176,41 @@ void LeccionPortugues::traduccionAvanzada(Progreso& progreso) {
     Banner::lineaVacia();
     Banner::lineaCentrada("=== Exercicio de Traducao Avancada ===", V_T);
 
+    
     struct Frase { string portugues; string espanhol; };
-    Frase frases[] = {
+    Frase todas[] = {
         {"Apesar da chuva, eles continuaram jogando futebol.", "A pesar de la lluvia, continuaron jugando futbol."},
         {"Ela esta trabalhando neste projeto ha tres meses.", "Ella ha estado trabajando en este proyecto por tres meses."},
-        {"Se eu soubesse, teria ajudado voce.", "Si lo hubiera sabido, te habria ayudado."}
+        {"Se eu soubesse, teria ajudado voce.", "Si lo hubiera sabido, te habria ayudado."},
+        {"Quando chegamos, o filme ja tinha comecado.", "Para cuando llegamos, la pelicula ya habia empezado."},
+        {"Ele preferiria estudar a noite do que de manha.", "El prefiere estudiar de noche que en la mañana."},
+        {"Eles nunca estiveram tao animados com uma viagem.", "Ellos nunca han estado tan emocionados por un viaje."}
     };
+    int totalDisponibles = 6;
+
+    srand(static_cast<unsigned int>(time(nullptr)));
+    int usados[6] = { 0,0,0,0,0,0 };
+    int orden[3];
+    for (int k = 0; k < 3; k++) {
+        int idx;
+        do { idx = rand() % totalDisponibles; } while (usados[idx]);
+        usados[idx] = 1;
+        orden[k] = idx;
+    }
 
     int total = 3, corretas = 0;
     for (int i = 0; i < total; i++) {
+        Frase& frase = todas[orden[i]];
         Banner::lineaVacia();
         Banner::lineaCentrada("Traduza a seguinte frase para o espanhol:", G_T);
-        Banner::lineaCentrada(frases[i].portugues, G_T);
+        Banner::lineaCentrada(frase.portugues, G_T);
         string resposta;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         Banner::promptCentrado("Respuesta: ");
         getline(cin, resposta);
         cout << Banner::RESET;
 
-        if (resposta == frases[i].espanhol) {
+        if (resposta == frase.espanhol) {
             Banner::lineaCentrada("Correcto!", V_T);
             progreso.registrarAcierto();
             corretas++;
@@ -198,7 +220,7 @@ void LeccionPortugues::traduccionAvanzada(Progreso& progreso) {
         }
         else {
             Banner::lineaCentrada("Incorrecto. A traducao correta e:", R_T);
-            Banner::lineaCentrada(frases[i].espanhol, G_T);
+            Banner::lineaCentrada(frase.espanhol, G_T);
             Error e(i + 1, "Traducao incorreta", "2026-05-07");
             progreso.registrarError(e);
         }

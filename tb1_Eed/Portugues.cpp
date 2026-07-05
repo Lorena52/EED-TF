@@ -48,7 +48,7 @@ void Portugues::repasoContinuo(Progreso& progreso) {
 
     srand(static_cast<unsigned int>(time(nullptr)));
 
-    // 1) Recolectar palabras del nivel actual.
+  
     Lista<Palabra*> delNivel;
     auto* nodo = vocabulario.primero();
     for (unsigned int i = 0; i < vocabulario.tam(); i++) {
@@ -60,13 +60,13 @@ void Portugues::repasoContinuo(Progreso& progreso) {
         return;
     }
 
-    // 2) Mezclar y meter hasta 10 en una COLA.
+   
     Ordenamiento<Palabra*>::mezclar(&delNivel);
     Cola<Palabra*> ronda;
     int cuantas = (delNivel.tam() < (unsigned)META) ? (int)delNivel.tam() : META;
     for (int i = 0; i < cuantas; i++) ronda.encolar(delNivel.obtener(i));
 
-    // 3) Procesar: acierto avanza barra; fallo se re-encola al final.
+   
     int aciertos = 0;
     const string VERDE_T = "\033[38;2;46;125;50m";
     const string GRIS_T = "\033[38;2;55;55;55m";
@@ -80,12 +80,31 @@ void Portugues::repasoContinuo(Progreso& progreso) {
         Banner::lineaCentrada("Palavra em portugues: " + p->getTermino(), VERDE_T);
         Banner::lineaCentrada("====================================", GRIS_T);
 
+ 
         Lista<string> opciones;
         string correcta = p->getTraduccion();
         opciones.insertarFinal(correcta);
-        opciones.insertarFinal("porta");
-        opciones.insertarFinal("cachorro");
-        opciones.insertarFinal("ceu");
+
+        Lista<string> candidatas;
+        for (unsigned int i = 0; i < delNivel.tam(); i++) {
+            string trad = delNivel.obtener(i)->getTraduccion();
+            if (trad == correcta) continue;
+            bool yaEsta = false;
+            for (unsigned int j = 0; j < candidatas.tam(); j++)
+                if (candidatas.obtener(j) == trad) { yaEsta = true; break; }
+            if (!yaEsta) candidatas.insertarFinal(trad);
+        }
+        string respaldo[] = { "porta", "cachorro", "ceu", "mesa", "arvore", "rio" };
+        for (int r = 0; r < 6; r++) {
+            if (respaldo[r] == correcta) continue;
+            bool yaEsta = false;
+            for (unsigned int j = 0; j < candidatas.tam(); j++)
+                if (candidatas.obtener(j) == respaldo[r]) { yaEsta = true; break; }
+            if (!yaEsta) candidatas.insertarFinal(respaldo[r]);
+        }
+        Ordenamiento<string>::mezclar(&candidatas);
+        for (unsigned int i = 0; i < candidatas.tam() && opciones.tam() < 4; i++)
+            opciones.insertarFinal(candidatas.obtener(i));
         Ordenamiento<string>::mezclar(&opciones);
 
         auto* on = opciones.inicio();

@@ -22,12 +22,14 @@ void LeccionIngles::ordenarOracion(Progreso& progreso) {
         srand(time(nullptr));
 
         Lista<string> correcta;
-        int tipo = rand() % 4;
+        int tipo = rand() % 6;
 
         if (tipo == 0) { correcta.insertarFinal("I"); correcta.insertarFinal("study"); correcta.insertarFinal("English"); }
         else if (tipo == 1) { correcta.insertarFinal("She"); correcta.insertarFinal("likes"); correcta.insertarFinal("music"); }
         else if (tipo == 2) { correcta.insertarFinal("We"); correcta.insertarFinal("play"); correcta.insertarFinal("soccer"); }
-        else { correcta.insertarFinal("They"); correcta.insertarFinal("watch"); correcta.insertarFinal("movies"); }
+        else if (tipo == 3) { correcta.insertarFinal("They"); correcta.insertarFinal("watch"); correcta.insertarFinal("movies"); }
+        else if (tipo == 4) { correcta.insertarFinal("He"); correcta.insertarFinal("reads"); correcta.insertarFinal("books"); }
+        else { correcta.insertarFinal("You"); correcta.insertarFinal("speak"); correcta.insertarFinal("English"); }
 
         Lista<string> mezclada;
         for (unsigned int i = 0; i < correcta.tam(); i++) mezclada.insertarFinal(correcta.obtener(i));
@@ -85,13 +87,33 @@ void LeccionIngles::ordenarOracion(Progreso& progreso) {
 
 
 void LeccionIngles::completarOracion(Progreso& progreso) {
+    
     Cola<string> opciones;
-    opciones.encolar("study");
-    opciones.encolar("eat");
-    opciones.encolar("play");
+    srand(static_cast<unsigned int>(time(nullptr)));
+    int tipo = rand() % 5;
 
     Banner::lineaVacia();
-    Banner::lineaCentrada("Complete the sentence: I ___ English.", G_T);
+    if (tipo == 0) {
+        Banner::lineaCentrada("Complete the sentence: I ___ English.", G_T);
+        opciones.encolar("study"); opciones.encolar("eat"); opciones.encolar("play");
+    }
+    else if (tipo == 1) {
+        Banner::lineaCentrada("Complete the sentence: She ___ music.", G_T);
+        opciones.encolar("likes"); opciones.encolar("runs"); opciones.encolar("sleeps");
+    }
+    else if (tipo == 2) {
+        Banner::lineaCentrada("Complete the sentence: We ___ soccer.", G_T);
+        opciones.encolar("play"); opciones.encolar("sing"); opciones.encolar("study");
+    }
+    else if (tipo == 3) {
+        Banner::lineaCentrada("Complete the sentence: They ___ movies.", G_T);
+        opciones.encolar("watch"); opciones.encolar("drink"); opciones.encolar("write");
+    }
+    else {
+        Banner::lineaCentrada("Complete the sentence: You ___ very fast.", G_T);
+        opciones.encolar("run"); opciones.encolar("read"); opciones.encolar("sing");
+    }
+
     int i = 1;
     opciones.mostrarCon([&](string palabra) {
         Banner::lineaCentrada(to_string(i++) + ") " + palabra, G_T);
@@ -129,25 +151,42 @@ void LeccionIngles::traduccionAvanzada(Progreso& progreso) {
     Banner::lineaVacia();
     Banner::lineaCentrada("=== Advanced Translation Exercise ===", V_T);
 
+    // Se agrego mas variedad: antes siempre eran las mismas 3 frases en el
+    // mismo orden. Ahora hay 6 frases y se eligen 3 distintas al azar.
     struct Frase { string ingles; string espanol; };
-    Frase frases[] = {
+    Frase todas[] = {
         {"Despite the rain, they continued playing football.", "A pesar de la lluvia, continuaron jugando futbol."},
         {"She has been working on this project for three months.", "Ella ha estado trabajando en este proyecto por tres meses."},
-        {"If I had known, I would have helped you.", "Si lo hubiera sabido, te habria ayudado."}
+        {"If I had known, I would have helped you.", "Si lo hubiera sabido, te habria ayudado."},
+        {"By the time we arrived, the movie had already started.", "Para cuando llegamos, la pelicula ya habia empezado."},
+        {"He would rather study at night than in the morning.", "El prefiere estudiar de noche que en la mañana."},
+        {"They have never been so excited about a trip.", "Ellos nunca han estado tan emocionados por un viaje."}
     };
+    int totalDisponibles = 6;
+
+    srand(static_cast<unsigned int>(time(nullptr)));
+    int usados[6] = { 0,0,0,0,0,0 };
+    int orden[3];
+    for (int k = 0; k < 3; k++) {
+        int idx;
+        do { idx = rand() % totalDisponibles; } while (usados[idx]);
+        usados[idx] = 1;
+        orden[k] = idx;
+    }
 
     int total = 3, correctas = 0;
     for (int i = 0; i < total; i++) {
+        Frase& frase = todas[orden[i]];
         Banner::lineaVacia();
         Banner::lineaCentrada("Translate into Spanish:", G_T);
-        Banner::lineaCentrada(frases[i].ingles, G_T);
+        Banner::lineaCentrada(frase.ingles, G_T);
         string respuesta;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         Banner::promptCentrado("Respuesta: ");
         getline(cin, respuesta);
         cout << Banner::RESET;
 
-        if (respuesta == frases[i].espanol) {
+        if (respuesta == frase.espanol) {
             Banner::lineaCentrada("Correct!", V_T);
             progreso.registrarAcierto();
             correctas++;
@@ -157,7 +196,7 @@ void LeccionIngles::traduccionAvanzada(Progreso& progreso) {
         }
         else {
             Banner::lineaCentrada("Incorrect. Correct answer:", R_T);
-            Banner::lineaCentrada(frases[i].espanol, G_T);
+            Banner::lineaCentrada(frase.espanol, G_T);
             Error e(i + 1, "Wrong translation", "2026-05-10");
             progreso.registrarError(e);
         }

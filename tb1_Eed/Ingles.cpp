@@ -33,7 +33,7 @@ void Ingles::mostrarTeoria() {
 
 void Ingles::iniciarEjercicios(Progreso& progreso) {
     Leccion* leccion = new LeccionIngles();
-    lecciones.insertarFinal(leccion);   // historial en la lista doble heredada
+    lecciones.insertarFinal(leccion);
     switch (nivel) {
     case 1: leccion->ordenarOracion(progreso); break;
     case 2: leccion->completarOracion(progreso); break;
@@ -42,7 +42,7 @@ void Ingles::iniciarEjercicios(Progreso& progreso) {
 }
 //INGLES
 void Ingles::repasoContinuo(Progreso& progreso) {
-    const int META = 10;   // 10 palabras por ronda
+    const int META = 10;  
 
     if (vocabulario.estaVacia()) {
         Banner::lineaCentrada("No hay palabras registradas.", "\033[38;2;200;40;40m");
@@ -51,7 +51,7 @@ void Ingles::repasoContinuo(Progreso& progreso) {
 
     srand(static_cast<unsigned int>(time(nullptr)));
 
-    // 1) Recolectar las palabras del nivel actual en una Lista.
+
     Lista<Palabra*> delNivel;
     auto* nodo = vocabulario.primero();
     for (unsigned int i = 0; i < vocabulario.tam(); i++) {
@@ -63,20 +63,17 @@ void Ingles::repasoContinuo(Progreso& progreso) {
         return;
     }
 
-    // 2) Mezclar al azar y meter hasta 10 en una COLA.
-    //    La cola permite que una palabra fallada vuelva al final de la ronda.
+
     Ordenamiento<Palabra*>::mezclar(&delNivel);
     Cola<Palabra*> ronda;
     int cuantas = (delNivel.tam() < (unsigned)META) ? (int)delNivel.tam() : META;
     for (int i = 0; i < cuantas; i++) ronda.encolar(delNivel.obtener(i));
 
-    // 3) Procesar la cola: acierto -> avanza barra; fallo -> se re-encola al final.
     const string VERDE_T = "\033[38;2;46;125;50m";
     const string GRIS_T = "\033[38;2;55;55;55m";
     const string ROJO_T = "\033[38;2;200;40;40m";
 
-    // HashMap que cuenta cuantas veces el usuario falla cada palabra.
-    // Clave = palabra en ingles, Valor = numero de fallos.
+
     HashMap<string, int> fallosPorPalabra;
 
     int aciertos = 0;
@@ -89,13 +86,31 @@ void Ingles::repasoContinuo(Progreso& progreso) {
         Banner::lineaCentrada("Palabra en ingles: " + p->getTermino(), VERDE_T);
         Banner::lineaCentrada("====================================", GRIS_T);
 
-        // Armar 4 opciones (1 correcta + 3 distractores) y mezclarlas.
         Lista<string> opciones;
         string correcta = p->getTraduccion();
         opciones.insertarFinal(correcta);
-        opciones.insertarFinal("puerta");
-        opciones.insertarFinal("perro");
-        opciones.insertarFinal("cielo");
+
+        Lista<string> candidatas;
+        for (unsigned int i = 0; i < delNivel.tam(); i++) {
+            string trad = delNivel.obtener(i)->getTraduccion();
+            if (trad == correcta) continue;
+            bool yaEsta = false;
+            for (unsigned int j = 0; j < candidatas.tam(); j++)
+                if (candidatas.obtener(j) == trad) { yaEsta = true; break; }
+            if (!yaEsta) candidatas.insertarFinal(trad);
+        }
+      
+        string respaldo[] = { "puerta", "perro", "cielo", "mesa", "arbol", "rio" };
+        for (int r = 0; r < 6; r++) {
+            if (respaldo[r] == correcta) continue;
+            bool yaEsta = false;
+            for (unsigned int j = 0; j < candidatas.tam(); j++)
+                if (candidatas.obtener(j) == respaldo[r]) { yaEsta = true; break; }
+            if (!yaEsta) candidatas.insertarFinal(respaldo[r]);
+        }
+        Ordenamiento<string>::mezclar(&candidatas);
+        for (unsigned int i = 0; i < candidatas.tam() && opciones.tam() < 4; i++)
+            opciones.insertarFinal(candidatas.obtener(i));
         Ordenamiento<string>::mezclar(&opciones);
 
         auto* on = opciones.inicio();
@@ -114,13 +129,13 @@ void Ingles::repasoContinuo(Progreso& progreso) {
 
         if (respuesta < 1 || respuesta > 4) {
             Banner::lineaCentrada("Opcion invalida. La palabra se repetira al final.", ROJO_T);
-            ronda.encolar(p);   // vuelve al final
+            ronda.encolar(p); 
         }
         else if (opciones.obtener(respuesta - 1) == correcta) {
             Banner::lineaCentrada("Correcto! :)", VERDE_T);
             p->incrementarRepaso();
             progreso.registrarAcierto();
-            aciertos++;   // SOLO aqui avanza la barra
+            aciertos++;   
         }
         else {
             Banner::lineaCentrada("Incorrecto. La respuesta correcta era: " + correcta, ROJO_T);
@@ -128,16 +143,15 @@ void Ingles::repasoContinuo(Progreso& progreso) {
             progreso.registrarError(e);
             progreso.getRacha()->reiniciar();
 
-            // Se cuenta el fallo de esta palabra en el HashMap.
-            // Si ya existia se incrementa; si no, se inserta con valor 1.
+          
             int vecesFallada = 0;
             fallosPorPalabra.buscar(p->getTermino(), vecesFallada);
             fallosPorPalabra.insertar(p->getTermino(), vecesFallada + 1);
 
-            ronda.encolar(p);   // la fallada reaparece al final de la ronda
+            ronda.encolar(p);   
         }
 
-        // Barra de progreso + contador + racha (centrados).
+       
         Banner::lineaVacia();
         Banner::lineaCentrada("Progreso del repaso:", GRIS_T);
         Sistema::mostrarBarraProgreso(aciertos, cuantas);
@@ -149,9 +163,7 @@ void Ingles::repasoContinuo(Progreso& progreso) {
     Banner::lineaCentrada("=== Repaso continuo completado! Acertaste las "
         + to_string(cuantas) + " palabras. ===", VERDE_T);
 
-    // ===== REPORTE: palabras que mas te costaron (usa el HashMap) =====
-    // Se recorre la tabla hash y se muestran las palabras con mas fallos,
-    // para que el usuario sepa cuales debe repasar mas (repaso inteligente).
+
     if (fallosPorPalabra.tam() > 0) {
         Banner::lineaVacia();
         Banner::lineaCentrada("===== PALABRAS QUE DEBES REPASAR =====", GRIS_T);
@@ -221,10 +233,10 @@ void Ingles::cargarVocabulario() {
     }
 }
 
-// RECURSIVIDAD: recorre el vocabulario nodo a nodo sin bucles.
+
 void Ingles::mostrarDiccionarioRecursivo(ListaCircular<Palabra>::Nodo* nodo,
     unsigned int restantes) {
-    if (nodo == nullptr || restantes == 0) return;   // caso base
+    if (nodo == nullptr || restantes == 0) return;   
     nodo->elem.mostrar();
     mostrarDiccionarioRecursivo(nodo->sig, restantes - 1);
 }
@@ -235,7 +247,7 @@ void Ingles::diccionario() {
         return;
     }
 
-    // Pasar el vocabulario a una Lista de punteros para poder ordenarlo
+ 
     Lista<Palabra*> ordenado;
     auto* nodo = vocabulario.primero();
     for (unsigned int i = 0; i < vocabulario.tam(); i++) {
@@ -243,7 +255,7 @@ void Ingles::diccionario() {
         nodo = nodo->sig;
     }
 
-    // INSERTION SORT: ideal para listas pequenias como el vocabulario
+   
     Ordenamiento<Palabra*>::insertion(&ordenado, cmpPalabraAZ);
 
     Banner::lineaCentrada("=== Diccionario de Ingles (orden alfabetico) ===", "\033[38;2;55;55;55m");
