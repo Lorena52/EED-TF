@@ -948,32 +948,54 @@ void Sistema::generarDatasetAleatorio() {
         + to_string(usuarios.tam()), "\033[38;2;55;55;55m");
 }
 
-//interfaz
 void Sistema::pantallaBienvenida() {
-
     system("cls");
-    cout << "\n\n";
-    cout << endl << endl << endl << endl << endl << endl << endl << endl;
-    Diseño::Logo();
+    Banner::fondoForm();       // pinta toda la pantalla de blanco
 
+    // Calcular donde va CENTRADO el logo (21 columnas x 2 chars = 42 de ancho)
+    int ancho = Banner::anchoConsola();
+    int anchoLogo = 21 * 2;
+    int colLogo = (ancho - anchoLogo) / 2;
+    if (colLogo < 1) colLogo = 1;
 
+    // Dibujar el logo en posicion absoluta, empezando en la fila 2
+    Diseño::LogoEnPosicion(2, colLogo);
 
+    // Reposicionar cursor DEBAJO del logo (22 filas + fila inicial 2 = fila 25)
+    cout << "\033[25;1H";
+    cout << "\033[107m\033[38;2;55;55;55m";   // fondo blanco + texto oscuro
 
-
-    Banner::lineaVacia();
     Banner::lineaCentrada("Bienvenido a AprendeGo!", "\033[38;2;46;125;50m");
     Banner::lineaCentrada("Cargando...", "\033[38;2;46;125;50m");
 
+    // Barra de carga con bloques verdes, centrada y con fondo blanco
+    int anchoBarra = 20 * 2 + 2;                  // 20 bloques + 2 corchetes
+    int izqB = (ancho - anchoBarra) / 2;
+    if (izqB < 0) izqB = 0;
+    int derB = ancho - anchoBarra - izqB;
+    if (derB < 0) derB = 0;
 
+    // Padding izquierdo BLANCO (no negro)
+    cout << "\033[107m";
+    for (int i = 0; i < izqB; i++) cout << " ";
 
-    cout << "                                  [";
+    // Corchete de apertura
+    cout << "\033[38;2;46;125;50m" << "[";
 
+    // Los 20 bloques verdes animados, SIN resetear el fondo entre uno y otro
     for (int i = 0; i < 20; i++) {
-        cout << "\033[42m  \033[0m";
+        cout << "\033[42m  ";
+        cout.flush();
         _sleep(120);
     }
 
-    cout << "]";
+    // Volver a fondo blanco y corchete de cierre
+    cout << "\033[107m\033[38;2;46;125;50m" << "]";
+
+    // Padding derecho BLANCO
+    cout << "\033[107m";
+    for (int i = 0; i < derB; i++) cout << " ";
+    cout << "\033[0m";
 
     _sleep(500);
     system("cls");
