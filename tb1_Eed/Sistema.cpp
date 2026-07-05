@@ -58,9 +58,9 @@ void Sistema::menuPrincipal() {
         system("cls");
 
         Banner::dibujar();
-        const string VERDE_T = "[38;2;46;125;50m";
-        const string GRIS_T = "[38;2;55;55;55m";
-        const string ROJO_T = "[38;2;200;40;40m";
+        const string VERDE_T = "\033[38;2;46;125;50m";
+        const string GRIS_T = "\033[38;2;55;55;55m";
+        const string ROJO_T = "\033[38;2;200;40;40m";
         Banner::lineaCentrada("===    Bienvenido a AprendeGo! C++    ===", VERDE_T);
         Banner::lineaVacia();
         Banner::lineaCentrada("--- Menu Principal ---", GRIS_T);
@@ -81,7 +81,7 @@ void Sistema::menuPrincipal() {
         Banner::lineaCentrada("15. Generar datos aleatorios (Dataset)", VERDE_T);
         Banner::lineaCentrada("16. Mostrar todos los usuarios registrados", VERDE_T);
         Banner::lineaCentrada("17. Salir", ROJO_T);
-        Diseño::Pinguino();
+        Diseño::PinguinoEnPosicion(13, 8);
         Banner::lineaVacia();
         Banner::promptCentrado("Seleccione una opcion y presione ENTER: ");
         cin >> opcion;

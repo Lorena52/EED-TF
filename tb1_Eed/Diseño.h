@@ -93,6 +93,39 @@ public:
         cout << "\033[0m";
     }
 
+    // Dibuja el pinguino en una POSICION ABSOLUTA de la consola
+    // (fila, columna) usando ANSI \033[fila;colH. Asi queda al costado
+    // del menu en vez de debajo, y no deja rastro negro porque no
+    // imprime rellenos horizontales.
+    static void PinguinoEnPosicion(int filaInicio, int col) {
+
+        int logo[13][10] =
+        { {0,0,6,6,6,6,6,6,0,0},
+          {0,6,6,6,6,6,6,6,6,0},
+          {6,6,0,6,6,6,6,0,6,6},
+          {6,0,0,0,6,6,0,0,0,6},
+          {6,0,6,0,6,6,0,6,0,6},
+          {6,0,6,0,0,0,0,6,0,6},
+          {6,0,0,5,5,5,5,0,0,6},
+          {0,6,0,0,5,5,0,0,6,0},
+          {6,6,0,0,0,0,0,0,6,6},
+          {6,6,0,0,0,0,0,0,6,6},
+          {6,6,0,0,0,0,0,0,6,6},
+          {6,0,6,0,0,0,0,6,0,6},
+          {0,0,5,5,6,6,5,5,0,0}
+        };
+
+        for (int f = 0; f < 13; f++) {
+            // Mover cursor a (filaInicio + f, col)
+            cout << "\033[" << (filaInicio + f) << ";" << col << "H";
+            for (int c = 0; c < 10; c++) {
+                cout << color(logo[f][c]) << "  ";
+            }
+            cout << "\033[107m"; // volver a fondo blanco para no manchar
+        }
+        cout << "\033[0m";
+    }
+
 
     static void Logo () {
 
