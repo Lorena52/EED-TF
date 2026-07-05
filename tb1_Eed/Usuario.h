@@ -14,7 +14,7 @@ private:
     string nombre;
     string email;
     int puntajeTotal;
-    Progreso progreso;      // progreso del usuario
+    Progreso progreso;
 
     int nivelIngles;
     int nivelPortugues;
@@ -28,6 +28,7 @@ public:
     // getters
     string getNombre() const;
     string getEmail() const;
+    int getId() const;
     int getPuntajeTotal() const;
 
     int getNivelIngles() const;

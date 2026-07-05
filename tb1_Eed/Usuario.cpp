@@ -23,6 +23,7 @@ Usuario::~Usuario() {
 
 string Usuario::getNombre() const { return nombre; }
 string Usuario::getEmail() const { return email; }
+int Usuario::getId() const { return id; }
 int Usuario::getPuntajeTotal() const { return puntajeTotal; }
 
 Progreso* Usuario::obtenerProgreso() {

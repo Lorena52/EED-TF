@@ -61,6 +61,7 @@ public:
     void mostrarRankingRachas();
 
     void mostrarUsuariosAvanzados();
+    void mostrarTodosUsuarios();   // NUEVA: tabla con todos los usuarios registrados
     void ordenarUsuariosPorNivel();
     void buscarUsuarioHash();   // NUEVA: busca un usuario por nombre usando HashMap
 

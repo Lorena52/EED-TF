@@ -79,7 +79,8 @@ void Sistema::menuPrincipal() {
         Banner::lineaCentrada("13. Mapa de aprendizaje (Grafo)", VERDE_T);
         Banner::lineaCentrada("14. Ranking de rachas (Arbol AVL balanceado)", VERDE_T);
         Banner::lineaCentrada("15. Generar datos aleatorios (Dataset)", VERDE_T);
-        Banner::lineaCentrada("16. Salir", ROJO_T);
+        Banner::lineaCentrada("16. Mostrar todos los usuarios registrados", VERDE_T);
+        Banner::lineaCentrada("17. Salir", ROJO_T);
         Diseño::Pinguino();
         Banner::lineaVacia();
         Banner::promptCentrado("Seleccione una opcion y presione ENTER: ");
@@ -105,13 +106,13 @@ void Sistema::menuPrincipal() {
         case 13: limpiarPantalla(); verMallaAprendizaje(); break;
         case 14: limpiarPantalla(); mostrarRankingRachasAVL(); break;
         case 15: limpiarPantalla(); generarDatasetAleatorio(); break;
-        case 16: Banner::lineaCentrada("Saliendo...", "\033[38;2;55;55;55m"); break;
+        case 16: limpiarPantalla(); mostrarTodosUsuarios(); break;
+        case 17: Banner::lineaCentrada("Saliendo...", "\033[38;2;55;55;55m"); break;
         default: Banner::lineaCentrada("Opcion invalida.", "\033[38;2;200;40;40m");
         }
-        if (opcion != 16) pausar();
-    } while (opcion != 16);
+        if (opcion != 17) pausar();
+    } while (opcion != 17);
 }
-
 
 void Sistema::mostrarBarraProgreso(int progreso, int total) {
     if (total <= 0) total = 1;
@@ -152,8 +153,20 @@ void Sistema::registrarUsuario() {
         aux = aux->sig;
     }
 
-    Banner::promptCentrado("Ingrese email: ");
-    cin >> email;
+    // Validar que el email termine en @gmail.com
+    auto esGmailValido = [](const string& correo) {
+        const string dominio = "@gmail.com";
+        if (correo.size() <= dominio.size()) return false;
+        return correo.compare(correo.size() - dominio.size(), dominio.size(), dominio) == 0;
+        };
+
+    do {
+        Banner::promptCentrado("Ingrese email (debe terminar en @gmail.com): ");
+        cin >> email;
+        if (!esGmailValido(email)) {
+            Banner::lineaCentrada("Correo invalido. Debe terminar en @gmail.com. Intente nuevamente.", "\033[38;2;200;40;40m");
+        }
+    } while (!esGmailValido(email));
 
     Banner::promptCentrado("Nivel de Ingles (1-3): ");
     cin >> ni;
@@ -523,6 +536,32 @@ void Sistema::mostrarUsuariosAvanzados() {
         Banner::lineaCentrada("Ningun usuario ha alcanzado nivel avanzado todavia.", "\033[38;2;55;55;55m");
 }
 
+void Sistema::mostrarTodosUsuarios() {
+    if (usuarios.estaVacia()) {
+        Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
+        return;
+    }
+
+    vector<vector<string>> filas;
+    auto* aux = usuarios.inicio();
+    while (aux != nullptr) {
+        filas.push_back({
+            to_string(aux->elem.getId()),
+            aux->elem.getNombre(),
+            aux->elem.getEmail(),
+            to_string(aux->elem.getNivelIngles()),
+            to_string(aux->elem.getNivelPortugues()),
+            to_string(aux->elem.getNivelItaliano())
+            });
+        aux = aux->sig;
+    }
+
+    Tabla::imprimir("USUARIOS REGISTRADOS",
+        { "ID", "Nombre", "Email", "Ingles", "Portugues", "Italiano" }, filas);
+
+    Banner::lineaVacia();
+    Banner::lineaCentrada("Total de usuarios: " + to_string(usuarios.tam()), "\033[38;2;55;55;55m");
+}
 Usuario* Sistema::buscarUsuario(const std::string& nombre) {
     // LAMBDA 6: predicado de coincidencia por nombre
     auto coincideNombre = [&nombre](const Usuario& u) {
