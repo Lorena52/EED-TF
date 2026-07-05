@@ -40,14 +40,14 @@ public:
 
         for (int f = 0; f < 12; f++) {
 
-            // 🔥 IMPORTANTE: rellenar toda la línea primero
+            // IMPORTANTE: rellenar toda la línea primero
             cout << "   ";
 
             for (int c = 0; c < 12; c++) {
                 cout << color(logo[f][c]) << "  ";
             }
 
-            // 🔥 relleno hasta final de línea (EVITA LÍNEA NEGRA)
+            // relleno hasta final de línea (EVITA LÍNEA NEGRA)
             cout << "\033[107m";
             cout << string(60, ' ');
             cout << "\n";

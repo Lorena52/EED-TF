@@ -81,6 +81,7 @@ void Sistema::menuPrincipal() {
         Banner::lineaCentrada("0. Salir", ROJO_T);
         Banner::lineaVacia();
         Banner::promptCentrado("Seleccione una opcion y presione ENTER: ");
+        Diseño::PinguinoEnPosicion(13, 8);
         cin >> opcion;
 
         cout << RESET;
