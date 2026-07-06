@@ -15,8 +15,7 @@ Idioma::~Idioma() {
     }
 }
 
-// --- Nivel ---
-void   Idioma::setNivel(int n)  { nivel = n; }
+void   Idioma::setNivel(int n) { nivel = n; }
 int    Idioma::getNivel() const { return nivel; }
 string Idioma::getNombre() const { return nombre; }
 
@@ -28,7 +27,7 @@ void Idioma::repasoContinuo(Progreso& progreso) {
     }
     vocabulario.recorrerCon([](const Palabra& p) {
         cout << p.getTermino() << endl;
-    });
+        });
 }
 
 // --- Diccionario comun (recursivo sobre la lista circular) ---
@@ -40,3 +39,5 @@ void Idioma::diccionario() {
     cout << "\n=== Diccionario de " << nombre << " ===\n";
     vocabulario.recorrerRecursivo([](const Palabra& p) { p.mostrar(); });
 }
+
+

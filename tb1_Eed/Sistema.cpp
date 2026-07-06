@@ -312,7 +312,6 @@ void Sistema::iniciarLecciones() {
     }
     else if (modo == 2) {
         idiomaSeleccionado->mostrarTeoria();
-        //Ahora iniciarEjercicios maneja todo el flujo y la barra
         idiomaSeleccionado->iniciarEjercicios(*(usuarioActivo->obtenerProgreso()));
 
         Banner::lineaCentrada("=== Leccion completada! ===", "\033[38;2;46;125;50m");
@@ -339,7 +338,7 @@ void Sistema::actualizarNivelUsuario() {
     Banner::promptCentrado("Ingrese el nombre del usuario: ");
     cin >> nombreBuscado;
 
-    Usuario* usuarioEncontrado = buscarUsuario(nombreBuscado);   // <-- ESTA linea
+    Usuario* usuarioEncontrado = buscarUsuario(nombreBuscado); 
 
     if (!usuarioEncontrado) {
         Banner::lineaCentrada("Usuario no encontrado.", "\033[38;2;200;40;40m");
@@ -454,16 +453,16 @@ void Sistema::mostrarRankingRachas() {
     Banner::lineaCentrada("Ranking guardado correctamente.", "[38;2;46;125;50m");
 
 
-    ArbolBinario<Ranking> arbolRanking(compararRacha);     // (1) O(1)
+    ArbolBinario<Ranking> arbolRanking(compararRacha);     
     auto* nodoLista = ranking.inicio();
-    while (nodoLista != nullptr) {                         // (2) O(n log n) prom. / O(n²) peor caso
-        arbolRanking.insertar(nodoLista->elem);            // cada insertar: O(log n) prom. / O(n) peor caso
+    while (nodoLista != nullptr) {                         
+        arbolRanking.insertar(nodoLista->elem);            
         nodoLista = nodoLista->sig;
     }
 
     vector<vector<string>> filasRanking;
     int pos = 1;
-    arbolRanking.inorden([&pos, &filasRanking](Ranking r) {       // (3) O(n)
+    arbolRanking.inorden([&pos, &filasRanking](Ranking r) {    
         filasRanking.push_back({
             to_string(pos++),
             r.getNombre(),
@@ -623,21 +622,21 @@ void Sistema::buscarUsuarioHash() {
     }
 
 
-    HashMap<string, Usuario*> indice;                                                 // (1) O(1)
-    auto* aux = usuarios.inicio();                                                    // (2) O(1)  
-    while (aux != nullptr) {                                                          // (3) O(n)
-        indice.insertar(aux->elem.getNombre(), &aux->elem);                           // (4) O(1) promedio
-        aux = aux->sig;                                                               // (5) O(1)
+    HashMap<string, Usuario*> indice;                                               
+    auto* aux = usuarios.inicio();                                                  
+    while (aux != nullptr) {                                                        
+        indice.insertar(aux->elem.getNombre(), &aux->elem);                         
+        aux = aux->sig;                                                             
     }
 
 
     string nombreBuscado;
     Banner::promptCentrado("Ingrese el nombre del usuario: ");
     cin.ignore();
-    getline(cin, nombreBuscado);                                                      // (6) O(1)
+    getline(cin, nombreBuscado);                                                     
 
     Usuario* encontrado = nullptr;
-    if (indice.buscar(nombreBuscado, encontrado) && encontrado != nullptr) {         // (7) O(1) promedio
+    if (indice.buscar(nombreBuscado, encontrado) && encontrado != nullptr) {         
         Banner::lineaCentrada("Usuario encontrado:", "\033[38;2;46;125;50m");
         Banner::lineaCentrada("Nombre: " + encontrado->getNombre(), "\033[38;2;55;55;55m");
         Banner::lineaCentrada("Email: " + encontrado->getEmail(), "\033[38;2;55;55;55m");

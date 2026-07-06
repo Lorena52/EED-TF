@@ -5,17 +5,13 @@
 #include <stack>
 #include <limits>
 using namespace std;
-
-// ============================================================
-//  Grafo<T,P>  (estructura genérica, template)
-//  - Cada nodo guarda un DATO de cualquier tipo T:  valores[i]
-//  - El PESO de la conexion es de tipo P (int por defecto):
-//    ady[i][j]   (0 = no hay conexion)
-//
-//  Usado en AprendeGo! para modelar la MALLA DE TEMAS de un
-//  idioma: cada nodo es un tema gramatical/vocabulario y cada
-//  conexion dirigida A->B significa "A es prerrequisito de B".
-// ============================================================
+ 
+// ===================================================================
+// === RUBRICA: IMPLEMENTACION DE GRAFOS (G) ========================
+// Grafo<T,P> generico con matriz de adyacencia. Modela la malla de
+// temas: una conexion dirigida A->B significa "A es prerrequisito
+// de B". Incluye BFS, DFS, Dijkstra y orden topologico.
+// ===================================================================
 template <typename T, typename P = int>
 class Grafo {
 public:
@@ -104,21 +100,21 @@ public:
 
     
     vector<int> ordenarPorRequisitos() {
-        vector<int> entran(n, 0);                           // (1) O(V)
-        for (int i = 0; i < n; i++)                         // (2) O(V²)
+        vector<int> entran(n, 0);                          
+        for (int i = 0; i < n; i++)                        
             for (int j = 0; j < n; j++)
                 if (ady[i][j] != 0) entran[j]++;
 
         queue<int> cola;
-        for (int i = 0; i < n; i++)                          // (3) O(V)
+        for (int i = 0; i < n; i++)                        
             if (entran[i] == 0) cola.push(i);
 
         vector<int> orden;
-        while (!cola.empty()) {                            // (4) O(V²)
+        while (!cola.empty()) {                            
             int actual = cola.front();
             cola.pop();
             orden.push_back(actual);
-            for (int v = 0; v < n; v++)                      //     recorre TODA la fila por cada nodo
+            for (int v = 0; v < n; v++)                     
                 if (ady[actual][v] != 0 && --entran[v] == 0)
                     cola.push(v);
         }

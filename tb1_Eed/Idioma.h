@@ -9,22 +9,17 @@ using namespace std;
 
 class Progreso;
 
-// =====================================================================
 //  Idioma  (clase ABSTRACTA)
 //  Representa un idioma que el usuario puede aprender. Define el
 //  comportamiento comun y obliga a las subclases (Ingles, Portugues,
 //  Italiano) a implementar la teoria, los ejercicios y el vocabulario.
 //
-//  IMPORTANTE (correccion de diseno):
-//  El vocabulario y las lecciones se declaran UNA sola vez aqui, en la
-//  clase base. Antes cada subclase volvia a declarar su propio
-//  'vocabulario', lo que ocultaba (shadowing) al de la base y generaba
-//  confusion. Ahora las hijas comparten estos contenedores 'protected'.
+//  El vocabulario y las lecciones se declaran una sola vez en la clase
+//  base (protected) y las subclases los comparten.
 //
 //  Estructuras usadas:
 //    - ListaDoble<Leccion*>   -> historial de lecciones realizadas
 //    - ListaCircular<Palabra> -> vocabulario (se repasa en ciclo)
-// =====================================================================
 
 class Idioma {
 protected:
@@ -44,11 +39,11 @@ public:
 
     //Comportamiento que CADA idioma debe definir
     virtual void mostrarTeoria() = 0;
-    // Devuelve true si el usuario completo la ronda con 100% de aciertos.
-    virtual bool iniciarEjercicios(Progreso& progreso) = 0;
+    virtual void iniciarEjercicios(Progreso& progreso) = 0;
     virtual void cargarVocabulario() = 0;
 
     // Comportamiento comun (puede sobreescribirse) 
     virtual void repasoContinuo(Progreso& progreso);
     virtual void diccionario();
 };
+

@@ -3,30 +3,13 @@
 
 using namespace std;
 
-// ═══════════════════════════════════════════════════════════════
-//  ArbolAVL<T>  (Arbol Binario de Busqueda BALANCEADO - AVL)
-//
-//  Extiende la idea del ArbolBinario<T> (ABB) del proyecto pero
-//  garantizando que el arbol se mantenga BALANCEADO: para todo
-//  nodo, la diferencia de alturas entre su subarbol izquierdo y
-//  derecho (factor de equilibrio) es a lo sumo 1.
-//
-//  ¿Por que balancear?
-//    - En un ABB comun, si los datos llegan ya ordenados el arbol
-//      degenera en una "lista" y las operaciones caen a O(n).
-//    - El AVL aplica ROTACIONES (simples y dobles) tras cada
-//      insercion para restaurar el equilibrio, garantizando
-//      altura O(log n) y por lo tanto insercion y busqueda en
-//      O(log n) SIEMPRE (peor caso incluido).
-//
-//  Mismo enfoque generico del proyecto: criterio de orden por
-//  function<bool(T,T)> (lambda o puntero a funcion), igual que
-//  Ordenamiento<T> y ArbolBinario<T>.
-//
-//  Uso en el proyecto: ranking de rachas balanceado. Como el
-//  ranking se inserta ya ordenado (peor caso del ABB), el AVL
-//  demuestra su ventaja: altura minima garantizada.
-// ═══════════════════════════════════════════════════════════════
+// ===================================================================
+// === RUBRICA: IMPLEMENTACION DE ARBOL BINARIO BALANCEADO (E) ======
+// ArbolAVL<T>: ABB balanceado. Tras cada insercion verifica el factor
+// de equilibrio y aplica rotaciones para mantener altura O(log n), lo
+// que garantiza insercion y busqueda en O(log n) incluso en el peor
+// caso (datos ya ordenados, que es como llega el ranking de rachas).
+// ===================================================================
 template <typename T>
 class ArbolAVL {
 public:
@@ -41,10 +24,9 @@ public:
 private:
     Nodo* raiz;
     unsigned int lon;
-    unsigned int rotaciones;              // contador de rotaciones realizadas
+    unsigned int rotaciones;              // contador de rotaciones aplicadas
     function<bool(T, T)> menor;           // criterio de orden
 
-    // --- Auxiliares de altura y balance ---
     int alturaDe(Nodo* n) const { return (n == nullptr) ? 0 : n->altura; }
 
     int factorEquilibrio(Nodo* n) const {
@@ -57,7 +39,6 @@ private:
         n->altura = 1 + (hi > hd ? hi : hd);
     }
 
-    // --- ROTACIONES ---
     // Rotacion simple a la DERECHA (caso Izquierda-Izquierda):
     //        y                x
     //       / \              / \.
@@ -150,21 +131,18 @@ private:
     }
 
 public:
-    // Constructor: recibe el criterio de orden (lambda o puntero a funcion).
     ArbolAVL(function<bool(T, T)> criterio)
         : raiz(nullptr), lon(0), rotaciones(0), menor(criterio) {
     }
 
     ~ArbolAVL() { destruir(raiz); }
 
-    // --- Consultas ---
     unsigned int tam()            const { return lon; }
     bool         estaVacio()      const { return lon == 0; }
     int          altura()         const { return alturaDe(raiz); }
     unsigned int getRotaciones()  const { return rotaciones; }
     bool         estaBalanceado() const { return balanceadoRec(raiz); }
 
-    // --- Operaciones ---
     // Insercion: O(log n) garantizado gracias al rebalanceo AVL.
     void insertar(T elem) { raiz = insertarRec(raiz, elem); }
 

@@ -11,16 +11,13 @@ ArchivoManager::ArchivoManager()
 ArchivoManager::~ArchivoManager() {
 }
 
-// ---------------------------------------------------------------------
-//  Usuarios
-// ---------------------------------------------------------------------
 
 // Lee usuarios.txt linea por linea, deserializa cada linea a un Usuario
 // y lo inserta en la lista. Usa lambdas (requisito de la rubrica).
 void ArchivoManager::cargarUsuarios(ListaDoble<Usuario>& usuarios) {
     cargarArchivo(
         rutaUsuarios,
-        [](string linea) { return Usuario::deserializar(linea); },  
+        [](string linea) { return Usuario::deserializar(linea); },
         [&usuarios](Usuario u) { usuarios.insertarFinal(u); }       //LAMBDA
     );
 }
@@ -34,9 +31,6 @@ void ArchivoManager::guardarUsuarios(ListaDoble<Usuario>& usuarios) {
     );
 }
 
-// ---------------------------------------------------------------------
-//  Ranking
-// ---------------------------------------------------------------------
 void ArchivoManager::guardarRanking(Lista<Ranking>& ranking) {
     guardarArchivo(
         &ranking,
@@ -45,7 +39,6 @@ void ArchivoManager::guardarRanking(Lista<Ranking>& ranking) {
     );
 }
 
-// inlges 
 void ArchivoManager::guardarNivelesIngles(ListaDoble<Usuario>& usuarios) {
     guardarArchivo(
         &usuarios,
@@ -58,7 +51,6 @@ void ArchivoManager::guardarNivelesIngles(ListaDoble<Usuario>& usuarios) {
 }
 
 
-// italiano
 void ArchivoManager::guardarNivelesItaliano(ListaDoble<Usuario>& usuarios) {
     guardarArchivo(
         &usuarios,
@@ -70,7 +62,6 @@ void ArchivoManager::guardarNivelesItaliano(ListaDoble<Usuario>& usuarios) {
     );
 }
 
-// portugues 
 void ArchivoManager::guardarNivelesPortugues(ListaDoble<Usuario>& usuarios) {
     guardarArchivo(
         &usuarios,
@@ -82,7 +73,6 @@ void ArchivoManager::guardarNivelesPortugues(ListaDoble<Usuario>& usuarios) {
     );
 }
 
-// portugues 
 void ArchivoManager::guardarNivelesRacha(ListaDoble<Usuario>& usuarios) {
     guardarArchivo(
         &usuarios,
