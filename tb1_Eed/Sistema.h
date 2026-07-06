@@ -84,5 +84,5 @@ public:
     void generarDatasetAleatorio();
     // intefaz 
     void pantallaBienvenida();
-
+    void UPC();
 };
