@@ -747,15 +747,14 @@ void Sistema::top3RachasHeap()
 void Sistema::verMallaAprendizaje() {
     int opcion = -1;
     do {
-        Banner::lineaCentrada("===== MAPA DE APRENDISAJE =====", "\033[38;2;46;125;50m");
+        Banner::lineaCentrada("===== MAPA DE APRENDIZAJE =====", "\033[38;2;46;125;50m");
         Banner::lineaVacia();
         mallaLecciones.listarLecciones();
         Banner::lineaVacia();
-        cout << "   1. Ver orden sugerido de aprendizaje \n";
-
-        cout << "   2. Ver prerrequisitos de una leccion\n";
-        cout << "   0. Volver al menu principal\n";
-        cout << "   Opcion: ";
+        Banner::lineaCentrada("1. Ver orden sugerido de aprendizaje", "\033[38;2;55;55;55m");
+        Banner::lineaCentrada("2. Ver prerrequisitos de una leccion", "\033[38;2;55;55;55m");
+        Banner::lineaCentrada("0. Volver al menu principal", "\033[38;2;55;55;55m");
+        Banner::promptCentrado("Opcion: ");
         cin >> opcion;
         switch (opcion) {
         case 1:
@@ -763,18 +762,18 @@ void Sistema::verMallaAprendizaje() {
             break;
         case 2: {
             int n;
-            cout << "Ingrese la leccion: ";
+            Banner::promptCentrado("Ingrese la leccion: ");
             cin >> n;
             if (n >= 0 && n < mallaLecciones.cantidadNodos())
                 mallaLecciones.prerrequisitosDe(n);
             else
-                cout << "Leccion invalida.\n";
+                Banner::lineaCentrada("Leccion invalida.", "\033[38;2;200;40;40m");
             break;
         }
         case 0:
             break;
         default:
-            cout << "Opcion invalida\n";
+            Banner::lineaCentrada("Opcion invalida.", "\033[38;2;200;40;40m");
         }
         if (opcion != 0)
             pausar();
