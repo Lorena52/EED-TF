@@ -13,9 +13,9 @@ class Leccion {
 public:
     virtual ~Leccion();
 
-    // Métodos comunes que cada idioma debe implementar
-    virtual void ordenarOracion(Progreso& progreso) = 0;
-    virtual void completarOracion(Progreso& progreso) = 0;
-    virtual void traduccionAvanzada(Progreso& progreso) = 0;
+  
+    virtual bool ordenarOracion(Progreso& progreso) = 0;
+    virtual bool completarOracion(Progreso& progreso) = 0;
+    virtual bool traduccionAvanzada(Progreso& progreso) = 0;
 };
 

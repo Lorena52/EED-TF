@@ -28,14 +28,15 @@ void Portugues::mostrarTeoria() {
     }
 }
 
-void Portugues::iniciarEjercicios(Progreso& progreso) {
+bool Portugues::iniciarEjercicios(Progreso& progreso) {
     Leccion* leccion = new LeccionPortugues();
     lecciones.insertarFinal(leccion);
     switch (nivel) {
-    case 1: leccion->ordenarOracion(progreso); break;
-    case 2: leccion->completarOracion(progreso); break;
-    case 3: leccion->traduccionAvanzada(progreso); break;
+    case 1: return leccion->ordenarOracion(progreso);
+    case 2: return leccion->completarOracion(progreso);
+    case 3: return leccion->traduccionAvanzada(progreso);
     }
+    return false;
 }
 
 void Portugues::repasoContinuo(Progreso& progreso) {
@@ -48,7 +49,7 @@ void Portugues::repasoContinuo(Progreso& progreso) {
 
     srand(static_cast<unsigned int>(time(nullptr)));
 
-  
+
     Lista<Palabra*> delNivel;
     auto* nodo = vocabulario.primero();
     for (unsigned int i = 0; i < vocabulario.tam(); i++) {
@@ -60,13 +61,13 @@ void Portugues::repasoContinuo(Progreso& progreso) {
         return;
     }
 
-   
+
     Ordenamiento<Palabra*>::mezclar(&delNivel);
     Cola<Palabra*> ronda;
     int cuantas = (delNivel.tam() < (unsigned)META) ? (int)delNivel.tam() : META;
     for (int i = 0; i < cuantas; i++) ronda.encolar(delNivel.obtener(i));
 
-   
+
     int aciertos = 0;
     const string VERDE_T = "\033[38;2;46;125;50m";
     const string GRIS_T = "\033[38;2;55;55;55m";
@@ -80,7 +81,7 @@ void Portugues::repasoContinuo(Progreso& progreso) {
         Banner::lineaCentrada("Palavra em portugues: " + p->getTermino(), VERDE_T);
         Banner::lineaCentrada("====================================", GRIS_T);
 
- 
+
         Lista<string> opciones;
         string correcta = p->getTraduccion();
         opciones.insertarFinal(correcta);

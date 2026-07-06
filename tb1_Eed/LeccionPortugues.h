@@ -9,7 +9,7 @@ using namespace std;
 
 class LeccionPortugues : public Leccion {
 public:
-    void ordenarOracion(Progreso& progreso) override;
-    void completarOracion(Progreso& progreso) override;
-    void traduccionAvanzada(Progreso& progreso) override;
+    bool ordenarOracion(Progreso& progreso) override;
+    bool completarOracion(Progreso& progreso) override;
+    bool traduccionAvanzada(Progreso& progreso) override;
 };

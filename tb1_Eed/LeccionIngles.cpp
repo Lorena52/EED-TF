@@ -13,13 +13,16 @@ static const string V_T = "\033[38;2;46;125;50m";   // verde
 static const string G_T = "\033[38;2;55;55;55m";    // gris
 static const string R_T = "\033[38;2;200;40;40m";   // rojo
 
-void LeccionIngles::ordenarOracion(Progreso& progreso) {
-    char continuar;
-    int contador = 0;
+bool LeccionIngles::ordenarOracion(Progreso& progreso) {
+  
     int totalPreguntas = 3;
+    int aciertos = 0;
 
-    do {
-        srand(time(nullptr));
+    for (int ronda = 1; ronda <= totalPreguntas; ronda++) {
+        srand(time(nullptr) + ronda);
+
+        system("cls");
+        Banner::fondoForm();
 
         Lista<string> correcta;
         int tipo = rand() % 6;
@@ -36,6 +39,7 @@ void LeccionIngles::ordenarOracion(Progreso& progreso) {
         Ordenamiento<string>::mezclar(&mezclada);
 
         Banner::lineaVacia();
+        Banner::lineaCentrada("Pregunta " + to_string(ronda) + " de " + to_string(totalPreguntas), G_T);
         Banner::lineaCentrada("Order the sentence:", G_T);
         for (unsigned int i = 0; i < mezclada.tam(); i++)
             Banner::lineaCentrada(to_string(i + 1) + ") " + mezclada.obtener(i), G_T);
@@ -54,10 +58,10 @@ void LeccionIngles::ordenarOracion(Progreso& progreso) {
             Banner::lineaCentrada("Correcto!", V_T);
             progreso.registrarAcierto();
             progreso.actualizar(1, 1);
+            aciertos++;
 
-            contador++;
             Sistema sistema;
-            sistema.mostrarBarraProgreso(contador, totalPreguntas);
+            sistema.mostrarBarraProgreso(ronda, totalPreguntas);
 
             Banner::lineaVacia();
             Banner::lineaCentrada("--- Racha actual ---", G_T);
@@ -69,88 +73,124 @@ void LeccionIngles::ordenarOracion(Progreso& progreso) {
             progreso.registrarError(e);
             progreso.actualizar(0, 1);
 
+            Sistema sistema;
+            sistema.mostrarBarraProgreso(ronda, totalPreguntas);
+
             progreso.getRacha()->reiniciar();
             Banner::lineaCentrada("--- Racha reiniciada a 0 ---", R_T);
         }
 
-        Banner::promptCentrado("Continue? (y/n): ");
-        cin >> continuar;
+        Banner::lineaVacia();
+        Banner::promptCentrado("Presione ENTER para continuar...");
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin.get();
         cout << Banner::RESET;
-    } while (continuar == 'y' || continuar == 'Y');
+    }
+
+    return aciertos == totalPreguntas;   // true solo si acerto TODAS las preguntas
 }
 
 
+bool LeccionIngles::completarOracion(Progreso& progreso) {
+  
+    struct FraseCompletar { string enunciado; string opcionA, opcionB, opcionC; };
+    FraseCompletar banco[] = {
+        {"Complete the sentence: I ___ English.",            "study", "eat",   "play"},
+        {"Complete the sentence: She ___ music.",             "likes", "runs",  "sleeps"},
+        {"Complete the sentence: We ___ soccer.",             "play",  "sing",  "study"},
+        {"Complete the sentence: They ___ movies.",           "watch", "drink", "write"},
+        {"Complete the sentence: You ___ very fast.",         "run",   "read",  "sing"},
+        {"Complete the sentence: He ___ a lot of books.",     "reads", "eats",  "swims"},
+        {"Complete the sentence: I ___ coffee every morning.","drink", "wear",  "study"},
+        {"Complete the sentence: She ___ to the gym daily.",  "goes",  "cooks", "paints"},
+        {"Complete the sentence: We ___ our homework at night.", "do", "sell", "buy"},
+        {"Complete the sentence: They ___ English very well.","speak", "climb","drive"}
+    };
+    int totalBanco = 10;
+    int totalPreguntas = 5;
 
-
-
-
-
-
-void LeccionIngles::completarOracion(Progreso& progreso) {
-    
-    Cola<string> opciones;
     srand(static_cast<unsigned int>(time(nullptr)));
-    int tipo = rand() % 5;
-
-    Banner::lineaVacia();
-    if (tipo == 0) {
-        Banner::lineaCentrada("Complete the sentence: I ___ English.", G_T);
-        opciones.encolar("study"); opciones.encolar("eat"); opciones.encolar("play");
-    }
-    else if (tipo == 1) {
-        Banner::lineaCentrada("Complete the sentence: She ___ music.", G_T);
-        opciones.encolar("likes"); opciones.encolar("runs"); opciones.encolar("sleeps");
-    }
-    else if (tipo == 2) {
-        Banner::lineaCentrada("Complete the sentence: We ___ soccer.", G_T);
-        opciones.encolar("play"); opciones.encolar("sing"); opciones.encolar("study");
-    }
-    else if (tipo == 3) {
-        Banner::lineaCentrada("Complete the sentence: They ___ movies.", G_T);
-        opciones.encolar("watch"); opciones.encolar("drink"); opciones.encolar("write");
-    }
-    else {
-        Banner::lineaCentrada("Complete the sentence: You ___ very fast.", G_T);
-        opciones.encolar("run"); opciones.encolar("read"); opciones.encolar("sing");
+    int usados[10] = { 0,0,0,0,0,0,0,0,0,0 };
+    int orden[5];
+    for (int k = 0; k < totalPreguntas; k++) {
+        int idx;
+        do { idx = rand() % totalBanco; } while (usados[idx]);
+        usados[idx] = 1;
+        orden[k] = idx;
     }
 
-    int i = 1;
-    opciones.mostrarCon([&](string palabra) {
-        Banner::lineaCentrada(to_string(i++) + ") " + palabra, G_T);
-        });
+    int aciertos = 0;
+    for (int ronda = 1; ronda <= totalPreguntas; ronda++) {
+        system("cls");
+        Banner::fondoForm();
 
-    int opcion;
-    Banner::promptCentrado("Opcion: ");
-    cin >> opcion;
-    cout << Banner::RESET;
-    if (opcion == 1) {
-        Banner::lineaCentrada("Correcto!", V_T);
-        progreso.registrarAcierto();
-        progreso.actualizar(1, 1);
+        FraseCompletar& frase = banco[orden[ronda - 1]];
 
-        Sistema sistema;
-        sistema.mostrarBarraProgreso(1, 1);
+        // Mezclar cual opcion (A, B o C) es la correcta para que no
+        // siempre aparezca en el mismo puesto.
+        Cola<string> opciones;
+        Lista<string> tresOpciones;
+        tresOpciones.insertarFinal(frase.opcionA);
+        tresOpciones.insertarFinal(frase.opcionB);
+        tresOpciones.insertarFinal(frase.opcionC);
+        Ordenamiento<string>::mezclar(&tresOpciones);
+        int posicionCorrecta = -1;
+        for (unsigned int i = 0; i < tresOpciones.tam(); i++) {
+            opciones.encolar(tresOpciones.obtener(i));
+            if (tresOpciones.obtener(i) == frase.opcionA) posicionCorrecta = (int)i + 1;
+        }
 
         Banner::lineaVacia();
-        Banner::lineaCentrada("--- Racha actual ---", G_T);
-        progreso.getRacha()->mostrar();
-    }
-    else {
-        Banner::lineaCentrada("Incorrecto.", R_T);
-        Error e(2, "Palabra incorrecta", "2026-05-08");
-        progreso.registrarError(e);
-        progreso.actualizar(0, 1);
+        Banner::lineaCentrada("Pregunta " + to_string(ronda) + " de " + to_string(totalPreguntas), G_T);
+        Banner::lineaCentrada(frase.enunciado, G_T);
 
-        progreso.getRacha()->reiniciar();
-        Banner::lineaCentrada("--- Racha reiniciada a 0 ---", R_T);
+        int i = 1;
+        opciones.mostrarCon([&](string palabra) {
+            Banner::lineaCentrada(to_string(i++) + ") " + palabra, G_T);
+            });
+
+        int opcion;
+        Banner::promptCentrado("Opcion: ");
+        cin >> opcion;
+        cout << Banner::RESET;
+        if (opcion == posicionCorrecta) {
+            Banner::lineaCentrada("Correcto!", V_T);
+            progreso.registrarAcierto();
+            progreso.actualizar(1, 1);
+            aciertos++;
+
+            Sistema sistema;
+            sistema.mostrarBarraProgreso(ronda, totalPreguntas);
+
+            Banner::lineaVacia();
+            Banner::lineaCentrada("--- Racha actual ---", G_T);
+            progreso.getRacha()->mostrar();
+        }
+        else {
+            Banner::lineaCentrada("Incorrecto.", R_T);
+            Error e(2, "Palabra incorrecta", "2026-05-08");
+            progreso.registrarError(e);
+            progreso.actualizar(0, 1);
+
+            Sistema sistema;
+            sistema.mostrarBarraProgreso(ronda, totalPreguntas);
+
+            progreso.getRacha()->reiniciar();
+            Banner::lineaCentrada("--- Racha reiniciada a 0 ---", R_T);
+        }
+
+        Banner::lineaVacia();
+        Banner::promptCentrado("Presione ENTER para continuar...");
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin.get();
+        cout << Banner::RESET;
     }
+
+    return aciertos == totalPreguntas;
 }
 
 
-void LeccionIngles::traduccionAvanzada(Progreso& progreso) {
-    Banner::lineaVacia();
-    Banner::lineaCentrada("=== Advanced Translation Exercise ===", V_T);
-
+bool LeccionIngles::traduccionAvanzada(Progreso& progreso) {
     // Se agrego mas variedad: antes siempre eran las mismas 3 frases en el
     // mismo orden. Ahora hay 6 frases y se eligen 3 distintas al azar.
     struct Frase { string ingles; string espanol; };
@@ -176,8 +216,13 @@ void LeccionIngles::traduccionAvanzada(Progreso& progreso) {
 
     int total = 3, correctas = 0;
     for (int i = 0; i < total; i++) {
+        system("cls");
+        Banner::fondoForm();
+
         Frase& frase = todas[orden[i]];
         Banner::lineaVacia();
+        Banner::lineaCentrada("Pregunta " + to_string(i + 1) + " de " + to_string(total), G_T);
+        Banner::lineaCentrada("=== Advanced Translation Exercise ===", V_T);
         Banner::lineaCentrada("Translate into Spanish:", G_T);
         Banner::lineaCentrada(frase.ingles, G_T);
         string respuesta;
@@ -192,17 +237,26 @@ void LeccionIngles::traduccionAvanzada(Progreso& progreso) {
             correctas++;
 
             Sistema sistema;
-            sistema.mostrarBarraProgreso(correctas, total);
+            sistema.mostrarBarraProgreso(i + 1, total);
         }
         else {
             Banner::lineaCentrada("Incorrect. Correct answer:", R_T);
             Banner::lineaCentrada(frase.espanol, G_T);
             Error e(i + 1, "Wrong translation", "2026-05-10");
             progreso.registrarError(e);
+
+            Sistema sistema;
+            sistema.mostrarBarraProgreso(i + 1, total);
         }
+
+        Banner::lineaVacia();
+        Banner::promptCentrado("Presione ENTER para continuar...");
+        cin.get();
+        cout << Banner::RESET;
     }
 
     Banner::lineaVacia();
     Banner::lineaCentrada("You got " + to_string(correctas) + " out of " + to_string(total) + ".", V_T);
     progreso.actualizar(correctas, total);
+    return correctas == total;
 }

@@ -22,3 +22,4 @@
 22;JorgeVargas896;JorgeVargas896@outlook.com;1;2;2;0;20;408
 23;JoseQuispe564;JoseQuispe564@upc.edu.pe;3;3;1;0;9;94
 24;MariaRamos646;MariaRamos646@hotmail.com;1;2;2;0;19;280
+25;mod;mod@gmail.com;3;2;2;5;5;5

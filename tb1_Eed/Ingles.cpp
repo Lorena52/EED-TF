@@ -31,18 +31,19 @@ void Ingles::mostrarTeoria() {
     }
 }
 
-void Ingles::iniciarEjercicios(Progreso& progreso) {
+bool Ingles::iniciarEjercicios(Progreso& progreso) {
     Leccion* leccion = new LeccionIngles();
     lecciones.insertarFinal(leccion);
     switch (nivel) {
-    case 1: leccion->ordenarOracion(progreso); break;
-    case 2: leccion->completarOracion(progreso); break;
-    case 3: leccion->traduccionAvanzada(progreso); break;
+    case 1: return leccion->ordenarOracion(progreso);
+    case 2: return leccion->completarOracion(progreso);
+    case 3: return leccion->traduccionAvanzada(progreso);
     }
+    return false;
 }
 //INGLES
 void Ingles::repasoContinuo(Progreso& progreso) {
-    const int META = 10;  
+    const int META = 10;
 
     if (vocabulario.estaVacia()) {
         Banner::lineaCentrada("No hay palabras registradas.", "\033[38;2;200;40;40m");
@@ -99,7 +100,7 @@ void Ingles::repasoContinuo(Progreso& progreso) {
                 if (candidatas.obtener(j) == trad) { yaEsta = true; break; }
             if (!yaEsta) candidatas.insertarFinal(trad);
         }
-      
+
         string respaldo[] = { "puerta", "perro", "cielo", "mesa", "arbol", "rio" };
         for (int r = 0; r < 6; r++) {
             if (respaldo[r] == correcta) continue;
@@ -129,13 +130,13 @@ void Ingles::repasoContinuo(Progreso& progreso) {
 
         if (respuesta < 1 || respuesta > 4) {
             Banner::lineaCentrada("Opcion invalida. La palabra se repetira al final.", ROJO_T);
-            ronda.encolar(p); 
+            ronda.encolar(p);
         }
         else if (opciones.obtener(respuesta - 1) == correcta) {
             Banner::lineaCentrada("Correcto! :)", VERDE_T);
             p->incrementarRepaso();
             progreso.registrarAcierto();
-            aciertos++;   
+            aciertos++;
         }
         else {
             Banner::lineaCentrada("Incorrecto. La respuesta correcta era: " + correcta, ROJO_T);
@@ -143,15 +144,15 @@ void Ingles::repasoContinuo(Progreso& progreso) {
             progreso.registrarError(e);
             progreso.getRacha()->reiniciar();
 
-          
+
             int vecesFallada = 0;
             fallosPorPalabra.buscar(p->getTermino(), vecesFallada);
             fallosPorPalabra.insertar(p->getTermino(), vecesFallada + 1);
 
-            ronda.encolar(p);   
+            ronda.encolar(p);
         }
 
-       
+
         Banner::lineaVacia();
         Banner::lineaCentrada("Progreso del repaso:", GRIS_T);
         Sistema::mostrarBarraProgreso(aciertos, cuantas);
@@ -236,7 +237,7 @@ void Ingles::cargarVocabulario() {
 
 void Ingles::mostrarDiccionarioRecursivo(ListaCircular<Palabra>::Nodo* nodo,
     unsigned int restantes) {
-    if (nodo == nullptr || restantes == 0) return;   
+    if (nodo == nullptr || restantes == 0) return;
     nodo->elem.mostrar();
     mostrarDiccionarioRecursivo(nodo->sig, restantes - 1);
 }
@@ -247,7 +248,7 @@ void Ingles::diccionario() {
         return;
     }
 
- 
+
     Lista<Palabra*> ordenado;
     auto* nodo = vocabulario.primero();
     for (unsigned int i = 0; i < vocabulario.tam(); i++) {
@@ -255,7 +256,7 @@ void Ingles::diccionario() {
         nodo = nodo->sig;
     }
 
-   
+
     Ordenamiento<Palabra*>::insertion(&ordenado, cmpPalabraAZ);
 
     Banner::lineaCentrada("=== Diccionario de Ingles (orden alfabetico) ===", "\033[38;2;55;55;55m");

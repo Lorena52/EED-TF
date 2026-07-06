@@ -13,7 +13,7 @@ public:
     Italiano();
 
     void mostrarTeoria() override;
-    void iniciarEjercicios(Progreso& progreso) override;
+    bool iniciarEjercicios(Progreso& progreso) override;
     void cargarVocabulario() override;
     void repasoContinuo(Progreso& progreso) override;
     void diccionario() override;

@@ -12,13 +12,18 @@ static const string V_T = "\033[38;2;46;125;50m";
 static const string G_T = "\033[38;2;55;55;55m";
 static const string R_T = "\033[38;2;200;40;40m";
 
-void LeccionItaliano::ordenarOracion(Progreso& progreso) {
-    char continuar;
-    int contador = 0;
+bool LeccionItaliano::ordenarOracion(Progreso& progreso) {
+    // Antes esto era un do-while con "Desea continuar? (s/n)" que dejaba
+    // seguir respondiendo sin limite, por eso la barra de progreso podia
+    // pasar de 100%. Ahora se hacen EXACTAMENTE totalPreguntas rondas.
     int totalPreguntas = 3;
+    int aciertos = 0;
 
-    do {
-        srand(time(nullptr));
+    for (int ronda = 1; ronda <= totalPreguntas; ronda++) {
+        srand(time(nullptr) + ronda);
+
+        system("cls");
+        Banner::fondoForm();
 
         Lista<string> correcta;
         int tipo = rand() % 6;
@@ -47,6 +52,7 @@ void LeccionItaliano::ordenarOracion(Progreso& progreso) {
         Ordenamiento<string>::mezclar(&mezclada);
 
         Banner::lineaVacia();
+        Banner::lineaCentrada("Pregunta " + to_string(ronda) + " de " + to_string(totalPreguntas), G_T);
         Banner::lineaCentrada("Ordina la frase:", G_T);
         for (unsigned int i = 0; i < mezclada.tam(); i++)
             Banner::lineaCentrada(to_string(i + 1) + ") " + mezclada.obtener(i), G_T);
@@ -65,10 +71,10 @@ void LeccionItaliano::ordenarOracion(Progreso& progreso) {
             Banner::lineaCentrada("Correcto!", V_T);
             progreso.registrarAcierto();
             progreso.actualizar(1, 1);
+            aciertos++;
 
-            contador++;
             Sistema sistema;
-            sistema.mostrarBarraProgreso(contador, totalPreguntas);
+            sistema.mostrarBarraProgreso(ronda, totalPreguntas);
 
             Banner::lineaVacia();
             Banner::lineaCentrada("--- Racha actual ---", G_T);
@@ -80,110 +86,126 @@ void LeccionItaliano::ordenarOracion(Progreso& progreso) {
             progreso.registrarError(e);
             progreso.actualizar(0, 1);
 
+            Sistema sistema;
+            sistema.mostrarBarraProgreso(ronda, totalPreguntas);
+
             progreso.getRacha()->reiniciar();
             Banner::lineaCentrada("--- Racha reiniciada a 0 ---", R_T);
         }
 
-        if (progreso.getErroresSeguidos() >= 3) {
-            Banner::lineaVacia();
-            Banner::lineaCentrada("Has cometido 3 errores seguidos.", R_T);
-            Banner::promptCentrado("Desea continuar la leccion? (s/n): ");
-            char op; cin >> op;
-            cout << Banner::RESET;
-            if (op == 'n' || op == 'N') {
-                Banner::lineaCentrada("Volviendo al menu...", G_T);
-                return;
-            }
-            progreso.reiniciarErrores();
-        }
-
-        Banner::promptCentrado("Desea continuar? (s/n): ");
-        cin >> continuar;
+        Banner::lineaVacia();
+        Banner::promptCentrado("Presione ENTER para continuar...");
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin.get();
         cout << Banner::RESET;
+    }
 
-    } while (continuar == 's' || continuar == 'S');
+    return aciertos == totalPreguntas;
 }
 
 
-void LeccionItaliano::completarOracion(Progreso& progreso) {
-    // Se agregaron mas ejercicios: antes solo existia "Io ___ italiano." fijo.
-    Cola<string> opciones;
+bool LeccionItaliano::completarOracion(Progreso& progreso) {
+    // Se pidio mas variedad: antes era 1 sola pregunta entre 5 posibles.
+    // Ahora hay un banco de 10 frases y se hacen 5 rondas SIN REPETIR
+    // frase dentro de la misma sesion.
+    struct FraseCompletar { string enunciado; string opcionA, opcionB, opcionC; };
+    FraseCompletar banco[] = {
+        {"Completa la frase: Io ___ italiano.",            "studio",    "mangio",  "gioco"},
+        {"Completa la frase: Lei ___ la musica.",          "ama",       "corre",   "dorme"},
+        {"Completa la frase: Noi ___ a calcio.",           "giochiamo", "cantiamo","studiamo"},
+        {"Completa la frase: Loro ___ film.",               "guardano",  "bevono",  "scrivono"},
+        {"Completa la frase: Tu ___ molto veloce.",        "corri",     "leggi",   "canti"},
+        {"Completa la frase: Lui ___ molti libri.",        "legge",     "mangia",  "nuota"},
+        {"Completa la frase: Io ___ caffe ogni mattina.",  "bevo",      "indosso", "studio"},
+        {"Completa la frase: Lei ___ in palestra ogni giorno.", "va",   "cucina",  "dipinge"},
+        {"Completa la frase: Noi ___ i compiti di sera.",  "facciamo",  "vendiamo","compriamo"},
+        {"Completa la frase: Loro ___ italiano molto bene.","parlano",  "scalano", "guidano"}
+    };
+    int totalBanco = 10;
+    int totalPreguntas = 5;
+
     srand(static_cast<unsigned int>(time(nullptr)));
-    int tipo = rand() % 5;
-
-    Banner::lineaVacia();
-    if (tipo == 0) {
-        Banner::lineaCentrada("Completa la frase: Io ___ italiano.", G_T);
-        opciones.encolar("studio"); opciones.encolar("mangio"); opciones.encolar("gioco");
-    }
-    else if (tipo == 1) {
-        Banner::lineaCentrada("Completa la frase: Lei ___ la musica.", G_T);
-        opciones.encolar("ama"); opciones.encolar("corre"); opciones.encolar("dorme");
-    }
-    else if (tipo == 2) {
-        Banner::lineaCentrada("Completa la frase: Noi ___ a calcio.", G_T);
-        opciones.encolar("giochiamo"); opciones.encolar("cantiamo"); opciones.encolar("studiamo");
-    }
-    else if (tipo == 3) {
-        Banner::lineaCentrada("Completa la frase: Loro ___ film.", G_T);
-        opciones.encolar("guardano"); opciones.encolar("bevono"); opciones.encolar("scrivono");
-    }
-    else {
-        Banner::lineaCentrada("Completa la frase: Tu ___ molto veloce.", G_T);
-        opciones.encolar("corri"); opciones.encolar("leggi"); opciones.encolar("canti");
+    int usados[10] = { 0,0,0,0,0,0,0,0,0,0 };
+    int orden[5];
+    for (int k = 0; k < totalPreguntas; k++) {
+        int idx;
+        do { idx = rand() % totalBanco; } while (usados[idx]);
+        usados[idx] = 1;
+        orden[k] = idx;
     }
 
-    int i = 1;
-    opciones.mostrarCon([&](string palabra) {
-        Banner::lineaCentrada(to_string(i++) + ") " + palabra, G_T);
-        });
+    int aciertos = 0;
+    for (int ronda = 1; ronda <= totalPreguntas; ronda++) {
+        system("cls");
+        Banner::fondoForm();
 
-    int opcion;
-    Banner::promptCentrado("Opcion: ");
-    cin >> opcion;
-    cout << Banner::RESET;
-    if (opcion == 1) {
-        Banner::lineaCentrada("Correcto!", V_T);
-        progreso.registrarAcierto();
-        progreso.actualizar(1, 1);
+        FraseCompletar& frase = banco[orden[ronda - 1]];
 
-        Sistema sistema;
-        sistema.mostrarBarraProgreso(1, 1);
-
-        Banner::lineaVacia();
-        Banner::lineaCentrada("--- Racha actual ---", G_T);
-        progreso.getRacha()->mostrar();
-    }
-    else {
-        Banner::lineaCentrada("Incorrecto.", R_T);
-        Error e(2, "Palabra incorrecta", "2026-05-08");
-        progreso.registrarError(e);
-        progreso.actualizar(0, 1);
-
-        progreso.getRacha()->reiniciar();
-        Banner::lineaCentrada("--- Racha reiniciada a 0 ---", R_T);
-    }
-
-    if (progreso.getErroresSeguidos() >= 3) {
-        Banner::lineaVacia();
-        Banner::lineaCentrada("Has cometido 3 errores seguidos.", R_T);
-        Banner::promptCentrado("Desea continuar la leccion? (s/n): ");
-        char op; cin >> op;
-        cout << Banner::RESET;
-        if (op == 'n' || op == 'N') {
-            Banner::lineaCentrada("Volviendo al menu...", G_T);
-            return;
+        Cola<string> opciones;
+        Lista<string> tresOpciones;
+        tresOpciones.insertarFinal(frase.opcionA);
+        tresOpciones.insertarFinal(frase.opcionB);
+        tresOpciones.insertarFinal(frase.opcionC);
+        Ordenamiento<string>::mezclar(&tresOpciones);
+        int posicionCorrecta = -1;
+        for (unsigned int i = 0; i < tresOpciones.tam(); i++) {
+            opciones.encolar(tresOpciones.obtener(i));
+            if (tresOpciones.obtener(i) == frase.opcionA) posicionCorrecta = (int)i + 1;
         }
-        progreso.reiniciarErrores();
+
+        Banner::lineaVacia();
+        Banner::lineaCentrada("Pregunta " + to_string(ronda) + " de " + to_string(totalPreguntas), G_T);
+        Banner::lineaCentrada(frase.enunciado, G_T);
+
+        int i = 1;
+        opciones.mostrarCon([&](string palabra) {
+            Banner::lineaCentrada(to_string(i++) + ") " + palabra, G_T);
+            });
+
+        int opcion;
+        Banner::promptCentrado("Opcion: ");
+        cin >> opcion;
+        cout << Banner::RESET;
+        if (opcion == posicionCorrecta) {
+            Banner::lineaCentrada("Correcto!", V_T);
+            progreso.registrarAcierto();
+            progreso.actualizar(1, 1);
+            aciertos++;
+
+            Sistema sistema;
+            sistema.mostrarBarraProgreso(ronda, totalPreguntas);
+
+            Banner::lineaVacia();
+            Banner::lineaCentrada("--- Racha actual ---", G_T);
+            progreso.getRacha()->mostrar();
+        }
+        else {
+            Banner::lineaCentrada("Incorrecto.", R_T);
+            Error e(2, "Palabra incorrecta", "2026-05-08");
+            progreso.registrarError(e);
+            progreso.actualizar(0, 1);
+
+            Sistema sistema;
+            sistema.mostrarBarraProgreso(ronda, totalPreguntas);
+
+            progreso.getRacha()->reiniciar();
+            Banner::lineaCentrada("--- Racha reiniciada a 0 ---", R_T);
+        }
+
+        Banner::lineaVacia();
+        Banner::promptCentrado("Presione ENTER para continuar...");
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin.get();
+        cout << Banner::RESET;
     }
+
+    return aciertos == totalPreguntas;
 }
 
 
-void LeccionItaliano::traduccionAvanzada(Progreso& progreso) {
-    Banner::lineaVacia();
-    Banner::lineaCentrada("=== Esercizio di Traduzione Avanzata ===", V_T);
-
-   
+bool LeccionItaliano::traduccionAvanzada(Progreso& progreso) {
+    // Se agrego mas variedad: antes siempre eran las mismas 3 frases en el
+    // mismo orden. Ahora hay 6 frases y se eligen 3 distintas al azar.
     struct Frase { string italiano; string espanol; };
     Frase todas[] = {
         {"Nonostante la pioggia, hanno continuato a giocare a calcio.", "A pesar de la lluvia, continuaron jugando futbol."},
@@ -207,8 +229,13 @@ void LeccionItaliano::traduccionAvanzada(Progreso& progreso) {
 
     int total = 3, correctas = 0;
     for (int i = 0; i < total; i++) {
+        system("cls");
+        Banner::fondoForm();
+
         Frase& frase = todas[orden[i]];
         Banner::lineaVacia();
+        Banner::lineaCentrada("Pregunta " + to_string(i + 1) + " de " + to_string(total), G_T);
+        Banner::lineaCentrada("=== Esercizio di Traduzione Avanzata ===", V_T);
         Banner::lineaCentrada("Traduci in spagnolo:", G_T);
         Banner::lineaCentrada(frase.italiano, G_T);
         string respuesta;
@@ -223,17 +250,26 @@ void LeccionItaliano::traduccionAvanzada(Progreso& progreso) {
             correctas++;
 
             Sistema sistema;
-            sistema.mostrarBarraProgreso(correctas, total);
+            sistema.mostrarBarraProgreso(i + 1, total);
         }
         else {
             Banner::lineaCentrada("Incorrecto. La traduccion correcta era:", R_T);
             Banner::lineaCentrada(frase.espanol, G_T);
             Error e(i + 1, "Traduccion incorrecta", "2026-05-08");
             progreso.registrarError(e);
+
+            Sistema sistema;
+            sistema.mostrarBarraProgreso(i + 1, total);
         }
+
+        Banner::lineaVacia();
+        Banner::promptCentrado("Presione ENTER para continuar...");
+        cin.get();
+        cout << Banner::RESET;
     }
 
     Banner::lineaVacia();
     Banner::lineaCentrada("Has acertado " + to_string(correctas) + " de " + to_string(total) + " frases.", V_T);
     progreso.actualizar(correctas, total);
+    return correctas == total;
 }

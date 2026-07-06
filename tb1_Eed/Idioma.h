@@ -7,7 +7,7 @@
 
 using namespace std;
 
-class Progreso; 
+class Progreso;
 
 // =====================================================================
 //  Idioma  (clase ABSTRACTA)
@@ -30,7 +30,7 @@ class Idioma {
 protected:
     string codigo; // "EN", "PT", "IT"
     string nombre; // "Ingles", "Portugues"
-	int nivel; //1=Principiante, 2=Intermedio, 3=Avanzado
+    int nivel; //1=Principiante, 2=Intermedio, 3=Avanzado
 
     ListaDoble<Leccion*> lecciones;
     ListaCircular<Palabra> vocabulario;
@@ -44,7 +44,8 @@ public:
 
     //Comportamiento que CADA idioma debe definir
     virtual void mostrarTeoria() = 0;
-    virtual void iniciarEjercicios(Progreso& progreso) = 0;
+    // Devuelve true si el usuario completo la ronda con 100% de aciertos.
+    virtual bool iniciarEjercicios(Progreso& progreso) = 0;
     virtual void cargarVocabulario() = 0;
 
     // Comportamiento comun (puede sobreescribirse) 

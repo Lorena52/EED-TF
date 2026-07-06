@@ -31,7 +31,7 @@ void Italiano::mostrarTeoria() {
     }
 }
 
-void Italiano::iniciarEjercicios(Progreso& progreso) {
+bool Italiano::iniciarEjercicios(Progreso& progreso) {
 
     Leccion* leccion = new LeccionItaliano();
     lecciones.insertarFinal(leccion);
@@ -39,17 +39,15 @@ void Italiano::iniciarEjercicios(Progreso& progreso) {
     switch (nivel) {
 
     case 1:
-        leccion->ordenarOracion(progreso);
-        break;
+        return leccion->ordenarOracion(progreso);
 
     case 2:
-        leccion->completarOracion(progreso);
-        break;
+        return leccion->completarOracion(progreso);
 
     case 3:
-        leccion->traduccionAvanzada(progreso);
-        break;
+        return leccion->traduccionAvanzada(progreso);
     }
+    return false;
 }
 
 void Italiano::repasoContinuo(Progreso& progreso) {
@@ -91,7 +89,7 @@ void Italiano::repasoContinuo(Progreso& progreso) {
         Banner::lineaCentrada("Parola in italiano: " + p->getTermino(), VERDE_T);
         Banner::lineaCentrada("====================================", GRIS_T);
 
- 
+
         Lista<string> opciones;
         string correcta = p->getTraduccion();
         opciones.insertarFinal(correcta);

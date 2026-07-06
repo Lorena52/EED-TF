@@ -359,18 +359,32 @@ void Sistema::iniciarLecciones() {
     }
     else if (modo == 2) {
         idiomaSeleccionado->mostrarTeoria();
-        //Ahora iniciarEjercicios maneja todo el flujo y la barra
-        idiomaSeleccionado->iniciarEjercicios(*(usuarioActivo->obtenerProgreso()));
+        //Ahora iniciarEjercicios maneja todo el flujo y la barra, y
+        //devuelve true SOLO si el usuario acerto TODAS las preguntas.
+        bool leccionCompleta = idiomaSeleccionado->iniciarEjercicios(*(usuarioActivo->obtenerProgreso()));
 
         Banner::lineaCentrada("=== Leccion completada! ===", "\033[38;2;46;125;50m");
         // ==========================================================
         //  AVANCE DE NIVEL USANDO EL GRAFO (MallaLecciones)
         //  El grafo tiene aristas nivel N -> nivel N+1 por idioma.
-        //  Al terminar la leccion, consultamos siguienteNivel() y si
-        //  existe conexion en el grafo, avanzamos al usuario y
-        //  mostramos el mensaje de transicion.
+        //  Solo se avanza si "leccionCompleta" es true (100% de
+        //  aciertos en la ronda); si no, se anima a intentarlo de
+        //  nuevo sin subir de nivel.
         // ==========================================================
-        if (idiomaActualIdx >= 0 && usuarioActivo != nullptr) {
+        if (!leccionCompleta) {
+            Banner::lineaVacia();
+            Banner::lineaCentrada("======================================================",
+                "\033[38;2;200;40;40m");
+            Banner::lineaCentrada(
+                "No acertaste todas las preguntas de esta ronda.",
+                "\033[38;2;200;40;40m");
+            Banner::lineaCentrada(
+                "Debes responder TODO correctamente para subir de nivel. Intenta de nuevo!",
+                "\033[38;2;55;55;55m");
+            Banner::lineaCentrada("======================================================",
+                "\033[38;2;200;40;40m");
+        }
+        else if (idiomaActualIdx >= 0 && usuarioActivo != nullptr) {
             int nivelActual = idiomaSeleccionado->getNivel();
             int nivelSiguiente = mallaLecciones.siguienteNivel(idiomaActualIdx, nivelActual);
 
