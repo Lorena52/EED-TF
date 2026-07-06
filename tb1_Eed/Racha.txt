@@ -1,7 +1,7 @@
 Kassandra;6
 leito;10
-juan;0
-shayli;0
+juan;5
+shayli;3
 AndresCastro540;17
 CamilaFlores330;3
 MiguelSalazar940;11
@@ -23,3 +23,4 @@ JorgeVargas896;20
 JoseQuispe564;9
 MariaRamos646;19
 mod;5
+fos;0

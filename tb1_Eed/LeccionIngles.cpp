@@ -15,17 +15,17 @@ static const string R_T = "\033[38;2;200;40;40m";   // rojo
 
 bool LeccionIngles::ordenarOracion(Progreso& progreso) {
   
-    int totalPreguntas = 3;
+    int totalPreguntas = 6;
     int aciertos = 0;
 
     for (int ronda = 1; ronda <= totalPreguntas; ronda++) {
-        srand(time(nullptr) + ronda);
+        ;
 
         system("cls");
         Banner::fondoForm();
 
         Lista<string> correcta;
-        int tipo = rand() % 6;
+        int tipo = ronda -1;
 
         if (tipo == 0) { correcta.insertarFinal("I"); correcta.insertarFinal("study"); correcta.insertarFinal("English"); }
         else if (tipo == 1) { correcta.insertarFinal("She"); correcta.insertarFinal("likes"); correcta.insertarFinal("music"); }

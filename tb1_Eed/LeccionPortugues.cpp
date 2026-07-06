@@ -16,7 +16,7 @@ bool LeccionPortugues::ordenarOracion(Progreso& progreso) {
     // Antes esto era un do-while con "Desea continuar? (s/n)" que dejaba
     // seguir respondiendo sin limite, por eso la barra de progreso podia
     // pasar de 100%. Ahora se hacen EXACTAMENTE totalPreguntas rondas.
-    int totalPreguntas = 3;
+    int totalPreguntas = 6;
     int aciertos = 0;
 
     for (int ronda = 1; ronda <= totalPreguntas; ronda++) {
@@ -26,7 +26,7 @@ bool LeccionPortugues::ordenarOracion(Progreso& progreso) {
         Banner::fondoForm();
 
         Lista<string> correcta;
-        int tipo = rand() % 5;
+        int tipo = ronda-1 ;
 
         if (tipo == 0) {
             correcta.insertarFinal("Eu"); correcta.insertarFinal("estudo"); correcta.insertarFinal("portugues");
