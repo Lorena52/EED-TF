@@ -7,6 +7,7 @@
 
 using namespace std;
 
+// =====================================================================
 //  ArchivoManager
 //  UNICA clase responsable de la persistencia en disco. Sabe los
 //  nombres de los archivos y como serializar/deserializar cada entidad.
@@ -18,6 +19,7 @@ using namespace std;
 //  Archivos que administra:
 //    - usuarios.txt -> lista de usuarios (clase Usuario)
 //    - ranking.txt  -> ranking de rachas (clase Ranking)
+// =====================================================================
 class ArchivoManager {
 private:
     string rutaUsuarios;
@@ -30,15 +32,20 @@ public:
     ArchivoManager();
     ~ArchivoManager();
 
+    // --- Usuarios ---
     // Carga los usuarios del archivo dentro de la lista recibida.
     void cargarUsuarios(ListaDoble<Usuario>& usuarios);
     // Guarda todos los usuarios de la lista en el archivo.
     void guardarUsuarios(ListaDoble<Usuario>& usuarios);
 
+    // --- Ranking ---
     void guardarRanking(Lista<Ranking>& ranking);
 
+    //ingles 
     void guardarNivelesIngles(ListaDoble<Usuario>& usuarios);
+    //ita
     void guardarNivelesItaliano(ListaDoble<Usuario>& usuarios);
+    // port
     void guardarNivelesPortugues(ListaDoble<Usuario>& usuarios);
     // racha
     void guardarNivelesRacha(ListaDoble<Usuario>& usuarios);

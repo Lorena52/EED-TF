@@ -3,12 +3,28 @@
 
 using namespace std;
 
-// ===================================================================
-// === RUBRICA: IMPLEMENTACION DE ARBOL BINARIO (D) =================
-// ArbolBinario<T>: ABB generico ordenado por un criterio (lambda).
-// El recorrido inorden entrega los elementos ya ordenados. Se usa
-// para el ranking de rachas.
-// ===================================================================
+// ═══════════════════════════════════════════════════════════════
+//  ArbolBinario<T>  (Arbol Binario de Busqueda - ABB)
+//
+//  Estructura de datos jerarquica generica (template) que mantiene
+//  los elementos ORDENADOS automaticamente segun un criterio de
+//  comparacion (puntero a funcion / lambda), igual que se hace en
+//  la clase Ordenamiento<T> del proyecto.
+//
+//  Reglas del ABB:
+//    - Cada nodo tiene a lo sumo dos hijos (izquierdo y derecho).
+//    - Si 'menor(x, raiz)' es true  -> x va al subarbol IZQUIERDO.
+//    - En caso contrario            -> x va al subarbol DERECHO.
+//  Esto permite que el recorrido inorden devuelva los elementos
+//  ya ordenados, sin volver a ordenar.
+//
+//  Uso en el proyecto: ordenar el ranking de rachas. Al insertar
+//  cada Ranking con el criterio "mayor racha primero", el recorrido
+//  inorden entrega el ranking listo de mejor a peor.
+//
+//  Estructura totalmente independiente: define su propio Nodo
+//  anidado y no depende de Lista ni de ningun otro header.
+// ═══════════════════════════════════════════════════════════════
 template <typename T>
 class ArbolBinario {
 public:
@@ -22,8 +38,11 @@ public:
 private:
     Nodo* raiz;
     unsigned int lon;
+    // Criterio de orden: devuelve true si 'a' debe ir antes que 'b'
+    // (es decir, a la izquierda). Mismo enfoque que Ordenamiento<T>.
     function<bool(T, T)> menor;
 
+    // --- Auxiliares recursivos privados ---
     void destruir(Nodo* n) {
         if (n == nullptr) return;
         destruir(n->izq);
@@ -55,16 +74,19 @@ private:
     }
 
 public:
+    // Constructor: recibe el criterio de orden (lambda o puntero a funcion).
     ArbolBinario(function<bool(T, T)> criterio)
         : raiz(nullptr), lon(0), menor(criterio) {
     }
 
     ~ArbolBinario() { destruir(raiz); }
 
+    // --- Consultas ---
     unsigned int tam()       const { return lon; }
     bool         estaVacio() const { return lon == 0; }
     int          altura()    const { return alturaRec(raiz); }
 
+    // --- Operaciones ---
     void insertar(T elem) { raiz = insertarRec(raiz, elem); }
 
     bool buscar(T elem) const {

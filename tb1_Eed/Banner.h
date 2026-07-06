@@ -4,13 +4,23 @@
 
 using namespace std;
 
-// Banner: dibuja el logo "APRENDE GO" como matriz de pixeles (cada
-// celda es un bloque de color de fondo) sobre fondo blanco tipo Form.
-// Paleta (color de fondo de cada bloque, ANSI 24-bit):
+// ═══════════════════════════════════════════════════════════════
+//  Banner  -  Dibujo por MATRIZ de colores (estilo pixel-art),
+//  inspirado en DibujarMatriz del proyecto "Juego Splash".
+//
+//  - Cada celda de la matriz es un color; el "pixel" se pinta como un
+//    BLOQUE DE COLOR DE FONDO, por lo que se ve como un cuadrado solido
+//    real, sin depender de la fuente de la consola.
+//  - Toda la pantalla se pinta con FONDO BLANCO (simula un Windows Form).
+//  - El logo dice "APRENDE GO" (palabras separadas), centrado, con una
+//    paleta tipo Duolingo en tonos OSCUROS para contrastar con el blanco.
+//
+//  Paleta (colores de FONDO de cada bloque, ANSI 24-bit):
 //    1 = verde fuerte  (#58CC02)
 //    2 = verde lima    (#89E219)
 //    3 = gris oscuro   (#4B4B4B)
 //    5 = verde fuerte  (borde del logo, #58CC02)
+// ═══════════════════════════════════════════════════════════════
 namespace Banner {
 
     const int FILAS = 9;

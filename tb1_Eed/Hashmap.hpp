@@ -2,13 +2,10 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <type_traits>
 
 using namespace std;
 
-// ===================================================================
-// === RUBRICA: HASH TABLE + FUNCIONES HASH PROPIA (C) ===============
-// Tabla hash generica con encadenamiento y rehash automatico.
-// ===================================================================
 template <typename K, typename V>
 class HashMap {
 private:
@@ -26,12 +23,53 @@ private:
     vector<Nodo*> buckets;
     int           numElementos;
 
-    // Funcion hash propia: dispersa la clave sobre los buckets.
-    int hash(K clave) {
-        return std::hash<K>{}(clave) % buckets.size();
+    // ═══════════════════════════════════════════════════════════
+    //  FUNCION HASH PROPIA (hecha por el equipo) - "hash posicional"
+    //
+    //  No es un algoritmo de libro (tipo djb2/FNV), sino uno pensado
+    //  a partir de los datos reales de ESTA app:
+    //    - Palabras del vocabulario (Ingles/Italiano/Portugues), que
+    //      muchas veces comparten letras entre si (ej. "casa","caso").
+    //    - Nombres de usuario generados en Sistema::generarDatasetAleatorio(),
+    //      con el patron Nombre+Apellido+numero (ej. "CarlosVargas405"),
+    //      donde es comun que muchos usuarios compartan el mismo Nombre
+    //      o el mismo Apellido como sub-cadena.
+    //
+    //  Un hash que solo SUMA los caracteres (sin importar su posicion)
+    //  generaria el mismo valor para "roper" y "perro", o colisionaria
+    //  mucho entre nombres que comparten letras. Por eso, ademas de la
+    //  longitud como semilla, cada caracter se multiplica por:
+    //     (posicion + 1) * un numero primo (37)
+    //  Asi el ORDEN de las letras si afecta el resultado final, y se
+    //  reduce la probabilidad de colision entre palabras/nombres que
+    //  comparten letras pero en distinto orden o posicion.
+    //
+    //  Complejidad: O(L), con L = longitud de la clave.
+    // ═══════════════════════════════════════════════════════════
+    unsigned long hashPropio(const string& texto) const {
+        unsigned long h = static_cast<unsigned long>(texto.size()) * 101UL;
+        for (size_t i = 0; i < texto.size(); i++) {
+            unsigned char c = texto[i];
+            h += static_cast<unsigned long>(c) * (i + 1) * 37UL;
+        }
+        return h;
     }
 
-    // Duplica el numero de buckets y reubica los nodos (mantiene O(1) promedio).
+    // Convierte la clave a una representacion en texto para
+    // pasarsela al hash propio. Si K ya es string, se usa tal cual;
+    // si es un tipo numerico (int, long, etc.) se convierte con
+    // to_string antes de aplicar djb2.
+    int hash(K clave) {
+        unsigned long h;
+        if constexpr (is_same<K, string>::value) {
+            h = hashPropio(clave);
+        }
+        else {
+            h = hashPropio(to_string(clave));
+        }
+        return static_cast<int>(h % buckets.size());
+    }
+
     void rehash() {
         vector<Nodo*> viejos = buckets;
         buckets = vector<Nodo*>(viejos.size() * 2, nullptr);
@@ -53,6 +91,13 @@ public:
         buckets = vector<Nodo*>(1, nullptr);
         numElementos = 0;
     }
+
+    // Metodo de apoyo (NO modifica el HashMap): devuelve en que bucket
+    // caeria una clave con la funcion hash propia. Sirve solo para
+    // demostrar/depurar visualmente que el hash esta funcionando
+    // (ej. imprimirlo en pantalla durante la sustentacion).
+    int bucketDe(K clave) { return hash(clave); }
+    int totalBuckets() const { return (int)buckets.size(); }
 
     ~HashMap() {
         for (int i = 0; i < (int)buckets.size(); i++) {
@@ -128,4 +173,3 @@ public:
     int  tam() { return numElementos; }
     bool estaVacia() { return numElementos == 0; }
 };
-
