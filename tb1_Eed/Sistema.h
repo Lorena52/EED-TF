@@ -75,6 +75,10 @@ public:
 
     void rankingXpMergeSort();
     void rankingNombreQuickSort();
+    void rankingNombreHeapSort();
+    void rankingXpQuickSort();       // segundo uso de QuickSort (ordena por XP)
+    void rankingRachaShellSort();    // segundo uso de ShellSort (ordena por racha)
+
     //heap 
     void top3RachasHeap();
     //piloto grafo

@@ -78,6 +78,7 @@ void Sistema::menuPrincipal() {
         Banner::lineaCentrada("12. Mapa de aprendizaje (Grafo)", VERDE_T);
         Banner::lineaCentrada("13. Generar datos aleatorios (Dataset)", VERDE_T);
         Banner::lineaCentrada("14. Mostrar todos los usuarios registrados", VERDE_T);
+        Banner::lineaCentrada("15. Ranking XP con QuickSort", VERDE_T);
         Banner::lineaCentrada("0. Salir", ROJO_T);
         Banner::lineaVacia();
         Banner::promptCentrado("Seleccione una opcion y presione ENTER: ");
@@ -101,6 +102,7 @@ void Sistema::menuPrincipal() {
         case 12: limpiarPantalla(); verMallaAprendizaje(); break;
         case 13: limpiarPantalla(); generarDatasetAleatorio(); break;
         case 14: limpiarPantalla(); mostrarTodosUsuarios(); break;
+        case 15: limpiarPantalla(); rankingXpQuickSort(); break;
         case 0: Banner::lineaCentrada("Saliendo...", "\033[38;2;55;55;55m"); break;
         default: Banner::lineaCentrada("Opcion invalida.", "\033[38;2;200;40;40m");
         }
@@ -547,6 +549,7 @@ void Sistema::mostrarRankingRachas() {
         Banner::lineaCentrada("De que forma desea ver el ranking?", "\033[38;2;55;55;55m");
         Banner::lineaCentrada("1. Arbol Binario comun (ABB)", "\033[38;2;55;55;55m");
         Banner::lineaCentrada("2. Arbol AVL balanceado", "\033[38;2;55;55;55m");
+        Banner::lineaCentrada("3. ShellSort (sobre lista)", "\033[38;2;55;55;55m");
         Banner::lineaCentrada("0. Volver al menu principal", "\033[38;2;55;55;55m");
         Banner::promptCentrado("Opcion: ");
         cin >> opcion;
@@ -554,6 +557,7 @@ void Sistema::mostrarRankingRachas() {
         switch (opcion) {
         case 1: limpiarPantalla(); rankingRachasABB(); break;
         case 2: limpiarPantalla(); rankingRachasAVL(); break;
+        case 3: limpiarPantalla(); rankingRachaShellSort(); break;
         case 0: break;
         default:
             Banner::lineaCentrada("Opcion invalida.", "\033[38;2;200;40;40m");
@@ -704,6 +708,7 @@ void Sistema::ordenarPorNombre() {
         switch (opcion) {
         case 1: limpiarPantalla(); ordenarUsuariosPorNombreAsc(); break;
         case 2: limpiarPantalla(); rankingNombreQuickSort();      break;
+        case 3: limpiarPantalla(); rankingNombreHeapSort(); break;
         case 0: break;
         default:
             Banner::lineaCentrada("Opcion invalida.", "\033[38;2;200;40;40m");
@@ -904,6 +909,30 @@ void Sistema::rankingXpMergeSort() {
     }
 }
 
+void Sistema::rankingXpQuickSort() {
+    if (usuarios.estaVacia()) {
+        Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
+        return;
+    }
+
+    vector<Usuario> vec;                                          // (1) O(1)
+    auto* aux = usuarios.inicio();
+    while (aux != nullptr) {                                      // (2) O(n)
+        vec.push_back(aux->elem);
+        aux = aux->sig;
+    }
+
+    // SEGUNDO USO DE QUICKSORT: aqui ordena por XP (antes ordenaba por nombre)
+    quickSort(vec, compararPorXpDesc);                            // (3) O(n log n) prom.
+
+    Banner::lineaCentrada("=== Ranking XP (QuickSort - mayor a menor) ===", "\033[38;2;46;125;50m");
+    for (int i = 0; i < (int)vec.size(); i++) {                   // (4) O(n)
+        Banner::lineaCentrada(to_string(i + 1) + ". " + vec[i].getNombre()
+            + "  |  XP: " + to_string(vec[i].obtenerProgreso()->getPuntosTotales()),
+            "\033[38;2;55;55;55m");
+    }
+}
+
 //QUICK SORT: ordenar usuarios por nombre alfabeticamente 
 
 bool compararPorNombreAlfabetico(Usuario a, Usuario b) {
@@ -914,6 +943,31 @@ bool compararRachaHeap(Usuario a, Usuario b)
 {
     return a.obtenerProgreso()->getRacha()->getMaxima() >
         b.obtenerProgreso()->getRacha()->getMaxima();
+}
+
+void Sistema::rankingRachaShellSort() {
+    if (usuarios.estaVacia()) {
+        Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
+        return;
+    }
+
+    Lista<Usuario> copia;
+    auto* aux = usuarios.inicio();
+    while (aux != nullptr) {
+        copia.insertarFinal(aux->elem);
+        aux = aux->sig;
+    }
+
+    // SEGUNDO USO DE SHELLSORT: aqui ordena por racha (antes ordenaba por nivel)
+    Ordenamiento<Usuario>::shell(&copia, compararRachaHeap);
+
+    Banner::lineaCentrada("=== Ranking de rachas (ShellSort - mayor a menor) ===", "\033[38;2;46;125;50m");
+    for (unsigned int i = 0; i < copia.tam(); i++) {
+        Usuario u = copia.obtener(i);
+        Banner::lineaCentrada(to_string(i + 1) + ". " + u.getNombre()
+            + "  |  Mejor racha: " + to_string(u.obtenerProgreso()->getRacha()->getMaxima()),
+            "\033[38;2;55;55;55m");
+    }
 }
 void Sistema::rankingNombreQuickSort() {
     if (usuarios.estaVacia()) {
@@ -930,6 +984,24 @@ void Sistema::rankingNombreQuickSort() {
     quickSort(vec, compararPorNombreAlfabetico);                 // (3) O(n log n) prom. / O(n²) peor caso
     Banner::lineaCentrada("=== Usuarios por nombre (QuickSort - A-Z) ===", "\033[38;2;46;125;50m");
     for (int i = 0; i < (int)vec.size(); i++) {                 // (4) O(n)
+        Banner::lineaCentrada(to_string(i + 1) + ". " + vec[i].getNombre() + "  |  Nivel global: " + to_string(vec[i].nivelGlobal()), "\033[38;2;55;55;55m");
+    }
+}
+void Sistema::rankingNombreHeapSort() {
+    if (usuarios.estaVacia()) {
+        Banner::lineaCentrada("No hay usuarios registrados.", "\033[38;2;200;40;40m");
+        return;
+    }
+
+    vector<Usuario> vec;                                         // (1) O(1)
+    auto* aux = usuarios.inicio();                               // (2) O(n)
+    while (aux != nullptr) {
+        vec.push_back(aux->elem);
+        aux = aux->sig;
+    }
+    heapSort(vec, compararPorNombreAlfabetico);                  // (3) O(n log n) en TODOS los casos
+    Banner::lineaCentrada("=== Usuarios por nombre (HeapSort - A-Z) ===", "\033[38;2;46;125;50m");
+    for (int i = 0; i < (int)vec.size(); i++) {                  // (4) O(n)
         Banner::lineaCentrada(to_string(i + 1) + ". " + vec[i].getNombre() + "  |  Nivel global: " + to_string(vec[i].nivelGlobal()), "\033[38;2;55;55;55m");
     }
 }

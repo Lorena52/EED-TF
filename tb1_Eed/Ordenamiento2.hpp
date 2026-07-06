@@ -65,3 +65,39 @@ template <typename T>
 void quickSort(vector<T>& v, bool (*menor)(T, T)) {
     if (!v.empty()) quickSort(v, 0, (int)v.size() - 1, menor);
 }
+
+// ---------------------------------------------------------------
+//  HEAP SORT  -  O(n log n) en todos los casos.
+// ---------------------------------------------------------------
+template <typename T>
+void heapify(vector<T>& v, int n, int i, bool (*menor)(T, T)) {
+    int mayor = i;
+    int izq = 2 * i + 1;
+    int der = 2 * i + 2;
+
+    // menor(a,b) = "a debe ir antes que b"; para heap MAX usamos
+    // menor(v[mayor], v[hijo]) para decidir si el hijo tiene mas prioridad
+    if (izq < n && menor(v[mayor], v[izq])) mayor = izq;
+    if (der < n&& menor(v[mayor], v[der])) mayor = der;
+
+    if (mayor != i) {
+        swap(v[i], v[mayor]);
+        heapify(v, n, mayor, menor);
+    }
+}
+
+template <typename T>
+void heapSort(vector<T>& v, bool (*menor)(T, T)) {
+    int n = (int)v.size();
+    if (n == 0) return;
+
+    // 1) Construir el heap (max-heap segun el comparador)
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(v, n, i, menor);
+
+    // 2) Extraer elementos uno a uno desde el final
+    for (int i = n - 1; i > 0; i--) {
+        swap(v[0], v[i]);          // raiz (el "mayor") al final
+        heapify(v, i, 0, menor);   // rehacer heap con el resto
+    }
+}
