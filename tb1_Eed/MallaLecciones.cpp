@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "MallaLecciones.h"
+#include "Banner.h"
 #include <iostream>
 #include <limits>
 using namespace std;
@@ -21,7 +22,7 @@ int MallaLecciones::indice(int idiomaIdx, int nivel) const {
 
 void MallaLecciones::cargarDatos() {
     string ejercicios[NIVELES] = { "ordenarOracion", "completarOracion", "traduccionAvanzada" };
-    int minutosPorNivel[NIVELES] = { 15, 20, 30 };  
+    int minutosPorNivel[NIVELES] = { 15, 20, 30 };
 
     for (int i = 0; i < IDIOMAS; i++) {
         for (int niv = 1; niv <= NIVELES; niv++) {
@@ -35,23 +36,25 @@ void MallaLecciones::cargarDatos() {
 }
 
 void MallaLecciones::listarLecciones() {
-    cout << "\n--- Lecciones (nodos del grafo) ---\n";
+    Banner::lineaCentrada("--- Lecciones (nodos del grafo) ---", "\033[38;2;46;125;50m");
     for (int i = 0; i < g->n; i++)
-        cout << "   " << i << " = " << g->obtener(i).detalle() << endl;
+        Banner::lineaCentrada(to_string(i) + " = " + g->obtener(i).detalle(),
+            "\033[38;2;55;55;55m");
 }
 
 void MallaLecciones::mostrarMenuIdiomas() {
     for (int i = 0; i < IDIOMAS; i++)
-        cout << "   " << i << " = " << nombresIdioma[i] << endl;
+        Banner::lineaCentrada(to_string(i) + " = " + nombresIdioma[i], "\033[38;2;55;55;55m");
 }
 
 // ORDEN TOPOLOGICO sobre las 9 lecciones: nunca muestra un nivel 2
 // antes que su nivel 1, ni un nivel 3 antes que su nivel 2.
 void MallaLecciones::ordenSugerido() {
     vector<int> orden = g->ordenarPorRequisitos();
-    cout << "\n--- Orden sugerido de todas las lecciones (orden topologico) ---\n";
+    Banner::lineaCentrada("--- Orden sugerido (orden topologico) ---", "\033[38;2;46;125;50m");
     for (int i = 0; i < (int)orden.size(); i++)
-        cout << "   " << (i + 1) << ". " << g->obtener(orden[i]).detalle() << endl;
+        Banner::lineaCentrada(to_string(i + 1) + ". " + g->obtener(orden[i]).detalle(),
+            "\033[38;2;55;55;55m");
 }
 
 // DFS: recorre a fondo la cadena nivel1 -> nivel2 -> nivel3 de UN idioma.
@@ -81,15 +84,18 @@ void MallaLecciones::ordenSugerido() {
 //}
 
 void MallaLecciones::prerrequisitosDe(int nodo) {
-    cout << "\n--- Prerrequisitos de ' |" << g->obtener(nodo).detalle() << "'| ---\n";
+    Banner::lineaCentrada("--- Prerrequisitos de: " + g->obtener(nodo).detalle() + " ---",
+        "\033[38;2;46;125;50m");
     bool alguno = false;
     for (int i = 0; i < g->n; i++) {
         if (g->ady[i][nodo] != 0) {
-            cout << "   - " << g->obtener(i).detalle() << endl;
+            Banner::lineaCentrada("- " + g->obtener(i).detalle(), "\033[38;2;55;55;55m");
             alguno = true;
         }
     }
-    if (!alguno) cout << "   (no tiene prerrequisitos, es nivel inicial de su idioma)\n";
+    if (!alguno)
+        Banner::lineaCentrada("(no tiene prerrequisitos, es nivel inicial de su idioma)",
+            "\033[38;2;55;55;55m");
 }
 
 int MallaLecciones::idiomaIdxPorNombre(const string& nombre) const {
@@ -115,31 +121,4 @@ string MallaLecciones::mensajeBloqueo(int idiomaIdx, int nivelActual, int nivelD
         if (g->ady[i][destino] != 0)                                                    // (4) O(1)
             msg += "      - " + g->obtener(i).detalle() + "\n";                          // (5) O(1)
     return msg;
-}
-// ==========================================================
-//  siguienteNivel  -  usa el GRAFO (matriz de adyacencia)
-//  para encontrar el nodo destino conectado desde el nodo
-//  (idiomaIdx, nivelActual). Al recorrer la fila de adyacencia
-//  del origen, el primer destino con arista != 0 dentro del
-//  mismo idioma es el siguiente nivel desbloqueado.
-// ==========================================================
-int MallaLecciones::siguienteNivel(int idiomaIdx, int nivelActual) {
-    if (idiomaIdx < 0 || idiomaIdx >= IDIOMAS) return -1;
-    if (nivelActual < 1 || nivelActual >= NIVELES) return -1;
-
-    int origen = indice(idiomaIdx, nivelActual);
-    for (int destino = 0; destino < g->n; destino++) {
-        if (g->ady[origen][destino] != 0) {
-            int idiomaDestino = destino / NIVELES;
-            int nivelDestino = (destino % NIVELES) + 1;
-            if (idiomaDestino == idiomaIdx) return nivelDestino;
-        }
-    }
-    return -1;
-}
-
-string MallaLecciones::detalleNodo(int idiomaIdx, int nivel) {
-    if (idiomaIdx < 0 || idiomaIdx >= IDIOMAS) return "";
-    if (nivel < 1 || nivel > NIVELES) return "";
-    return g->obtener(indice(idiomaIdx, nivel)).detalle();
 }

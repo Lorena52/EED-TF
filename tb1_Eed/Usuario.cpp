@@ -32,7 +32,7 @@ Progreso* Usuario::obtenerProgreso() {
 
 void Usuario::agregarPuntaje(int n) {
     puntajeTotal += n;
-    // Mantener sincronizado el XP del Progreso (lo usa el ranking XP MergeSort)
+    // Sincronizar el XP del Progreso: es el que lee el ranking XP (opcion 10).
     progreso.setPuntosTotales(progreso.getPuntosTotales() + n);
 }
 
@@ -53,7 +53,7 @@ string Usuario::serializar() const {
         to_string(nivelItaliano) + ";" +
         to_string(progreso.getRacha()->getActual()) + ";" +
         to_string(progreso.getRacha()->getMaxima()) + ";" +
-        to_string(progreso.getPuntosTotales());   // XP
+        to_string(progreso.getPuntosTotales());
 }
 
 Usuario Usuario::deserializar(const string& linea) {
