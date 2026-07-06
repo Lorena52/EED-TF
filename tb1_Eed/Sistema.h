@@ -88,5 +88,6 @@ public:
     void generarDatasetAleatorio();
     // intefaz 
     void pantallaBienvenida();
+	void MostrarCreditos();
 
 };

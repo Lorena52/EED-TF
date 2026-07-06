@@ -79,6 +79,7 @@ void Sistema::menuPrincipal() {
         Banner::lineaCentrada("13. Generar datos aleatorios (Dataset)", VERDE_T);
         Banner::lineaCentrada("14. Mostrar todos los usuarios registrados", VERDE_T);
         Banner::lineaCentrada("15. Ranking XP con QuickSort", VERDE_T);
+        Banner::lineaCentrada("16. Creditos", VERDE_T);
         Banner::lineaCentrada("0. Salir", ROJO_T);
         Banner::lineaVacia();
         Banner::promptCentrado("Seleccione una opcion y presione ENTER: ");
@@ -103,6 +104,7 @@ void Sistema::menuPrincipal() {
         case 13: limpiarPantalla(); generarDatasetAleatorio(); break;
         case 14: limpiarPantalla(); mostrarTodosUsuarios(); break;
         case 15: limpiarPantalla(); rankingXpQuickSort(); break;
+        case 16: limpiarPantalla(); MostrarCreditos(); break;
         case 0: Banner::lineaCentrada("Saliendo...", "\033[38;2;55;55;55m"); break;
         default: Banner::lineaCentrada("Opcion invalida.", "\033[38;2;200;40;40m");
         }
@@ -110,6 +112,17 @@ void Sistema::menuPrincipal() {
     } while (opcion != 0);
 }
 
+void Sistema::MostrarCreditos() {
+    Banner::lineaCentrada("  ____ ____  _____ ____ ___ _____ ___  ____", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada(" / ___|  _ \\| ____|  _ \\_ _|_   _/ _ \\/ ___|    ", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada(" | |   | |_) |  _| | | | | |  | || | | \\___ \\ ", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada(" | |___|  _ <| |___| |_| | |  | || |_| |___) |  ", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada("  \\____|_| \\_\\_____|____/___| |_| \\___/|____/ ", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada("", "\033[38;2;46;125;50m");
+    Diseño::NuevoLogo();
+    Banner::lineaCentrada("MISHELLY FLORES - ING. SOFTWARE   |  KASSANDRA CHAVEZ - ING. SOFTWARE  |   LEITO DAZA - ING. SOFTWARE \n", "\033[38;2;46;125;50m");
+
+}
 void Sistema::mostrarBarraProgreso(int progreso, int total) {
     if (total <= 0) total = 1;
     int ancho = 30;
