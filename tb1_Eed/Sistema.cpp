@@ -1057,7 +1057,7 @@ void Sistema::top3RachasHeap()
 void Sistema::verMallaAprendizaje() {
     int opcion = -1;
     do {
-        Banner::lineaCentrada("===== MAPA DE APRENDISAJE =====", "\033[38;2;46;125;50m");
+        Banner::lineaCentrada("===== MAPA DE APRENDIZAJE =====", "\033[38;2;46;125;50m");
         Banner::lineaVacia();
         mallaLecciones.listarLecciones();
         Banner::lineaVacia();
