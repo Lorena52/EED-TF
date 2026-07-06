@@ -1,7 +1,7 @@
 1;Kassandra;kassandrachavez@gmail.com;1;3;2;0;6;0
 3;leito;457@gmail.com;2;1;1;0;10;0
 4;juan;juan@gmail.com;2;1;1;0;5;5
-4;shayli;shayli@;1;1;1;2;3;6
+4;shayli;shayli@;1;1;1;0;3;6
 5;AndresCastro540;AndresCastro540@outlook.com;1;3;1;0;17;222
 6;CamilaFlores330;CamilaFlores330@outlook.com;3;2;2;0;3;118
 7;MiguelSalazar940;MiguelSalazar940@gmail.com;1;3;2;0;11;39
@@ -24,3 +24,13 @@
 24;MariaRamos646;MariaRamos646@hotmail.com;1;2;2;0;19;280
 25;mod;mod@gmail.com;3;2;2;0;5;10
 26;fos;fost@gmail.com;1;1;1;0;0;0
+27;CarlosVargas112;CarlosVargas112@upc.edu.pe;2;1;1;0;0;419
+28;LuciaFlores161;LuciaFlores161@upc.edu.pe;3;3;1;0;13;119
+29;LuciaRojas502;LuciaRojas502@gmail.com;1;2;3;0;7;413
+30;DanielaSalazar1;DanielaSalazar1@hotmail.com;2;2;1;0;11;146
+31;LuciaFlores524;LuciaFlores524@hotmail.com;3;3;1;0;14;380
+32;CamilaSalazar136;CamilaSalazar136@outlook.com;3;3;1;0;18;443
+33;FernandaParedes38;FernandaParedes38@gmail.com;3;2;1;0;8;230
+34;MariaCastro47;MariaCastro47@outlook.com;2;2;2;0;16;140
+35;RosaMendoza843;RosaMendoza843@hotmail.com;2;2;1;0;4;463
+36;MiguelRojas241;MiguelRojas241@outlook.com;2;3;3;0;12;70

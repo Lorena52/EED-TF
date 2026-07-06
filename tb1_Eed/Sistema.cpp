@@ -47,6 +47,7 @@ void Sistema::pausar() {
 }
 
 void Sistema::iniciar() {
+    pantallaupc();
     pantallaBienvenida();
     menuPrincipal();
 }
@@ -113,10 +114,10 @@ void Sistema::menuPrincipal() {
 }
 
 void Sistema::MostrarCreditos() {
-    Banner::lineaCentrada("  ____ ____  _____ ____ ___ _____ ___  ____", "\033[38;2;46;125;50m");
-    Banner::lineaCentrada(" / ___|  _ \\| ____|  _ \\_ _|_   _/ _ \\/ ___|    ", "\033[38;2;46;125;50m");
-    Banner::lineaCentrada(" | |   | |_) |  _| | | | | |  | || | | \\___ \\ ", "\033[38;2;46;125;50m");
-    Banner::lineaCentrada(" | |___|  _ <| |___| |_| | |  | || |_| |___) |  ", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada("   ____ ____  _____ ____ ___ _____ ___  ____", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada("  / ___|  _ \\| ____|  _ \\_ _|_   _/ _ \\/ ___|    ", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada("  | |   | |_) |  _| | | | | |  | || | | \\___ \\ ", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada("  | |___|  _ <| |___| |_| | |  | || |_| |___) |  ", "\033[38;2;46;125;50m");
     Banner::lineaCentrada("  \\____|_| \\_\\_____|____/___| |_| \\___/|____/ ", "\033[38;2;46;125;50m");
     Banner::lineaCentrada("", "\033[38;2;46;125;50m");
     Diseño::NuevoLogo();
@@ -1217,6 +1218,56 @@ void Sistema::pantallaBienvenida() {
 
     Banner::lineaCentrada("Bienvenido a AprendeGo!", "\033[38;2;46;125;50m");
     Banner::lineaCentrada("Cargando...", "\033[38;2;46;125;50m");
+
+    // Barra de carga con bloques verdes, centrada y con fondo blanco
+    int anchoBarra = 20 * 2 + 2;                  // 20 bloques + 2 corchetes
+    int izqB = (ancho - anchoBarra) / 2;
+    if (izqB < 0) izqB = 0;
+    int derB = ancho - anchoBarra - izqB;
+    if (derB < 0) derB = 0;
+
+    // Padding izquierdo BLANCO (no negro)
+    cout << "\033[107m";
+    for (int i = 0; i < izqB; i++) cout << " ";
+
+    // Corchete de apertura
+    cout << "\033[38;2;46;125;50m" << "[";
+
+    // Los 20 bloques verdes animados, SIN resetear el fondo entre uno y otro
+    for (int i = 0; i < 20; i++) {
+        cout << "\033[42m  ";
+        cout.flush();
+        _sleep(120);
+    }
+
+    // Volver a fondo blanco y corchete de cierre
+    cout << "\033[107m\033[38;2;46;125;50m" << "]";
+
+    // Padding derecho BLANCO
+    cout << "\033[107m";
+    for (int i = 0; i < derB; i++) cout << " ";
+    cout << "\033[0m";
+
+    _sleep(500);
+    system("cls");
+}
+
+void Sistema::pantallaupc() {
+    system("cls");
+    Banner::fondoForm();      
+
+    int ancho = Banner::anchoConsola();
+    int anchoLogo = 21 * 2;
+    int colLogo = (ancho - anchoLogo) / 2;
+    if (colLogo < 1) colLogo = 1;
+
+    Diseño::UPC();
+
+    cout << "\033[25;1H";
+    cout << "\033[107m\033[38;2;55;55;55m";   // fondo blanco + texto oscuro
+
+    Banner::lineaCentrada("UNIVERSIDAD DE CIENCIAS APLICADAS 2026-l", "\033[38;2;46;125;50m");
+    Banner::lineaCentrada("TRABAJO GRUPO 3 ", "\033[38;2;46;125;50m");
 
     // Barra de carga con bloques verdes, centrada y con fondo blanco
     int anchoBarra = 20 * 2 + 2;                  // 20 bloques + 2 corchetes

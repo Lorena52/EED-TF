@@ -24,3 +24,13 @@ JoseQuispe564;3
 MariaRamos646;2
 mod;2
 fos;1
+CarlosVargas112;1
+LuciaFlores161;3
+LuciaRojas502;2
+DanielaSalazar1;2
+LuciaFlores524;3
+CamilaSalazar136;3
+FernandaParedes38;2
+MariaCastro47;2
+RosaMendoza843;2
+MiguelRojas241;3

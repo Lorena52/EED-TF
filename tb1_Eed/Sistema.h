@@ -90,4 +90,6 @@ public:
     void pantallaBienvenida();
 	void MostrarCreditos();
 
+    //upc
+    void pantallaupc();
 };
